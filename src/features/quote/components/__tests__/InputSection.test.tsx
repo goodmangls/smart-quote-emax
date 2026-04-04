@@ -19,7 +19,7 @@ const mockInput: QuoteInput = {
   incoterm: Incoterm.DAP,
   packingType: PackingType.NONE,
   items: [{ id: '1', width: 10, length: 10, height: 10, weight: 1, quantity: 1 }],
-  marginPercent: 15,
+  discountPercent: 15,
   dutyTaxEstimate: 0,
   exchangeRate: 1400,
   fscPercent: 30,
@@ -103,9 +103,8 @@ describe('InputSection', () => {
     );
   });
 
-  it('does not render Target Margin input when hideMargin=true', () => {
+  it('does not render Discount input when hideMargin=true', () => {
     render(<InputSection {...defaultProps} hideMargin={true} />);
-
-    expect(screen.queryByText('Target Margin (%)')).not.toBeInTheDocument();
+    expect(screen.queryByText('Discount')).not.toBeInTheDocument();
   });
 });
