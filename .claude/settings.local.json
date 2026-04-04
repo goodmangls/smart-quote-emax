@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Vercel__deploy_to_vercel",
+      "mcp__claude_ai_Vercel__get_deployment"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "github",
+    "postgres",
+    "brave-search",
+    "ruby-docs",
+    "rails-docs",
+    "rubygems",
+    "bundler",
+    "react-docs",
+    "typescript-docs",
+    "vite-docs",
+    "npm-security",
+    "rust-docs",
+    "cargo-docs",
+    "crates-search",
+    "rust-analyzer"
+  ]
+}

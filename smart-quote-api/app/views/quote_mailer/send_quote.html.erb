@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #333; discount: 0; padding: 0; background: #f5f5f5; }
+    .container { max-width: 600px; discount: 0 auto; background: #fff; }
+    .header { background: #1a56db; color: #fff; padding: 24px 32px; }
+    .header h1 { discount: 0; font-size: 20px; font-weight: 600; }
+    .header p { discount: 4px 0 0; font-size: 13px; opacity: 0.85; }
+    .content { padding: 32px; }
+    .greeting { font-size: 15px; discount-bottom: 16px; }
+    .message-box { background: #f8fafc; border-left: 3px solid #1a56db; padding: 12px 16px; discount: 16px 0; font-size: 14px; color: #555; }
+    table { width: 100%; border-collapse: collapse; discount: 20px 0; }
+    th { text-align: left; font-size: 11px; text-transform: uppercase; color: #888; padding: 8px 12px; border-bottom: 2px solid #e5e7eb; }
+    td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+    .total-row td { font-weight: 700; font-size: 16px; border-top: 2px solid #1a56db; color: #1a56db; }
+    .meta { font-size: 12px; color: #888; discount-top: 24px; }
+    .footer { padding: 20px 32px; background: #f8fafc; border-top: 1px solid #e5e7eb; font-size: 11px; color: #999; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>J-Ways Smart Quote</h1>
+      <p>Integrated Logistics Solution</p>
+    </div>
+    <div class="content">
+      <p class="greeting">Dear <%= @recipient_name %>,</p>
+      <p style="font-size:14px;">Please find your shipping quote details below.</p>
+
+      <% if @message.present? %>
+        <div class="message-box"><%= @message %></div>
+      <% end %>
+
+      <table>
+        <tr><th colspan="2">Quote Details</th></tr>
+        <tr><td>Reference</td><td><strong><%= @quote.reference_no %></strong></td></tr>
+        <tr><td>Destination</td><td><%= @quote.destination_country %> <%= @quote.destination_zip %></td></tr>
+        <tr><td>Incoterm</td><td><%= @quote.incoterm %></td></tr>
+        <tr><td>Zone</td><td><%= @quote.applied_zone %></td></tr>
+        <tr><td>Billable Weight</td><td><%= number_with_delimiter(@quote.billable_weight.to_f.round(1)) %> kg</td></tr>
+      </table>
+
+      <table>
+        <tr><th>Cost Item</th><th style="text-align:right;">Amount (KRW)</th></tr>
+        <% bd = @quote.breakdown || {} %>
+        <tr><td>Packing & Handling</td><td style="text-align:right;"><%= number_with_delimiter(((bd["packingMaterial"] || 0) + (bd["packingLabor"] || 0) + (bd["packingFumigation"] || 0) + (bd["handlingFees"] || 0)).to_i) %></td></tr>
+        <tr><td>International Freight</td><td style="text-align:right;"><%= number_with_delimiter(((bd["intlBase"] || 0) + (bd["intlFsc"] || 0) + (bd["intlWarRisk"] || 0) + (bd["intlSurge"] || 0)).to_i) %></td></tr>
+        <% if (bd["destDuty"] || 0).to_i > 0 %>
+          <tr><td>Destination Duty (Est.)</td><td style="text-align:right;"><%= number_with_delimiter((bd["destDuty"] || 0).to_i) %></td></tr>
+        <% end %>
+        <tr class="total-row">
+          <td>Total Quote</td>
+          <td style="text-align:right;">&#8361; <%= number_with_delimiter(@quote.total_quote_amount.to_i) %></td>
+        </tr>
+        <tr><td style="color:#888;font-size:12px;">Approx. USD</td><td style="text-align:right;color:#888;font-size:12px;">$ <%= number_with_delimiter(@quote.total_quote_amount_usd.to_f.round(2)) %></td></tr>
+      </table>
+
+      <p class="meta">
+        Exchange Rate: <%= @quote.exchange_rate.to_f %> KRW/USD &middot;
+        Status: <%= @quote.status.capitalize %> &middot;
+        Date: <%= @quote.created_at.strftime("%Y-%m-%d") %>
+      </p>
+    </div>
+    <div class="footer">
+      This quote is an estimate based on provided dimensions and is subject to change upon final measurement.<br>
+      &copy; 2025 Goodman GLS & J-Ways Co., Ltd.
+    </div>
+  </div>
+</body>
+</html>

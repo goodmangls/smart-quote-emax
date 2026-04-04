@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Focus-visible ring for keyboard navigation accessibility */
+@layer base {
+  *:focus-visible {
+    @apply outline-none ring-2 ring-accent-500/50 ring-offset-1 ring-offset-white dark:ring-offset-gray-950;
+  }
+
+  body {
+    @apply font-sans bg-gray-50 text-gray-800 dark:bg-gray-950 dark:text-gray-200;
+  }
+}
+
+/* Safe area padding for iOS notch/home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

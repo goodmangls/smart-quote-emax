@@ -1,0 +1,66 @@
+{
+  "sessionCount": 60,
+  "lastSession": {
+    "startedAt": "2026-03-17T13:16:07.482Z",
+    "platform": "claude",
+    "level": "Dynamic"
+  },
+  "activeFeatures": {
+    "quote-share-link": {
+      "phase": "plan",
+      "startedAt": "2026-03-31",
+      "matchRate": null,
+      "iterations": 0
+    },
+    "backend-critical-fixes": {
+      "phase": "do-complete",
+      "startedAt": "2026-03-29",
+      "matchRate": null,
+      "iterations": 0
+    }
+  },
+  "archivedFeatures": {
+    "fix-critical-issues": {
+      "archivedAt": "2026-03-28",
+      "archivedTo": "docs/archive/2026-03/fix-critical-issues/",
+      "matchRate": 100,
+      "iterations": 0
+    },
+    "jwt-security-improvement": {
+      "archivedAt": "2026-03-29",
+      "archivedTo": "docs/archive/2026-03/jwt-security-improvement/",
+      "matchRate": 100,
+      "iterations": 0
+    },
+    "code-quality-fixes": {
+      "archivedAt": "2026-02-25",
+      "archivedTo": "docs/archive/2026-02/code-quality-fixes/",
+      "matchRate": 97,
+      "iterations": 0
+    },
+    "calculate-quote": {
+      "archivedAt": "2026-02-24",
+      "archivedTo": "docs/archive/2026-02/calculate-quote/",
+      "matchRate": 100,
+      "iterations": 2
+    },
+    "Save-Quote": {
+      "archivedAt": "2026-02-24",
+      "archivedTo": "docs/archive/2026-02/Save-Quote/",
+      "matchRate": 92,
+      "iterations": 0
+    },
+    "dynamic-margin-rules": {
+      "archivedAt": "2026-03-08",
+      "archivedTo": "docs/archive/2026-03/dynamic-margin-rules/",
+      "matchRate": 98,
+      "iterations": 1
+    },
+    "security-hardening": {
+      "archivedAt": "2026-03-08",
+      "archivedTo": "docs/archive/2026-03/security-hardening/",
+      "matchRate": 100,
+      "iterations": 0
+    }
+  }
+}

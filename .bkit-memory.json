@@ -1,0 +1,78 @@
+{
+  "activeFeature": null,
+  "phase": "idle",
+  "matchRate": null,
+  "iteration": 0,
+  "history": [
+    {
+      "feature": "Save-Quote",
+      "phase": "archived",
+      "timestamp": "2026-03-13",
+      "action": "Archived v2 docs to docs/archive/2026-02/Save-Quote/ (97%)",
+      "matchRate": 97
+    },
+    {
+      "feature": "auth-hardening",
+      "phase": "archived",
+      "timestamp": "2026-03-13",
+      "action": "Re-analyzed: 93%→97% (+12 AuthContext tests, isLoading exposure)",
+      "matchRate": 97
+    },
+    {
+      "feature": "calculation-sync",
+      "phase": "archived",
+      "timestamp": "2026-03-11",
+      "action": "Archived to docs/archive/2026-03/calculation-sync/",
+      "matchRate": 100
+    },
+    {
+      "feature": "surcharge-management",
+      "phase": "archived",
+      "timestamp": "2026-03-12",
+      "action": "Archived to docs/archive/2026-03/surcharge-management/",
+      "matchRate": 100
+    },
+    {
+      "feature": "surcharge-management-v2",
+      "phase": "archived",
+      "timestamp": "2026-03-12",
+      "action": "Archived to docs/archive/2026-03/surcharge-management-v2/",
+      "matchRate": 100
+    },
+    {
+      "feature": "dhl-addons",
+      "phase": "archived",
+      "timestamp": "2026-03-12",
+      "action": "Archived to docs/archive/2026-03/dhl-addons/",
+      "matchRate": 91
+    },
+    {
+      "feature": "packing-docs-simplify",
+      "phase": "archived",
+      "timestamp": "2026-03-13",
+      "action": "Archived to docs/archive/2026-03/packing-docs-simplify/",
+      "matchRate": 95
+    },
+    {
+      "feature": "exchange-rate-proxy",
+      "phase": "archived",
+      "timestamp": "2026-03-13",
+      "action": "Archived to docs/archive/2026-03/exchange-rate-proxy/",
+      "matchRate": 98
+    },
+    {
+      "feature": "freight-networks",
+      "phase": "archived",
+      "timestamp": "2026-03-13",
+      "action": "Archived to docs/archive/2026-03/freight-networks/",
+      "matchRate": 97
+    },
+    {
+      "feature": "code-quality-improvement",
+      "phase": "archived",
+      "timestamp": "2026-03-24",
+      "action": "Archived to docs/archive/2026-03/code-quality-improvement/ (100%)",
+      "matchRate": 100
+    }
+  ]
+}

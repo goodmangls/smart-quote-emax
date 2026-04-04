@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-03-05T11:46:39.186Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-26T19:30:00.000Z",
+    "activeFeatures": [],
+    "primaryFeature": null,
+    "features": {
+      "widget-upgrades": {
+        "phase": "archived",
+        "planDoc": null,
+        "designDoc": null,
+        "analysisDoc": "docs/archive/2026-02/widget-upgrades/widget-upgrades.analysis.md",
+        "reportDoc": "docs/archive/2026-02/widget-upgrades/widget-upgrades.report.md",
+        "startedAt": "2026-02-26",
+        "completedAt": "2026-02-26",
+        "archivedAt": "2026-02-26",
+        "archivedTo": "docs/archive/2026-02/widget-upgrades/",
+        "matchRate": 98,
+        "iterations": 1,
+        "note": "Post-hoc PDCA. 98% match rate after 1 iteration. All Medium gaps resolved. 133 tests passing."
+      },
+      "dashboard-enhancements": {
+        "phase": "archived",
+        "planDoc": null,
+        "designDoc": null,
+        "analysisDoc": "docs/archive/2026-02/dashboard-enhancements/dashboard-enhancements.analysis.md",
+        "reportDoc": "docs/archive/2026-02/dashboard-enhancements/dashboard-enhancements.report.md",
+        "startedAt": "2026-02-26",
+        "completedAt": "2026-02-26",
+        "archivedAt": "2026-02-26",
+        "archivedTo": "docs/archive/2026-02/dashboard-enhancements/",
+        "matchRate": 93,
+        "iterations": 0,
+        "note": "Post-hoc PDCA (Implementation-first, no formal Plan/Design). All 6 features complete."
+      },
+      "Customer-Dashboard": {
+        "phase": "archived",
+        "planDoc": "docs/archive/2026-02/Customer-Dashboard/customer-dashboard.plan.md",
+        "designDoc": "docs/archive/2026-02/Customer-Dashboard/customer-dashboard.design.md",
+        "analysisDoc": "docs/archive/2026-02/Customer-Dashboard/customer-dashboard.analysis.md",
+        "reportDoc": "docs/archive/2026-02/Customer-Dashboard/customer-dashboard.report.md",
+        "startedAt": "2026-02-26",
+        "completedAt": "2026-02-26",
+        "archivedAt": "2026-02-26",
+        "archivedTo": "docs/archive/2026-02/Customer-Dashboard/",
+        "matchRate": 95,
+        "iterations": 1
+      },
+      "Save-Quote": {
+        "phase": "archived",
+        "planDoc": "docs/archive/2026-02/Save-Quote/Save-Quote.plan.md",
+        "designDoc": "docs/archive/2026-02/Save-Quote/Save-Quote.design.md",
+        "analysisDoc": "docs/archive/2026-02/Save-Quote/Save-Quote.analysis.md",
+        "reportDoc": "docs/archive/2026-02/Save-Quote/Save-Quote.report.md",
+        "startedAt": "2026-02-24",
+        "completedAt": "2026-02-24",
+        "archivedAt": "2026-02-24",
+        "archivedTo": "docs/archive/2026-02/Save-Quote/",
+        "matchRate": 92,
+        "iterations": 0
+      },
+      "global-port-weather": {
+        "phase": "archived",
+        "planDoc": "docs/archive/2026-02/global-port-weather/global-port-weather.plan.md",
+        "designDoc": "docs/archive/2026-02/global-port-weather/global-port-weather.design.md",
+        "analysisDoc": "docs/archive/2026-02/global-port-weather/global-port-weather.analysis.md",
+        "reportDoc": "docs/archive/2026-02/global-port-weather/global-port-weather.report.md",
+        "startedAt": "2026-02-26",
+        "completedAt": "2026-02-26",
+        "archivedAt": "2026-02-26",
+        "archivedTo": "docs/archive/2026-02/global-port-weather/",
+        "matchRate": 97,
+        "iterations": 0
+      }
+    },
+    "pipeline": {
+      "currentPhase": 1,
+      "level": "Dynamic",
+      "phaseHistory": []
+    },
+    "session": {
+      "startedAt": "2026-02-24T08:04:53.096Z",
+      "onboardingCompleted": false,
+      "lastActivity": "2026-02-26T19:00:00.000Z"
+    },
+    "history": []
+  }
+}
