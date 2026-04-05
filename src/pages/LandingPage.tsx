@@ -80,10 +80,10 @@ export const LandingPage: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { value: '2', label: t('landing.stat.carriers'), icon: Truck },
+                { value: '3', label: t('landing.stat.carriers'), icon: Truck },
                 { value: '190+', label: t('landing.stat.countries'), icon: Globe },
-                { value: '~3s', label: t('landing.stat.calculation'), icon: Zap },
-                { value: '24/7', label: t('landing.stat.available'), icon: ShieldCheck },
+                { value: '1s', label: t('landing.stat.calculation'), icon: Zap },
+                { value: '36', label: t('landing.stat.available'), icon: ShieldCheck },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <stat.icon className="w-8 h-8 text-emax-500 mx-auto mb-3" />
