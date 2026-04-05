@@ -15,6 +15,7 @@ import {
 } from "@/config/rates";
 import { UPS_EXACT_RATES, UPS_RANGE_RATES } from "@/config/ups_tariff";
 import { DHL_EXACT_RATES, DHL_RANGE_RATES } from "@/config/dhl_tariff";
+import { FEDEX_EXACT_RATES, FEDEX_RANGE_RATES } from "@/config/fedex_tariff";
 import { EMAX_RATES, EMAX_HANDLING_CHARGE } from "@/config/emax_tariff";
 import { applyPackingDimensions } from "@/lib/packing-utils";
 import { MAX_MARGIN_PERCENT } from "@/config/business-rules";
@@ -47,7 +48,8 @@ export const calculateVolumetricWeight = (l: number, w: number, h: number, divis
 // --- Zone Mappings (extracted to config files) ---
 import { determineUpsZone } from '@/config/ups_zones';
 import { determineDhlZone } from '@/config/dhl_zones';
-export { determineUpsZone, determineDhlZone };
+import { determineFedexZone } from '@/config/fedex_zones';
+export { determineUpsZone, determineDhlZone, determineFedexZone };
 
 // --- Common Rate Lookup for UPS/DHL ---
 const roundToHalf = (num: number) => Math.ceil(num * 2) / 2;
@@ -166,6 +168,24 @@ export const calculateDhlCosts = (
   };
 };
 
+// --- FedEx Calculator ---
+
+export const calculateFedexCosts = (
+  billableWeight: number,
+  country: string,
+): CarrierCostResult => {
+  const zoneInfo = determineFedexZone(country);
+  const intlBase = lookupCarrierRate(billableWeight, zoneInfo.rateKey, FEDEX_EXACT_RATES, FEDEX_RANGE_RATES as RangeRateEntry[]);
+  const intlWarRisk = intlBase * (WAR_RISK_SURCHARGE_RATE / 100);
+  return {
+    intlBase,
+    intlFsc: 0, // FSC calculated in orchestrator
+    intlWarRisk,
+    appliedZone: zoneInfo.label,
+    transitTime: TRANSIT_TIMES.FEDEX,
+  };
+};
+
 // --- EMAX Calculator ---
 
 export const calculateEmaxCosts = (
@@ -227,6 +247,9 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   switch (carrier) {
     case 'DHL':
       carrierResult = calculateDhlCosts(billableWeight, input.destinationCountry);
+      break;
+    case 'FEDEX':
+      carrierResult = calculateFedexCosts(billableWeight, input.destinationCountry);
       break;
     case 'EMAX':
       carrierResult = calculateEmaxCosts(billableWeight, input.destinationCountry);

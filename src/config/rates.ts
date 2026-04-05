@@ -7,6 +7,7 @@ export const PACKING_LABOR_UNIT_COST = 50000; // per item
 export const TRANSIT_TIMES = {
   UPS: '2-4 Business Days',
   DHL: '2-4 Business Days',
+  FEDEX: 'FedEx Int. Priority 3-7 Days',
   EMAX: '5-10 Business Days (E-MAX)',
 } as const;
 
@@ -14,6 +15,8 @@ export const TRANSIT_TIMES = {
 export const DEFAULT_EXCHANGE_RATE = 1450; // Manual: 하나은행 월요일 09시 송금환율 (2026-03-24)
 export const DEFAULT_FSC_PERCENT = 46.25; // UPS default, effective 2026-03-30
 export const DEFAULT_FSC_PERCENT_DHL = 30.5; // DHL default, verified 2026-03 (39% from 2026-04-01)
+export const DEFAULT_FSC_PERCENT_FEDEX = 34.5; // FedEx default (estimated baseline)
 export const UPS_FSC_URL = "https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page";
 export const UPS_RATES_HUB_URL = "https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates";
 export const DHL_FSC_URL = "https://mydhl.express.dhl/kr/ko/ship/surcharges.html#/fuel_surcharge";
+export const FEDEX_FSC_URL = "https://www.fedex.com/ko-kr/shipping/surcharges/fuel-surcharge.html";

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { QuoteInput } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { COUNTRY_OPTIONS, UPS_ZONE_COUNTRIES, DHL_ZONE_COUNTRIES } from '@/config/options';
+import { COUNTRY_OPTIONS, UPS_ZONE_COUNTRIES, DHL_ZONE_COUNTRIES, FEDEX_ZONE_COUNTRIES } from '@/config/options';
 import { inputStyles } from './input-styles';
 
 interface Props {
@@ -34,7 +34,7 @@ export const RouteSection: React.FC<Props> = ({ input, onFieldChange, isMobileVi
   const { t } = useLanguage();
 
   const carrier = input.overseasCarrier || 'UPS';
-  const zoneMap = carrier === 'DHL' ? DHL_ZONE_COUNTRIES : UPS_ZONE_COUNTRIES;
+  const zoneMap = carrier === 'DHL' ? DHL_ZONE_COUNTRIES : (carrier === 'FEDEX' ? FEDEX_ZONE_COUNTRIES : UPS_ZONE_COUNTRIES);
   const zoneKeys = Object.keys(zoneMap);
 
   // Extract country name without emoji flag for proper alphabetical sorting
@@ -153,6 +153,7 @@ export const RouteSection: React.FC<Props> = ({ input, onFieldChange, isMobileVi
                 >
                   <option value="UPS">UPS</option>
                   <option value="DHL">DHL</option>
+                  <option value="FEDEX">FedEx</option>
                 </select>
                 {selectChevron}
             </div>

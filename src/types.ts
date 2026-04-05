@@ -37,7 +37,7 @@ export enum Incoterm {
     // Market Variables
     exchangeRate: number; // KRW per USD
     fscPercent: number; // Fuel Surcharge %
-    overseasCarrier?: 'UPS' | 'DHL' | 'EMAX';
+    overseasCarrier?: 'UPS' | 'DHL' | 'EMAX' | 'FEDEX';
 
     // Manual Overrides
     manualPackingCost?: number; // Optional manual override for packing & docs
@@ -131,7 +131,7 @@ export enum Incoterm {
     billableWeight: number;
     appliedZone: string;
     transitTime: string;
-    carrier: string; // 'UPS' | 'DHL' | 'EMAX'
+    carrier: string; // 'UPS' | 'DHL' | 'EMAX' | 'FEDEX'
     warnings: string[];
 
     breakdown: CostBreakdown;

@@ -4,6 +4,7 @@ export interface FscRates {
   rates: {
     UPS: { international: number; domestic: number };
     DHL: { international: number; domestic: number };
+    FEDEX: { international: number; domestic: number };
   };
   updatedAt: string;
 }
@@ -13,7 +14,7 @@ export const getFscRates = async (): Promise<FscRates> => {
 };
 
 export const updateFscRate = async (
-  carrier: 'UPS' | 'DHL',
+  carrier: 'UPS' | 'DHL' | 'FEDEX',
   international: number,
   domestic: number
 ): Promise<{ success: boolean }> => {

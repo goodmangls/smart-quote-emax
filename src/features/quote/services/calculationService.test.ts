@@ -2,13 +2,16 @@ import { describe, it, expect } from 'vitest';
 import {
   determineUpsZone,
   determineDhlZone,
+  determineFedexZone,
   calculateDhlCosts,
+  calculateFedexCosts,
   calculateEmaxCosts,
   calculateUpsCosts,
   calculateQuote,
 } from './calculationService';
 import { PackingType, Incoterm, QuoteInput } from '@/types';
 import { DHL_EXACT_RATES } from '@/config/dhl_tariff';
+import { FEDEX_EXACT_RATES } from '@/config/fedex_tariff';
 
 describe('calculationService', () => {
 
@@ -93,6 +96,28 @@ describe('calculationService', () => {
       expect(determineDhlZone('XX')).toEqual({ rateKey: 'Z8', label: 'Rest of World' });
     });
   });
+  
+  describe('determineFedexZone', () => {
+    it('maps US to ZF', () => {
+      expect(determineFedexZone('US')).toEqual({ rateKey: 'ZF', label: 'US/CA/NZ/MX' });
+    });
+
+    it('maps HK to ZV', () => {
+      expect(determineFedexZone('HK')).toEqual({ rateKey: 'ZV', label: 'Hong Kong' });
+    });
+
+    it('maps CN to ZW', () => {
+      expect(determineFedexZone('CN')).toEqual({ rateKey: 'ZW', label: 'China' });
+    });
+
+    it('maps DE to ZM', () => {
+      expect(determineFedexZone('DE')).toEqual({ rateKey: 'ZM', label: 'Western Europe' });
+    });
+
+    it('falls back to ZJ for unknown country', () => {
+      expect(determineFedexZone('XX')).toEqual({ rateKey: 'ZJ', label: 'Rest of World' });
+    });
+  });
 
   // --- UPS Cost Tests ---
 
@@ -143,6 +168,21 @@ describe('calculationService', () => {
     it('war risk is disabled (returns 0)', () => {
       const result = calculateDhlCosts(1, 'CN');
       expect(result.intlWarRisk).toBe(0);
+    });
+  });
+
+  // --- FedEx Cost Tests ---
+
+  describe('calculateFedexCosts', () => {
+    it('returns correct exact rate for FedEx ZV (HK) at 1kg', () => {
+      const result = calculateFedexCosts(1, 'HK');
+      expect(result.intlBase).toBe(FEDEX_EXACT_RATES['ZV'][1]);
+    });
+
+    it('uses range rate for FedEx ZF (US) at 50kg', () => {
+      const result = calculateFedexCosts(50, 'US');
+      // 50 * ZF rate at [44.1-70] range (22000) = 1100000
+      expect(result.intlBase).toBe(50 * 22000);
     });
   });
 
@@ -210,6 +250,17 @@ describe('calculationService', () => {
       });
       expect(result.carrier).toBe('DHL');
       expect(result.appliedZone).toBe('Z2/Japan');
+      expect(result.breakdown.intlBase).toBeGreaterThan(0);
+    });
+
+    it('FEDEX quote: uses FEDEX zone and rates', () => {
+      const result = calculateQuote({
+        ...baseInput,
+        overseasCarrier: 'FEDEX',
+        destinationCountry: 'US',
+      });
+      expect(result.carrier).toBe('FEDEX');
+      expect(result.appliedZone).toBe('US/CA/NZ/MX');
       expect(result.breakdown.intlBase).toBeGreaterThan(0);
     });
 

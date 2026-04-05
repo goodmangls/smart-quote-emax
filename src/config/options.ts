@@ -279,6 +279,29 @@ export const DHL_ZONE_COUNTRIES: Record<string, string[]> = {
   ],
 };
 
+export const FEDEX_ZONE_COUNTRIES: Record<string, string[]> = {
+  ZV: ['HK'],
+  ZA: ['MO'],
+  ZW: ['CN'],
+  ZX: ['TW'],
+  ZY: ['SG'],
+  ZP: ['JP'],
+  ZQ: ['MY'],
+  ZR: ['TH'],
+  ZS: ['PH'],
+  ZT: ['ID'],
+  ZN: ['VN'],
+  ZO: ['IN'],
+  ZU: ['AU', 'NZ'], // NZ is in ZF too, but usually grouped with OZ in some tariffs, backend had NZ in ZF. 
+  ZD: ['GU', 'MP', 'LA', 'MN', 'BN'],
+  ZF: ['US', 'CA', 'MX', 'NZ'],
+  ZM: ['IT', 'ES', 'GB', 'DE', 'FR', 'CH', 'FI', 'SE', 'NO', 'PT', 'IE', 'MC'],
+  ZG: ['AT', 'DK', 'HU', 'BE', 'CZ', 'GR', 'NL', 'PL', 'IL'],
+  ZH: ['RU', 'RO', 'TR', 'BG', 'EE', 'LV', 'LT', 'SK', 'SI', 'UA', 'BY'],
+  ZI: ['AR', 'BR', 'CL', 'PY', 'PE', 'UY', 'CO', 'VE', 'EC', 'BO'],
+  ZJ: ['AE', 'SA', 'BH', 'QA', 'JO', 'LB', 'EG', 'ZA', 'PK'],
+};
+
 // ─── Nationality options for signup / admin ─────────────────────────
 // Top 7 pinned (frequent B2B partners), rest alphabetical from COUNTRY_OPTIONS
 const PINNED_NATIONALITY_CODES = ['KR', 'US', 'CN', 'JP', 'VN', 'TW', 'SG'];
