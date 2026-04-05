@@ -92,7 +92,7 @@ export const AccountSettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
           <h3 id="settings-modal-title" className="font-bold text-gray-900 dark:text-white flex items-center text-lg">
-            <Settings className="w-5 h-5 mr-2 text-jways-600 dark:text-jways-400" />
+            <Settings className="w-5 h-5 mr-2 text-emax-600 dark:text-emax-400" />
             {t('settings.account.title')}
           </h3>
           <button
@@ -122,7 +122,7 @@ export const AccountSettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   required
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="pl-10 w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-jways-500 focus:ring-jways-500 sm:text-sm transition-colors py-2.5"
+                  className="pl-10 w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emax-500 focus:ring-emax-500 sm:text-sm transition-colors py-2.5"
                 />
                 <button
                   type="button"
@@ -148,7 +148,7 @@ export const AccountSettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="pl-10 w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-jways-500 focus:ring-jways-500 sm:text-sm transition-colors py-2.5"
+                  className="pl-10 w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emax-500 focus:ring-emax-500 sm:text-sm transition-colors py-2.5"
                 />
                 <button
                   type="button"
@@ -174,7 +174,7 @@ export const AccountSettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-jways-500 focus:ring-jways-500 sm:text-sm transition-colors py-2.5"
+                  className="pl-10 w-full rounded-xl border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emax-500 focus:ring-emax-500 sm:text-sm transition-colors py-2.5"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@ export const AccountSettingsModal: React.FC<Props> = ({ isOpen, onClose }) => {
               <button
                 type="submit"
                 disabled={isLoading || !currentPassword || !newPassword || !confirmPassword || success}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-jways-600 hover:bg-jways-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jways-500 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-emax-600 hover:bg-emax-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emax-500 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />

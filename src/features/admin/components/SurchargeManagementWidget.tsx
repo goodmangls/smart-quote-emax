@@ -129,7 +129,7 @@ export const SurchargeManagementWidget: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setShowAddForm(true); setEditingId(null); setForm(EMPTY_FORM); }}
-            className="flex items-center gap-1 text-[10px] font-semibold text-jways-600 hover:text-jways-700 dark:text-jways-400 transition-colors"
+            className="flex items-center gap-1 text-[10px] font-semibold text-emax-600 hover:text-emax-700 dark:text-emax-400 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             Add
@@ -137,7 +137,7 @@ export const SurchargeManagementWidget: React.FC = () => {
           <button
             onClick={fetchData}
             disabled={loading}
-            className="text-[10px] font-semibold text-gray-500 hover:text-jways-600 dark:text-gray-400 transition-colors"
+            className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           </button>

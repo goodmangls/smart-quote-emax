@@ -34,7 +34,7 @@ export const QuotePagination: React.FC<Props> = ({ pagination, onPageChange }) =
               onClick={() => onPageChange(page)}
               className={`w-8 h-8 text-xs rounded-md font-medium transition-colors ${
                 page === pagination.currentPage
-                  ? 'bg-jways-600 text-white'
+                  ? 'bg-emax-600 text-white'
                   : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >

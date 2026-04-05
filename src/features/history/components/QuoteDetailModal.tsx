@@ -144,7 +144,7 @@ export const QuoteDetailModal: React.FC<Props> = ({ quote, onClose, onDuplicate,
             {onDuplicate && (
               <button
                 onClick={() => onDuplicate(quote)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-jways-600 hover:text-jways-700 bg-jways-50 hover:bg-jways-100 dark:text-jways-400 dark:hover:text-jways-300 dark:bg-jways-900/30 dark:hover:bg-jways-900/50 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-emax-600 hover:text-emax-700 bg-emax-50 hover:bg-emax-100 dark:text-emax-400 dark:hover:text-emax-300 dark:bg-emax-900/30 dark:hover:bg-emax-900/50 transition-colors"
                 aria-label="Duplicate this quote"
               >
                 <Copy className="w-3.5 h-3.5" />
@@ -203,7 +203,7 @@ export const QuoteDetailModal: React.FC<Props> = ({ quote, onClose, onDuplicate,
           {/* Key Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <MetricCard
-              icon={<DollarSign className="w-4 h-4 text-jways-500" />}
+              icon={<DollarSign className="w-4 h-4 text-emax-500" />}
               label="Quote Amount"
               value={`${fmt(quote.totalQuoteAmount)} KRW`}
             />

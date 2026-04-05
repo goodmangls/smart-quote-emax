@@ -7,7 +7,7 @@ import type { QuoteSummary } from '@/types';
 import { formatKRW } from '@/lib/format';
 
 const statusColor: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-600 dark:bg-jways-700 dark:text-gray-400',
+  draft: 'bg-gray-100 text-gray-600 dark:bg-emax-700 dark:text-gray-400',
   sent: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   accepted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
   rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
@@ -37,7 +37,7 @@ export const QuoteHistoryCompact: React.FC = () => {
     return (
       <div className="animate-pulse space-y-3 p-5">
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-12 rounded-lg bg-gray-200 dark:bg-jways-700" />
+          <div key={i} className="h-12 rounded-lg bg-gray-200 dark:bg-emax-700" />
         ))}
       </div>
     );
@@ -46,7 +46,7 @@ export const QuoteHistoryCompact: React.FC = () => {
   if (quotes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <FileText className="w-10 h-10 text-gray-300 dark:text-jways-600 mb-3" />
+        <FileText className="w-10 h-10 text-gray-300 dark:text-emax-600 mb-3" />
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           {t('dashboard.noQuotes')}
         </p>
@@ -55,11 +55,11 @@ export const QuoteHistoryCompact: React.FC = () => {
   }
 
   return (
-    <div className="divide-y divide-gray-100 dark:divide-jways-700">
+    <div className="divide-y divide-gray-100 dark:divide-emax-700">
       {quotes.map((quote) => (
-        <div key={quote.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 dark:hover:bg-jways-700/50 transition-colors">
+        <div key={quote.id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 dark:hover:bg-emax-700/50 transition-colors">
           <div className="flex items-center gap-3 min-w-0">
-            <span className="text-xs font-mono font-bold text-jways-600 dark:text-jways-400 shrink-0">
+            <span className="text-xs font-mono font-bold text-emax-600 dark:text-emax-400 shrink-0">
               {quote.referenceNo}
             </span>
             <span className="text-sm text-gray-700 dark:text-gray-300 truncate">

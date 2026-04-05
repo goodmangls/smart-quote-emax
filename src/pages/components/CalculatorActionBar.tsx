@@ -68,10 +68,10 @@ export const CalculatorActionBar: React.FC<Props> = ({
               >
                 {isMobileView ? (
                   <div className="relative">
-                    <Smartphone className="w-5 h-5 text-accent-600" />
+                    <Smartphone className="w-5 h-5 text-emax-600" />
                     <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-accent-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emax-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emax-500"></span>
                     </span>
                   </div>
                 ) : (

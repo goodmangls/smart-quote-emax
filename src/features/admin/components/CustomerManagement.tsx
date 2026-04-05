@@ -98,14 +98,14 @@ export const CustomerManagement: React.FC = () => {
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-jways-500" />
+          <Building2 className="w-4 h-4 text-emax-500" />
           <h4 className="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
             Customer Management
           </h4>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-1 text-[10px] font-semibold text-jways-600 hover:text-jways-700 dark:text-jways-400 transition-colors"
+          className="flex items-center gap-1 text-[10px] font-semibold text-emax-600 hover:text-emax-700 dark:text-emax-400 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" /> Add
         </button>
@@ -120,14 +120,14 @@ export const CustomerManagement: React.FC = () => {
             placeholder="Search customers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-jways-500"
+            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-1 focus:ring-emax-500"
           />
         </div>
       </div>
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-jways-50/30 dark:bg-jways-900/10 space-y-2">
+        <form onSubmit={handleSubmit} className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-emax-50/30 dark:bg-emax-900/10 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
               {editingId ? 'Edit Customer' : 'New Customer'}
@@ -183,7 +183,7 @@ export const CustomerManagement: React.FC = () => {
             <button
               type="submit"
               disabled={saving || !form.companyName.trim()}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-jways-600 rounded-lg hover:bg-jways-700 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-emax-600 rounded-lg hover:bg-emax-700 disabled:opacity-50 transition-colors"
             >
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
               {editingId ? 'Update' : 'Create'}
@@ -216,13 +216,13 @@ export const CustomerManagement: React.FC = () => {
                 <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">{c.companyName}</p>
                 <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
                   {[c.contactName, c.email].filter(Boolean).join(' · ') || 'No contact info'}
-                  {c.quoteCount > 0 && <span className="ml-1.5 text-jways-500">({c.quoteCount} quotes)</span>}
+                  {c.quoteCount > 0 && <span className="ml-1.5 text-emax-500">({c.quoteCount} quotes)</span>}
                 </p>
               </div>
               <div className="flex items-center gap-1 ml-2">
                 <button
                   onClick={() => handleEdit(c)}
-                  className="p-1 text-gray-400 hover:text-jways-600 transition-colors"
+                  className="p-1 text-gray-400 hover:text-emax-600 transition-colors"
                   aria-label={`Edit ${c.companyName}`}
                 >
                   <Pencil className="w-3 h-3" />

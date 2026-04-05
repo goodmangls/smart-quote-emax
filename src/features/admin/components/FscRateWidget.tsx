@@ -97,7 +97,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Fuel className="w-4 h-4 text-jways-500" />
+          <Fuel className="w-4 h-4 text-emax-500" />
           <h4 className="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
             FSC Rates (International)
           </h4>
@@ -105,7 +105,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
         <button
           onClick={fetchRates}
           disabled={loading}
-          className="text-[10px] font-semibold text-gray-500 hover:text-jways-600 dark:text-gray-400 transition-colors"
+          className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -132,7 +132,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                       href={link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-jways-500 transition-colors"
+                      className="text-gray-400 hover:text-emax-500 transition-colors"
                       title={`${carrier} 공식 연료 할증료 페이지 열기`}
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -241,7 +241,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                 <button
                   onClick={handleAddEntry}
                   disabled={!addDate || !addRate}
-                  className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white bg-jways-600 hover:bg-jways-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white bg-emax-600 hover:bg-emax-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors"
                 >
                   <Plus className="w-3 h-3" />
                   Add

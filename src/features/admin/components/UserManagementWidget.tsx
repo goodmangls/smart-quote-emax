@@ -110,8 +110,8 @@ export const UserManagementWidget: React.FC = () => {
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mt-6">
       <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-jways-100 dark:bg-jways-500/20 rounded-lg">
-            <Users className="w-5 h-5 text-jways-600 dark:text-jways-400" />
+          <div className="p-2 bg-emax-100 dark:bg-emax-500/20 rounded-lg">
+            <Users className="w-5 h-5 text-emax-600 dark:text-emax-400" />
           </div>
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             {t('admin.userManagementTitle')}
@@ -124,7 +124,7 @@ export const UserManagementWidget: React.FC = () => {
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-jways-500" />
+          <Loader2 className="w-6 h-6 animate-spin text-emax-500" />
           <span className="ml-2 text-gray-500">Loading users...</span>
         </div>
       ) : error ? (
@@ -200,7 +200,7 @@ export const UserManagementWidget: React.FC = () => {
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                       {isEditing ? (
                         <input
-                          className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-jways-500 focus:border-jways-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                          className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emax-500 focus:border-emax-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                           value={editForm.company || ''}
                           onChange={(e) => handleFormChange('company', e.target.value)}
                         />
@@ -211,7 +211,7 @@ export const UserManagementWidget: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <input
-                          className="w-[100px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-jways-500 focus:border-jways-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                          className="w-[100px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emax-500 focus:border-emax-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                           value={editForm.name || ''}
                           onChange={(e) => handleFormChange('name', e.target.value)}
                         />
@@ -222,7 +222,7 @@ export const UserManagementWidget: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <select
-                          className="w-[140px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-jways-500 focus:border-jways-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                          className="w-[140px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emax-500 focus:border-emax-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                           value={editForm.nationality || ''}
                           onChange={(e) => handleFormChange('nationality', e.target.value)}
                         >
@@ -281,14 +281,14 @@ export const UserManagementWidget: React.FC = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <a href={`mailto:${user.email}`} className="text-jways-600 dark:text-jways-400 hover:underline">
+                      <a href={`mailto:${user.email}`} className="text-emax-600 dark:text-emax-400 hover:underline">
                         {user.email}
                       </a>
                     </td>
                     <td className="px-6 py-4">
                       {isEditing ? (
                         <select
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-jways-500 focus:border-jways-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emax-500 focus:border-emax-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                           value={editForm.role || 'user'}
                           onChange={(e) => handleFormChange('role', e.target.value)}
                         >

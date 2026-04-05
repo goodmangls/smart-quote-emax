@@ -212,7 +212,7 @@ const PackingCostOverrideField: React.FC<{
         <button
           type="button"
           onClick={() => setShowInfo(!showInfo)}
-          className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-jways-500 transition-colors"
+          className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-emax-500 transition-colors"
         >
           <HelpCircle className="w-3 h-3 flex-shrink-0" />
           <span>참고: 아래 항목들을 합산하여 자유롭게 입력할 수 있습니다. (예시 금액이며 필수 아님)</span>
@@ -227,7 +227,7 @@ const PackingCostOverrideField: React.FC<{
           >
             <X className="w-3 h-3" />
           </button>
-          <p className="font-bold mb-2 text-jways-700 dark:text-jways-300">{t('calc.costBasis.title')}</p>
+          <p className="font-bold mb-2 text-emax-700 dark:text-emax-300">{t('calc.costBasis.title')}</p>
           <ul className="space-y-1 list-disc pl-4 marker:text-gray-300">
             <li>{t('calc.costBasis.material')}</li>
             <li>{t('calc.costBasis.labor')}</li>

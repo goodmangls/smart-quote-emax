@@ -114,8 +114,8 @@ export const CargoSection: React.FC<Props> = ({ items, onChange, isMobileView })
   const cargoLabelClass = `block font-medium text-gray-500 dark:text-gray-400 mb-1 ${isMobileView ? 'text-sm' : 'text-xs'}`;
 
   const addBoxBtnClass = isMobileView
-    ? "text-sm flex items-center bg-jways-600 text-white px-4 py-2.5 rounded-lg shadow-sm hover:bg-jways-700 active:scale-95 transition-all font-medium"
-    : "text-xs flex items-center bg-jways-600 text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-jways-700 active:scale-95 transition-all font-medium";
+    ? "text-sm flex items-center bg-emax-600 text-white px-4 py-2.5 rounded-lg shadow-sm hover:bg-emax-700 active:scale-95 transition-all font-medium"
+    : "text-xs flex items-center bg-emax-600 text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-emax-700 active:scale-95 transition-all font-medium";
 
   return (
     <div className={cardClass}>
@@ -131,7 +131,7 @@ export const CargoSection: React.FC<Props> = ({ items, onChange, isMobileView })
                   aria-pressed={unitSystem === 'metric'}
                   className={`px-2.5 py-1 font-medium transition-colors ${
                     unitSystem === 'metric'
-                      ? 'bg-jways-600 text-white'
+                      ? 'bg-emax-600 text-white'
                       : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -142,7 +142,7 @@ export const CargoSection: React.FC<Props> = ({ items, onChange, isMobileView })
                   aria-pressed={unitSystem === 'imperial'}
                   className={`px-2.5 py-1 font-medium transition-colors ${
                     unitSystem === 'imperial'
-                      ? 'bg-jways-600 text-white'
+                      ? 'bg-emax-600 text-white'
                       : 'bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -195,7 +195,7 @@ export const CargoSection: React.FC<Props> = ({ items, onChange, isMobileView })
                  <div className={`col-span-2 ${!isMobileView ? 'sm:col-span-1' : ''} flex justify-end items-end gap-0.5 pb-1`}>
                    <button
                       onClick={() => duplicateItem(idx)}
-                      className={`text-gray-400 hover:text-jways-600 dark:hover:text-jways-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600/30 transition-colors ${isMobileView ? 'p-2.5' : 'p-1.5'}`}
+                      className={`text-gray-400 hover:text-emax-600 dark:hover:text-emax-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600/30 transition-colors ${isMobileView ? 'p-2.5' : 'p-1.5'}`}
                       aria-label="Duplicate this box"
                    >
                       <Copy className={`${isMobileView ? 'w-5 h-5' : 'w-4 h-4'}`} />

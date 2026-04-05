@@ -52,7 +52,7 @@ export const SurchargeTable: React.FC<SurchargeTableProps> = ({
                     )}
                   </div>
                   {rule.sourceUrl && (
-                    <a href={rule.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-jways-500 flex-shrink-0">
+                    <a href={rule.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-emax-500 flex-shrink-0">
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
@@ -82,7 +82,7 @@ export const SurchargeTable: React.FC<SurchargeTableProps> = ({
                 <div className="flex items-center gap-1.5 justify-end">
                   <button
                     onClick={() => onEdit(rule)}
-                    className="text-[10px] font-semibold text-gray-400 hover:text-jways-600 transition-colors"
+                    className="text-[10px] font-semibold text-gray-400 hover:text-emax-600 transition-colors"
                   >
                     Edit
                   </button>

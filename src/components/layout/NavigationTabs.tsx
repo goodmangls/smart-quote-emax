@@ -18,7 +18,7 @@ export const NavigationTabs: React.FC<Props> = ({ currentView, onViewChange }) =
         onClick={() => onViewChange('calculator')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
           currentView === 'calculator'
-            ? 'bg-white dark:bg-gray-600 text-jways-600 dark:text-jways-400 shadow-sm'
+            ? 'bg-white dark:bg-gray-600 text-emax-600 dark:text-emax-400 shadow-sm'
             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
         }`}
       >
@@ -32,7 +32,7 @@ export const NavigationTabs: React.FC<Props> = ({ currentView, onViewChange }) =
         onClick={() => onViewChange('history')}
         className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
           currentView === 'history'
-            ? 'bg-white dark:bg-gray-600 text-jways-600 dark:text-jways-400 shadow-sm'
+            ? 'bg-white dark:bg-gray-600 text-emax-600 dark:text-emax-400 shadow-sm'
             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
         }`}
       >

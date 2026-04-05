@@ -39,12 +39,12 @@ export const QuoteSearchBar: React.FC<Props> = ({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search by reference no or destination..."
-              className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-jways-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emax-500 focus:border-transparent"
             />
           </div>
           <button
             type="submit"
-            className="px-4 py-2.5 text-sm font-medium text-white bg-jways-600 rounded-lg hover:bg-jways-700 transition-colors"
+            className="px-4 py-2.5 text-sm font-medium text-white bg-emax-600 rounded-lg hover:bg-emax-700 transition-colors"
           >
             Search
           </button>
@@ -53,7 +53,7 @@ export const QuoteSearchBar: React.FC<Props> = ({
           onClick={onToggleFilters}
           className={`flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border transition-colors sm:hidden ${
             showFilters || hasActiveFilters
-              ? 'border-jways-500 text-jways-600 bg-jways-50 dark:bg-jways-900/20 dark:text-jways-400'
+              ? 'border-emax-500 text-emax-600 bg-emax-50 dark:bg-emax-900/20 dark:text-emax-400'
               : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400'
           }`}
         >

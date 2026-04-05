@@ -25,7 +25,7 @@ function App() {
         <BrowserRouter>
           <AuthProvider>
             <ChannelTalk />
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950"><div className="w-8 h-8 border-4 border-gray-200 dark:border-gray-700 border-t-jways-500 rounded-full animate-spin" /></div>}>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950"><div className="w-8 h-8 border-4 border-gray-200 dark:border-gray-700 border-t-emax-500 rounded-full animate-spin" /></div>}>
               <Routes>
                 {/* Public Landing Page */}
                 <Route path="/" element={<LandingPage />} />

@@ -95,7 +95,7 @@ export function AuditLogViewer() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-              <FileText className="w-4 h-4 text-jways-600 dark:text-jways-400" />
+              <FileText className="w-4 h-4 text-emax-600 dark:text-emax-400" />
               Audit Log
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -120,13 +120,13 @@ export function AuditLogViewer() {
               placeholder="Search ref no, email..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-jways-500"
+              className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-emax-500"
             />
           </form>
           <select
             value={filters.actionType || ''}
             onChange={(e) => setFilters(prev => ({ ...prev, actionType: e.target.value || undefined, page: 1 }))}
-            className="px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-jways-500"
+            className="px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-emax-500"
           >
             {ACTION_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -173,7 +173,7 @@ export function AuditLogViewer() {
                         {config.label}
                       </span>
                       {log.resourceRef && (
-                        <span className="text-xs font-mono text-jways-600 dark:text-jways-400">
+                        <span className="text-xs font-mono text-emax-600 dark:text-emax-400">
                           {log.resourceRef}
                         </span>
                       )}

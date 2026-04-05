@@ -5,7 +5,7 @@ import { PDF_LAYOUT } from '@/config/ui-constants';
 import { applyPackingDimensions } from './packing-utils';
 import { formatNum, formatNumDec } from './format';
 import { loadKoreanFont } from './pdfFontLoader';
-// Logo import removed — brand neutral PDF for partner sharing
+import EmaxLogo from '@/assets/logo-base64';
 
 // PDF-safe formatters (avoid ₩ and emoji that break in jsPDF)
 const pdfFormatKRW = (val: number): string => `KRW ${Math.round(val).toLocaleString('en-US')}`;
@@ -35,7 +35,12 @@ const PACKING_TYPE_LABELS: Record<string, { ko: string; en: string }> = {
 const drawHeader = (doc: jsPDF, yPos: number, referenceNo?: string, validityDate?: string): number => {
   doc.setFont(FONTS.FAMILY, 'normal');
 
-  // Logo hidden — brand neutral PDF for partner sharing
+  // Draw Logo
+  try {
+    doc.addImage(EmaxLogo, 'SVG', MARGIN_X, yPos - 5, 45, 12);
+  } catch (err) {
+    console.error('Failed to add logo to PDF:', err);
+  }
 
   // Title (right)
   doc.setFontSize(FONTS.SIZE_TITLE);
@@ -233,7 +238,7 @@ const drawCostTable = async (doc: jsPDF, result: QuoteResult, yPos: number, curr
 const drawQuoteSummary = (doc: jsPDF, input: QuoteInput, result: QuoteResult, yPos: number, currency: CurrencyMode = 'both'): number => {
   doc.setFont(FONTS.FAMILY, 'normal');
 
-  // Blue summary box
+  // E-MAX Red summary box
   doc.setFillColor(...COLORS.PRIMARY);
   doc.roundedRect(MARGIN_X, yPos, CONTENT_WIDTH, 35, 3, 3, 'F');
 

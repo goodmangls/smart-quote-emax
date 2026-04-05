@@ -3,7 +3,7 @@ export type Language = 'en' | 'ko';
 export const translations: Record<Language, Record<string, string>> = {
   ko: {
      // Navigation / General
-     'nav.smartQuote': 'E-MAX Quote',
+     'nav.smartQuote': 'E-MAX Smart Quote',
      'nav.login': '로그인',
      'nav.signup': '회원가입',
      'nav.logout': '로그아웃',
@@ -14,7 +14,7 @@ export const translations: Record<Language, Record<string, string>> = {
      // Landing Page
      'landing.title.main': '190개국 국제 운임,',
      'landing.title.sub': '1초 만에 견적 완료.',
-     'landing.subtitle': '포워딩 파트너를 위한 국제 특송 견적 시스템. Door-to-Door 운임을 실시간 환율과 FSC를 반영하여 즉시 산출합니다.',
+     'landing.subtitle': '정직과 신용으로 고객에게 최선을 다하는 기업, 이맥스 국제특송(E-MAX)의 스마트 견적 시스템입니다. 전 세계 190개국 Door-to-Door 운임을 실시간 환율과 FSC를 반영하여 즉시 산출합니다.',
      'landing.getStarted': '무료로 시작하기',
      'landing.featuresLabel': '포워더를 위한 핵심 기능',
      'landing.featuresTitle': '네트워크 파트너를 위한 스마트 견적 솔루션',
@@ -32,7 +32,10 @@ export const translations: Record<Language, Record<string, string>> = {
      'landing.stat.available': '온라인 접속',
      'landing.mock.route': 'ICN(서울) → LAX(로스앤젤레스)',
      'landing.mock.margin': '할인',
-     'landing.footer': '© 2026 E-MAX Quote. Your Express Freight Partner. All rights reserved.',
+     'landing.footer': '© 2026 E-MAX Worldwide Express. Your Trusted Logistics Partner. All rights reserved.',
+     'landing.footer.address.main': '본사: 충청북도 청주시 흥덕구 지동로 11-3',
+     'landing.footer.address.hub': '허브센터: 경기도 김포시 고촌읍 태리 1018-1번지',
+     'landing.footer.contact': '대표번호: 1588-0033 | Fax: 043-232-4522',
      'landing.badge.networks': 'Global Freight Networks',
 
      // Auth Pages
@@ -316,7 +319,7 @@ export const translations: Record<Language, Record<string, string>> = {
   },
   en: {
     // Navigation / General
-    'nav.smartQuote': 'E-MAX Quote',
+    'nav.smartQuote': 'E-MAX Smart Quote',
     'nav.login': 'Login',
     'nav.signup': 'Sign Up',
     'nav.logout': 'Logout',
@@ -328,7 +331,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Landing Page
     'landing.title.main': 'Freight Quotes for',
     'landing.title.sub': '190+ Countries, Instantly.',
-    'landing.subtitle': 'The express freight quoting engine built for forwarding partners. Calculate Door-to-Door costs with real-time exchange rates and FSC — instantly.',
+    'landing.subtitle': 'E-MAX Worldwide Express - A company doing its best for customers with integrity and credit. The express freight quoting engine built for network partners. Calculate Door-to-Door costs instantly.',
     'landing.getStarted': 'Get Started Free',
     'landing.featuresLabel': 'Built for Freight Forwarders',
     'landing.featuresTitle': 'Smart Quoting Built for Network Partners',
@@ -346,7 +349,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'landing.stat.available': 'Always Online',
     'landing.mock.route': 'ICN (Seoul) → LAX (Los Angeles)',
     'landing.mock.margin': 'Discount',
-    'landing.footer': '© 2026 E-MAX Quote. Your Express Freight Partner. All rights reserved.',
+    'landing.footer': '© 2026 E-MAX Worldwide Express. Your Trusted Logistics Partner. All rights reserved.',
     'landing.badge.networks': 'Global Freight Networks',
 
     // Auth Pages

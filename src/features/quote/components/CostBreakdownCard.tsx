@@ -42,14 +42,14 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
       <div className={cardClass}>
         <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center transition-colors">
             <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
-                <Calculator className="w-4 h-4 mr-2 text-jways-500" />
+                <Calculator className="w-4 h-4 mr-2 text-emax-500" />
                 {t('quote.logisticsCost')}
             </h3>
             <div className="flex items-center gap-2">
               {!hideMargin && (
                 <button
                   onClick={() => setShowKRW(prev => !prev)}
-                  className="flex items-center gap-1 text-[10px] font-semibold text-gray-500 hover:text-jways-600 dark:text-gray-400 dark:hover:text-jways-300 transition-colors"
+                  className="flex items-center gap-1 text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-300 transition-colors"
                   title="Toggle currency"
                 >
                   <ArrowUpDown className="w-3 h-3" />
@@ -88,7 +88,7 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
                                     step="0.1"
                                     value={discountPercent}
                                     onChange={(e) => onDiscountChange(Number(e.target.value))}
-                                    className="focus:ring-jways-500 focus:border-jways-500 block w-full text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-6 py-1 text-right font-bold"
+                                    className="focus:ring-emax-500 focus:border-emax-500 block w-full text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white pr-6 py-1 text-right font-bold"
                                     inputMode="decimal"
                                 />
                                 <div className="pointer-events-none absolute inset-y-0 right-0 pr-2 flex items-center text-gray-500 text-xs">%</div>
@@ -209,11 +209,11 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
             )}
 
             {/* 3. Final Quote Price */}
-            <div className="bg-jways-50 dark:bg-jways-900/20 p-4 rounded-xl border border-jways-100 dark:border-jways-800/30">
+            <div className="bg-emax-50 dark:bg-emax-900/20 p-4 rounded-xl border border-emax-100 dark:border-emax-800/30">
                 <div className="flex justify-between items-center">
-                    <span className="text-jways-900 dark:text-jways-100 font-extrabold text-lg">{t('quote.finalPrice')}</span>
+                    <span className="text-emax-900 dark:text-emax-100 font-extrabold text-lg">{t('quote.finalPrice')}</span>
                     <div className="flex flex-col items-end">
-                        <span className="text-jways-900 dark:text-jways-100 font-extrabold text-lg">
+                        <span className="text-emax-900 dark:text-emax-100 font-extrabold text-lg">
                           {showKRW ? formatKRW(result.totalQuoteAmount) : formatUSD(result.totalQuoteAmountUSD)}
                         </span>
                         {!hideMargin && (

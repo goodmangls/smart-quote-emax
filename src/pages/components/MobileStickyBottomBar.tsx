@@ -20,7 +20,7 @@ export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onVie
           <div className="flex items-baseline space-x-1">
             {isKorean ? (
               <>
-                <p className="text-xl font-bold text-jways-700 dark:text-jways-400">
+                <p className="text-xl font-bold text-emax-700 dark:text-emax-400">
                   {formatKRW(result.totalQuoteAmount)}
                 </p>
                 <span className="text-xs text-gray-400 dark:text-gray-400">
@@ -29,7 +29,7 @@ export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onVie
               </>
             ) : (
               <>
-                <p className="text-xl font-bold text-jways-700 dark:text-jways-400">
+                <p className="text-xl font-bold text-emax-700 dark:text-emax-400">
                   {formatUSDInt(result.totalQuoteAmountUSD)}
                 </p>
                 <span className="text-xs text-gray-400 dark:text-gray-400">
@@ -41,7 +41,7 @@ export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onVie
         </div>
         <button
           onClick={onViewDetails}
-          className="flex items-center bg-jways-600 text-white px-4 py-3 rounded-xl text-sm font-bold shadow-lg shadow-jways-600/25 hover:bg-jways-500 active:scale-95 transition-all"
+          className="flex items-center bg-emax-600 text-white px-4 py-3 rounded-xl text-sm font-bold shadow-lg shadow-emax-600/25 hover:bg-emax-500 active:scale-95 transition-all"
         >
           {t('calc.viewDetails')}
         </button>

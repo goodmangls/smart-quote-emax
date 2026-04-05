@@ -61,7 +61,7 @@ export const QuoteFlowDiagram: React.FC<VisualProps> = ({ lang }) => {
         {steps.map((step, i) => (
           <React.Fragment key={i}>
             <div className="flex flex-col items-center gap-1.5 min-w-[100px]">
-              <div className="w-12 h-12 rounded-xl bg-jways-50 dark:bg-jways-900/30 border border-jways-200 dark:border-jways-700 flex items-center justify-center text-jways-600 dark:text-jways-400">
+              <div className="w-12 h-12 rounded-xl bg-emax-50 dark:bg-emax-900/30 border border-emax-200 dark:border-emax-700 flex items-center justify-center text-emax-600 dark:text-emax-400">
                 {step.icon}
               </div>
               <span className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center">
@@ -70,8 +70,8 @@ export const QuoteFlowDiagram: React.FC<VisualProps> = ({ lang }) => {
             </div>
             {i < steps.length - 1 && (
               <>
-                <ArrowRight className="hidden sm:block w-5 h-5 text-jways-300 dark:text-jways-600 mx-1 flex-shrink-0" />
-                <ArrowDown className="sm:hidden w-5 h-5 text-jways-300 dark:text-jways-600 my-0.5 flex-shrink-0" />
+                <ArrowRight className="hidden sm:block w-5 h-5 text-emax-300 dark:text-emax-600 mx-1 flex-shrink-0" />
+                <ArrowDown className="sm:hidden w-5 h-5 text-emax-300 dark:text-emax-600 my-0.5 flex-shrink-0" />
               </>
             )}
           </React.Fragment>
@@ -115,9 +115,9 @@ export const DashboardLayoutDiagram: React.FC<VisualProps> = ({ lang }) => {
       <div className="grid grid-cols-3 gap-2 max-w-md mx-auto">
         {/* Left column */}
         <div className="col-span-2 space-y-2">
-          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-jways-50 dark:bg-jways-900/30 border border-jways-200 dark:border-jways-700">
-            <BarChart3 className="w-3.5 h-3.5 text-jways-500 dark:text-jways-400" />
-            <span className="text-xs font-medium text-jways-700 dark:text-jways-300">
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-emax-50 dark:bg-emax-900/30 border border-emax-200 dark:border-emax-700">
+            <BarChart3 className="w-3.5 h-3.5 text-emax-500 dark:text-emax-400" />
+            <span className="text-xs font-medium text-emax-700 dark:text-emax-300">
               {t(labels.recentQuotes, lang)}
             </span>
           </div>
@@ -306,8 +306,8 @@ export const VolWeightFormula: React.FC<VisualProps> = ({ lang }) => {
     <div className="py-2">
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         {/* Package icon */}
-        <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-jways-50 dark:bg-jways-900/30 border border-jways-200 dark:border-jways-700">
-          <Box className="w-7 h-7 text-jways-500 dark:text-jways-400" />
+        <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-emax-50 dark:bg-emax-900/30 border border-emax-200 dark:border-emax-700">
+          <Box className="w-7 h-7 text-emax-500 dark:text-emax-400" />
         </div>
 
         {/* Formula */}
@@ -342,8 +342,8 @@ export const VolWeightFormula: React.FC<VisualProps> = ({ lang }) => {
           </div>
           <span className="text-lg font-bold text-gray-400 dark:text-gray-500">=</span>
           {/* Result */}
-          <div className="px-3 h-10 rounded-lg bg-jways-100 dark:bg-jways-900/30 border border-jways-300 dark:border-jways-700 flex items-center justify-center">
-            <span className="text-xs font-bold text-jways-700 dark:text-jways-300">
+          <div className="px-3 h-10 rounded-lg bg-emax-100 dark:bg-emax-900/30 border border-emax-300 dark:border-emax-700 flex items-center justify-center">
+            <span className="text-xs font-bold text-emax-700 dark:text-emax-300">
               {t(volWeightLabel, lang)}
             </span>
           </div>
@@ -378,7 +378,7 @@ export const IncotermsVisual: React.FC<VisualProps> = ({ lang }) => {
       {/* Legend */}
       <div className="flex items-center justify-center gap-6 mb-3">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-sm bg-jways-500 dark:bg-jways-400" />
+          <div className="w-3 h-3 rounded-sm bg-emax-500 dark:bg-emax-400" />
           <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
             {t(sellerLabel, lang)}
           </span>
@@ -400,7 +400,7 @@ export const IncotermsVisual: React.FC<VisualProps> = ({ lang }) => {
             </span>
             <div className="flex-1 flex h-5 rounded-md overflow-hidden">
               <div
-                className="bg-jways-500 dark:bg-jways-400 transition-all"
+                className="bg-emax-500 dark:bg-emax-400 transition-all"
                 style={{ width: `${term.sellerPct}%` }}
               />
               <div
@@ -414,7 +414,7 @@ export const IncotermsVisual: React.FC<VisualProps> = ({ lang }) => {
 
       {/* Arrow labels */}
       <div className="flex justify-between mt-2 px-10">
-        <span className="text-[10px] text-jways-500 dark:text-jways-400 font-semibold">
+        <span className="text-[10px] text-emax-500 dark:text-emax-400 font-semibold">
           {t(sellerLabel, lang)} &larr;
         </span>
         <Ship className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
@@ -456,7 +456,7 @@ export const QuoteSaveFlowDiagram: React.FC<VisualProps> = ({ lang }) => {
         {steps.map((step, i) => (
           <React.Fragment key={i}>
             <div className="flex flex-col items-center gap-1.5 min-w-[100px]">
-              <div className="w-12 h-12 rounded-xl bg-jways-50 dark:bg-jways-900/30 border border-jways-200 dark:border-jways-700 flex items-center justify-center text-jways-600 dark:text-jways-400">
+              <div className="w-12 h-12 rounded-xl bg-emax-50 dark:bg-emax-900/30 border border-emax-200 dark:border-emax-700 flex items-center justify-center text-emax-600 dark:text-emax-400">
                 {step.icon}
               </div>
               <span className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center">
@@ -470,8 +470,8 @@ export const QuoteSaveFlowDiagram: React.FC<VisualProps> = ({ lang }) => {
             </div>
             {i < steps.length - 1 && (
               <>
-                <ArrowRight className="hidden sm:block w-5 h-5 text-jways-300 dark:text-jways-600 mx-1 flex-shrink-0" />
-                <ArrowDown className="sm:hidden w-5 h-5 text-jways-300 dark:text-jways-600 my-0.5 flex-shrink-0" />
+                <ArrowRight className="hidden sm:block w-5 h-5 text-emax-300 dark:text-emax-600 mx-1 flex-shrink-0" />
+                <ArrowDown className="sm:hidden w-5 h-5 text-emax-300 dark:text-emax-600 my-0.5 flex-shrink-0" />
               </>
             )}
           </React.Fragment>

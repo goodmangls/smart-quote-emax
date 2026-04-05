@@ -46,7 +46,7 @@ export const SurchargePanel: React.FC<Props> = ({
   const { t, language } = useLanguage();
   const isKo = language === 'ko';
 
-  const inputClass = `w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-jways-500 focus:ring-jways-500 border bg-white dark:bg-gray-700 dark:text-white transition-colors placeholder-gray-400 ${isMobileView ? 'text-base py-3.5 px-4' : 'text-sm py-2 px-3'}`;
+  const inputClass = `w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-emax-500 focus:ring-emax-500 border bg-white dark:bg-gray-700 dark:text-white transition-colors placeholder-gray-400 ${isMobileView ? 'text-base py-3.5 px-4' : 'text-sm py-2 px-3'}`;
   const labelClass = `block font-medium text-gray-700 dark:text-gray-300 mb-1 ml-0.5 ${isMobileView ? 'text-base' : 'text-sm'}`;
 
   const carrierLink = CARRIER_SURCHARGE_URLS[carrier];
@@ -86,7 +86,7 @@ export const SurchargePanel: React.FC<Props> = ({
                           href={s.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-jways-500 transition-colors flex-shrink-0"
+                          className="text-gray-400 hover:text-emax-500 transition-colors flex-shrink-0"
                           title={t('calc.service.surcharge.verifyLink')}
                         >
                           <ExternalLink className="w-3 h-3" />
@@ -174,7 +174,7 @@ export const SurchargePanel: React.FC<Props> = ({
             href={carrierLink.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[10px] font-medium text-jways-600 dark:text-jways-400 hover:text-jways-700 dark:hover:text-jways-300 transition-colors"
+            className="inline-flex items-center gap-1 text-[10px] font-medium text-emax-600 dark:text-emax-400 hover:text-emax-700 dark:hover:text-emax-300 transition-colors"
           >
             <ExternalLink className="w-3 h-3" />
             {carrierLink.label}

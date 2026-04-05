@@ -142,7 +142,7 @@ export const JetFuelWidget: React.FC = () => {
         : 'text-gray-500 bg-gray-50 dark:text-gray-400 dark:bg-gray-800';
 
   return (
-    <div className="bg-white dark:bg-jways-800 rounded-2xl shadow-sm border border-gray-100 dark:border-jways-700 overflow-hidden transition-colors duration-200">
+    <div className="bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200">
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center">
         <div>
@@ -156,7 +156,7 @@ export const JetFuelWidget: React.FC = () => {
         </div>
         <button
           onClick={retry}
-          className={`text-gray-400 hover:text-jways-500 dark:text-gray-400 dark:hover:text-jways-400 transition-colors ${loading ? 'animate-spin cursor-not-allowed' : ''}`}
+          className={`text-gray-400 hover:text-emax-500 dark:text-gray-400 dark:hover:text-emax-400 transition-colors ${loading ? 'animate-spin cursor-not-allowed' : ''}`}
           disabled={loading}
           aria-label="Refresh"
         >
@@ -223,7 +223,7 @@ export const JetFuelWidget: React.FC = () => {
                 href="https://www.eia.gov/petroleum/gasdiesel/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 hover:text-jways-500 dark:hover:text-jways-400 transition-colors"
+                className="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 hover:text-emax-500 dark:hover:text-emax-400 transition-colors"
               >
                 {t('dashboard.jetFuel.source')}
                 <ExternalLink className="w-2.5 h-2.5" />

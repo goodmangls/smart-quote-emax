@@ -158,7 +158,7 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
         <button
           onClick={onSave}
           disabled={saving}
-          className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold bg-jways-600 hover:bg-jways-700 text-white rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold bg-emax-600 hover:bg-emax-700 text-white rounded-lg transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
           {editingId ? 'Update' : 'Create'}

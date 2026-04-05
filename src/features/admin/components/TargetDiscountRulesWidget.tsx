@@ -237,7 +237,7 @@ export const TargetDiscountRulesWidget: React.FC = () => {
           <button
             onClick={handleSave}
             disabled={saving || !form.name}
-            className="flex items-center gap-1 text-[10px] font-semibold text-jways-600 hover:text-jways-700 disabled:opacity-50"
+            className="flex items-center gap-1 text-[10px] font-semibold text-emax-600 hover:text-emax-700 disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
             {editingId ? 'Update' : 'Create'}
@@ -252,7 +252,7 @@ export const TargetDiscountRulesWidget: React.FC = () => {
       {/* Header */}
       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Percent className="w-4 h-4 text-jways-500" />
+          <Percent className="w-4 h-4 text-emax-500" />
           <h4 className="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
             Target Discount Rules
           </h4>
@@ -261,14 +261,14 @@ export const TargetDiscountRulesWidget: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => { setShowAddForm(!showAddForm); setEditingId(null); setForm(EMPTY_FORM); }}
-            className="text-[10px] font-semibold text-gray-500 hover:text-jways-600 dark:text-gray-400 transition-colors"
+            className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={refetch}
             disabled={loading}
-            className="text-[10px] font-semibold text-gray-500 hover:text-jways-600 dark:text-gray-400 transition-colors"
+            className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -319,7 +319,7 @@ export const TargetDiscountRulesWidget: React.FC = () => {
                           <div className="hidden group-hover:flex items-center gap-1">
                             <button
                               onClick={() => startEdit(rule)}
-                              className="text-[10px] font-semibold text-gray-400 hover:text-jways-600 transition-colors"
+                              className="text-[10px] font-semibold text-gray-400 hover:text-emax-600 transition-colors"
                             >
                               Edit
                             </button>

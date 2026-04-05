@@ -70,8 +70,8 @@ export const SignUpPage: React.FC = () => {
 
       <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-black">
         <div className="absolute inset-0 pointer-events-none" style={dotGridStyle} />
-        <div className="absolute -top-40 -left-40 w-[400px] h-[400px] rounded-full bg-accent-600/20 blur-[120px] pointer-events-none" />
-        <div className="absolute -bottom-40 -right-40 w-[300px] h-[300px] rounded-full bg-accent-500/15 blur-[100px] pointer-events-none" />
+        <div className="absolute -top-40 -left-40 w-[400px] h-[400px] rounded-full bg-emax-600/20 blur-[120px] pointer-events-none" />
+        <div className="absolute -bottom-40 -right-40 w-[300px] h-[300px] rounded-full bg-emax-500/15 blur-[100px] pointer-events-none" />
 
         <div className="relative flex flex-col items-center justify-center py-16 sm:py-24 px-4">
           <Link
@@ -111,7 +111,7 @@ export const SignUpPage: React.FC = () => {
                   type="text"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 text-sm transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors"
                   placeholder={t('auth.optional')}
                 />
               </div>
@@ -128,7 +128,7 @@ export const SignUpPage: React.FC = () => {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 text-sm transition-colors"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors"
                   />
                 </div>
                 <div>
@@ -140,7 +140,7 @@ export const SignUpPage: React.FC = () => {
                     name="nationality"
                     value={nationality}
                     onChange={(e) => setNationality(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 text-sm transition-colors appearance-none"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors appearance-none"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2.5rem' }}
                   >
                     <option value="" className="bg-gray-800 text-white">{`🌍 ${t('auth.optional')}`}</option>
@@ -164,7 +164,7 @@ export const SignUpPage: React.FC = () => {
                       key={net}
                       className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-xl border cursor-pointer transition-all duration-200 text-sm font-medium ${
                         networks.includes(net)
-                          ? 'bg-accent-600/20 border-accent-500/50 text-accent-300'
+                          ? 'bg-emax-600/20 border-emax-500/50 text-emax-300'
                           : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20 hover:text-gray-300'
                       }`}
                     >
@@ -176,7 +176,7 @@ export const SignUpPage: React.FC = () => {
                       />
                       <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
                         networks.includes(net)
-                          ? 'bg-accent-500 border-accent-500'
+                          ? 'bg-emax-500 border-emax-500'
                           : 'border-gray-500'
                       }`}>
                         {networks.includes(net) && (
@@ -209,7 +209,7 @@ export const SignUpPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 text-sm transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors"
                   placeholder="name@company.com"
                 />
               </div>
@@ -225,7 +225,7 @@ export const SignUpPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 text-sm transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors"
                 />
               </div>
 
@@ -240,14 +240,14 @@ export const SignUpPage: React.FC = () => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-500/50 focus:border-accent-500/50 text-sm transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-accent-600 hover:bg-accent-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-accent-600/25 hover:shadow-accent-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 px-4 bg-emax-600 hover:bg-emax-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-emax-600/25 hover:shadow-emax-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? '...' : t('auth.signup')}
               </button>
@@ -256,7 +256,7 @@ export const SignUpPage: React.FC = () => {
             <div className="mt-6 pt-5 border-t border-white/10 text-center">
               <p className="text-sm text-gray-400">
                 {t('auth.haveAccount')}{' '}
-                <Link to="/login" className="font-semibold text-accent-400 hover:text-accent-300 transition-colors">
+                <Link to="/login" className="font-semibold text-emax-400 hover:text-emax-300 transition-colors">
                   {t('nav.login')}
                 </Link>
               </p>

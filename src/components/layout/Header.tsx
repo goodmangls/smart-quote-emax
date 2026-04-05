@@ -57,27 +57,27 @@ export const Header: React.FC = () => {
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                           {user?.name || user?.email.split('@')[0]}
                       </span>
-                      <span className="text-xs text-accent-600 dark:text-accent-400 font-semibold uppercase tracking-wider">
+                      <span className="text-xs text-emax-600 dark:text-emax-400 font-semibold uppercase tracking-wider">
                           {user?.role}
                       </span>
                    </div>
-                    <Link to="/quote" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-white transition-colors">
+                    <Link to="/quote" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-white transition-colors">
                       {t('nav.smartQuote')}
                     </Link>
 
                     {user?.role === 'admin' && (
-                         <Link to="/admin" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-white bg-accent-50 dark:bg-gray-900 px-3 py-1.5 rounded-md transition-colors">
+                         <Link to="/admin" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-white bg-emax-50 dark:bg-gray-900 px-3 py-1.5 rounded-md transition-colors">
                            {t('nav.admin')}
                          </Link>
                     )}
 
-                   <Link to="/guide" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-white transition-colors flex items-center gap-1">
+                   <Link to="/guide" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-white transition-colors flex items-center gap-1">
                      <BookOpen className="w-4 h-4" />
                      {t('nav.guide')}
                    </Link>
                    <button
                       onClick={() => setIsSettingsOpen(true)}
-                      className="p-2 text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg flex items-center transition-all"
+                      className="p-2 text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-emax-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg flex items-center transition-all"
                       aria-label={t('settings.account.title')}
                     >
                       <Settings className="w-5 h-5" />
@@ -88,7 +88,7 @@ export const Header: React.FC = () => {
                   <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                     {t('nav.login')}
                   </Link>
-                  <Link to="/signup" className="bg-accent-600 text-white hover:bg-accent-700 px-3 py-2 sm:px-4 rounded-md text-sm font-medium shadow-sm transition-colors">
+                  <Link to="/signup" className="bg-emax-600 text-white hover:bg-emax-700 px-3 py-2 sm:px-4 rounded-md text-sm font-medium shadow-sm transition-colors">
                     {t('nav.signup')}
                   </Link>
                   <Link to="/guide" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1">
@@ -107,7 +107,7 @@ export const Header: React.FC = () => {
                       if (e.key === 'Escape') setIsLangOpen(false);
                       if (e.key === 'ArrowDown' && !isLangOpen) { e.preventDefault(); setIsLangOpen(true); }
                     }}
-                    className="p-2 text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg flex items-center space-x-1 transition-all"
+                    className="p-2 text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-emax-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg flex items-center space-x-1 transition-all"
                     aria-label="Select language"
                     aria-expanded={isLangOpen}
                     aria-haspopup="listbox"
@@ -124,7 +124,7 @@ export const Header: React.FC = () => {
                           aria-selected={language === lang.code}
                           onClick={() => { setLanguage(lang.code); setIsLangOpen(false); }}
                           onKeyDown={(e) => { if (e.key === 'Escape') setIsLangOpen(false); }}
-                          className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${language === lang.code ? 'text-accent-600 dark:text-accent-400 font-semibold' : 'text-gray-700 dark:text-gray-300'}`}
+                          className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${language === lang.code ? 'text-emax-600 dark:text-emax-400 font-semibold' : 'text-gray-700 dark:text-gray-300'}`}
                         >
                           <span>{lang.flag}</span>
                           <span>{lang.label}</span>
@@ -138,7 +138,7 @@ export const Header: React.FC = () => {
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="p-2 text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+                className="p-2 text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-emax-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
                 aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -174,22 +174,22 @@ export const Header: React.FC = () => {
               <>
                 <div className="pb-2 mb-2 border-b border-gray-200 dark:border-gray-800">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name || user?.email.split('@')[0]}</p>
-                  <p className="text-xs text-accent-600 dark:text-accent-400 font-semibold uppercase">{user?.role}</p>
+                  <p className="text-xs text-emax-600 dark:text-emax-400 font-semibold uppercase">{user?.role}</p>
                 </div>
 
-                <Link to="/quote" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-accent-600 font-medium">
+                <Link to="/quote" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600 font-medium">
                   {t('nav.smartQuote')}
                 </Link>
                 {user?.role === 'admin' && (
-                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-accent-600">
+                    <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">
                       {t('nav.admin')}
                     </Link>
                 )}
-                <Link to="/guide" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-1.5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-accent-600">
+                <Link to="/guide" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-1.5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">
                   <BookOpen className="w-4 h-4" />
                   {t('nav.guide')}
                 </Link>
-                <button onClick={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-accent-600">
+                <button onClick={() => { setIsSettingsOpen(true); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">
                   {t('settings.account.title')}
                 </button>
                 <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700">
@@ -198,13 +198,13 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-accent-600">
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">
                   {t('nav.login')}
                 </Link>
-                <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-accent-600">
+                <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm font-medium text-emax-600">
                   {t('nav.signup')}
                 </Link>
-                <Link to="/guide" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-1.5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-accent-600">
+                <Link to="/guide" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-1.5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">
                   <BookOpen className="w-4 h-4" />
                   {t('nav.guide')}
                 </Link>

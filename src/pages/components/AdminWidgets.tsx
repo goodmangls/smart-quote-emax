@@ -13,22 +13,22 @@ export const AdminWidgets: React.FC = () => {
   return (
     <React.Suspense fallback={<div className="mt-8 space-y-6">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-32 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />)}</div>}>
       <div className="mt-8 space-y-4">
-        <CollapsibleSection title="Customer Management" icon={<Building2 className="w-4 h-4 text-jways-500" />}>
+        <CollapsibleSection title="Customer Management" icon={<Building2 className="w-4 h-4 text-emax-500" />}>
           <CustomerManagement />
         </CollapsibleSection>
-        <CollapsibleSection title="Target Discount Rules" icon={<Percent className="w-4 h-4 text-jways-500" />}>
+        <CollapsibleSection title="Target Discount Rules" icon={<Percent className="w-4 h-4 text-emax-500" />}>
           <TargetDiscountRulesWidget />
         </CollapsibleSection>
-        <CollapsibleSection title="Surcharge Management" icon={<AlertTriangle className="w-4 h-4 text-jways-500" />}>
+        <CollapsibleSection title="Surcharge Management" icon={<AlertTriangle className="w-4 h-4 text-emax-500" />}>
           <SurchargeManagementWidget />
         </CollapsibleSection>
-        <CollapsibleSection title="Rate Tables" icon={<Table2 className="w-4 h-4 text-jways-500" />}>
+        <CollapsibleSection title="Rate Tables" icon={<Table2 className="w-4 h-4 text-emax-500" />}>
           <RateTableViewer />
         </CollapsibleSection>
-        <CollapsibleSection title="Registered Users" icon={<UserCog className="w-4 h-4 text-jways-500" />}>
+        <CollapsibleSection title="Registered Users" icon={<UserCog className="w-4 h-4 text-emax-500" />}>
           <UserManagementWidget />
         </CollapsibleSection>
-        <CollapsibleSection title="Audit Log" icon={<ClipboardList className="w-4 h-4 text-jways-500" />}>
+        <CollapsibleSection title="Audit Log" icon={<ClipboardList className="w-4 h-4 text-emax-500" />}>
           <AuditLogViewer />
         </CollapsibleSection>
       </div>

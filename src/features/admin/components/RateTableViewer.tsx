@@ -33,7 +33,7 @@ export const RateTableViewer: React.FC = () => {
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <TableProperties className="w-4 h-4 text-jways-500" />
+          <TableProperties className="w-4 h-4 text-emax-500" />
           <h4 className="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
             Rate Tables
           </h4>
@@ -68,7 +68,7 @@ export const RateTableViewer: React.FC = () => {
                 onClick={() => setSelectedZone(z)}
                 className={`text-[10px] font-semibold px-2 py-0.5 rounded-full transition-colors ${
                   z === selectedZone
-                    ? 'bg-jways-100 text-jways-700 dark:bg-jways-900/30 dark:text-jways-400'
+                    ? 'bg-emax-100 text-emax-700 dark:bg-emax-900/30 dark:text-emax-400'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}
               >

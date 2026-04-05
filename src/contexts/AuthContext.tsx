@@ -220,7 +220,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
-        <div className="w-6 h-6 border-2 border-gray-300 border-t-jways-500 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-gray-300 border-t-emax-500 rounded-full animate-spin" />
       </div>
     );
   }

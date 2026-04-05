@@ -47,7 +47,7 @@ export const ExchangeRateWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-jways-800 rounded-2xl shadow-sm border border-gray-100 dark:border-jways-700 overflow-hidden transition-colors duration-200 h-full flex flex-col">
+    <div className="bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200 h-full flex flex-col">
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center">
         <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
@@ -68,7 +68,7 @@ export const ExchangeRateWidget: React.FC = () => {
           )}
           <button
             onClick={handleRetry}
-            className={`text-gray-400 hover:text-jways-500 dark:text-gray-400 dark:hover:text-jways-400 transition-colors ${loading ? 'animate-spin cursor-not-allowed' : ''}`}
+            className={`text-gray-400 hover:text-emax-500 dark:text-gray-400 dark:hover:text-emax-400 transition-colors ${loading ? 'animate-spin cursor-not-allowed' : ''}`}
             disabled={loading}
             aria-label={t('widget.exchange.refresh')}
           >
@@ -99,7 +99,7 @@ export const ExchangeRateWidget: React.FC = () => {
                 {exchangeData.map((rate) => (
                   <div
                     key={rate.currency}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-jways-900/30 transition-colors group"
+                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-emax-900/30 transition-colors group"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <span className="text-lg leading-none" role="img" aria-label={rate.currency}>
@@ -144,7 +144,7 @@ export const ExchangeRateWidget: React.FC = () => {
             <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1.5">
-                  <Fuel className="w-3.5 h-3.5 text-jways-500" />
+                  <Fuel className="w-3.5 h-3.5 text-emax-500" />
                   <span className="text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">
                     {t('widget.fsc.title')}
                   </span>
@@ -164,14 +164,14 @@ export const ExchangeRateWidget: React.FC = () => {
                   return (
                     <div
                       key={carrier.name}
-                      className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-jways-900/30 transition-colors group"
+                      className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-emax-900/30 transition-colors group"
                     >
                       <div className="flex items-center gap-2">
                         <a 
                           href={carrier.link} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-sm font-bold text-gray-800 dark:text-gray-100 hover:text-jways-600 dark:hover:text-jways-400 transition-colors"
+                          className="flex items-center gap-1.5 text-sm font-bold text-gray-800 dark:text-gray-100 hover:text-emax-600 dark:hover:text-emax-400 transition-colors"
                         >
                           {carrier.name}
                           <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -179,7 +179,7 @@ export const ExchangeRateWidget: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="w-12 text-right">
-                          <span className="text-sm font-bold text-jways-600 dark:text-jways-400">
+                          <span className="text-sm font-bold text-emax-600 dark:text-emax-400">
                             {rates ? `${rates.international}%` : '--'}
                           </span>
                         </div>

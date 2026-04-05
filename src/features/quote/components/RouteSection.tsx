@@ -70,7 +70,7 @@ export const RouteSection: React.FC<Props> = ({ input, onFieldChange, isMobileVi
   return (
     <div className={cardClass}>
         <h3 className={sectionTitleClass}>
-            <span className="w-2 h-2 bg-jways-500 rounded-full mr-2"></span>
+            <span className="w-2 h-2 bg-emax-500 rounded-full mr-2"></span>
             {t('calc.section.route')}
         </h3>
         <div className={grid}>

@@ -1,11 +1,11 @@
 {
-  "name": "Smart Quote System",
-  "short_name": "SmartQuote",
-  "description": "International shipping cost calculator for Goodman GLS & J-Ways",
+  "name": "E-MAX Smart Quote",
+  "short_name": "E-MAX",
+  "description": "International shipping cost calculator for E-MAX Worldwide Express",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f9fafb",
-  "theme_color": "#2563eb",
+  "theme_color": "#dc2626",
   "icons": [
     {
       "src": "/icon-192.png",

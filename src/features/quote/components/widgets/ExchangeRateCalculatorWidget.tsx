@@ -38,10 +38,10 @@ export const ExchangeRateCalculatorWidget: React.FC = () => {
   }, [amount, fromCurrency, toCurrency, currencies]);
 
   return (
-    <div className="bg-white dark:bg-jways-800 rounded-2xl shadow-sm border border-gray-100 dark:border-jways-700 overflow-hidden transition-colors duration-200">
+    <div className="bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200">
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center">
         <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
-          <Calculator className="w-4 h-4 mr-2 text-jways-500" />
+          <Calculator className="w-4 h-4 mr-2 text-emax-500" />
           {t('widget.calculator')}
         </h3>
       </div>
@@ -57,7 +57,7 @@ export const ExchangeRateCalculatorWidget: React.FC = () => {
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-jways-900 border border-gray-200 dark:border-jways-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white font-semibold focus:ring-2 focus:ring-jways-500 focus:border-transparent transition-all outline-none"
+              className="w-full bg-gray-50 dark:bg-emax-900 border border-gray-200 dark:border-emax-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white font-semibold focus:ring-2 focus:ring-emax-500 focus:border-transparent transition-all outline-none"
               placeholder="0.00"
               min="0"
             />
@@ -73,7 +73,7 @@ export const ExchangeRateCalculatorWidget: React.FC = () => {
                 <select
                   value={fromCurrency}
                   onChange={(e) => setFromCurrency(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-jways-900 border border-gray-200 dark:border-jways-700 rounded-xl pl-3 pr-8 py-2.5 text-gray-900 dark:text-white font-bold focus:ring-2 focus:ring-jways-500 focus:border-transparent transition-all outline-none appearance-none"
+                  className="w-full bg-gray-50 dark:bg-emax-900 border border-gray-200 dark:border-emax-700 rounded-xl pl-3 pr-8 py-2.5 text-gray-900 dark:text-white font-bold focus:ring-2 focus:ring-emax-500 focus:border-transparent transition-all outline-none appearance-none"
                   disabled={loading}
                 >
                   {currencies.map(c => (
@@ -95,7 +95,7 @@ export const ExchangeRateCalculatorWidget: React.FC = () => {
               <button
                 type="button"
                 onClick={handleSwap}
-                className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-jways-700 dark:hover:bg-jways-600 text-gray-600 dark:text-gray-300 transition-colors"
+                className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-emax-700 dark:hover:bg-emax-600 text-gray-600 dark:text-gray-300 transition-colors"
                 aria-label="Swap currencies"
               >
                 <ArrowRightLeft className="w-4 h-4" />
@@ -111,7 +111,7 @@ export const ExchangeRateCalculatorWidget: React.FC = () => {
                 <select
                   value={toCurrency}
                   onChange={(e) => setToCurrency(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-jways-900 border border-gray-200 dark:border-jways-700 rounded-xl pl-3 pr-8 py-2.5 text-gray-900 dark:text-white font-bold focus:ring-2 focus:ring-jways-500 focus:border-transparent transition-all outline-none appearance-none"
+                  className="w-full bg-gray-50 dark:bg-emax-900 border border-gray-200 dark:border-emax-700 rounded-xl pl-3 pr-8 py-2.5 text-gray-900 dark:text-white font-bold focus:ring-2 focus:ring-emax-500 focus:border-transparent transition-all outline-none appearance-none"
                   disabled={loading}
                 >
                   {currencies.map(c => (
@@ -130,16 +130,16 @@ export const ExchangeRateCalculatorWidget: React.FC = () => {
           </div>
 
           {/* Result */}
-          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-jways-700">
-            <div className="bg-jways-50 dark:bg-jways-900/30 rounded-xl p-4 border border-jways-100 dark:border-jways-800 flex flex-col items-center justify-center min-h-[80px]">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-emax-700">
+            <div className="bg-emax-50 dark:bg-emax-900/30 rounded-xl p-4 border border-emax-100 dark:border-emax-800 flex flex-col items-center justify-center min-h-[80px]">
               {loading && currencies.length === 1 ? (
-                <div className="animate-pulse bg-jways-200 dark:bg-jways-700 h-8 w-3/4 rounded"></div>
+                <div className="animate-pulse bg-emax-200 dark:bg-emax-700 h-8 w-3/4 rounded"></div>
               ) : (
                 <>
                   <span className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-1">
                     {amount || '0'} {fromCurrency} =
                   </span>
-                  <span className="text-2xl font-extrabold text-jways-700 dark:text-jways-400">
+                  <span className="text-2xl font-extrabold text-emax-700 dark:text-emax-400">
                     {currentResult.toLocaleString(undefined, {
                       minimumFractionDigits: toCurrency === 'KRW' || toCurrency === 'JPY' ? 0 : 2,
                       maximumFractionDigits: toCurrency === 'KRW' || toCurrency === 'JPY' ? 0 : 2,

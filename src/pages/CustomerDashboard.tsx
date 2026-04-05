@@ -33,12 +33,12 @@ const CustomerDashboard: React.FC = () => {
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-200">
               <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
                 <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
-                  <FileText className="w-4 h-4 mr-2 text-jways-500" />
+                  <FileText className="w-4 h-4 mr-2 text-emax-500" />
                   {t('dashboard.recentQuotes')}
                 </h3>
                 <button
                   onClick={() => navigate('/quote')}
-                  className="text-xs font-semibold text-jways-600 dark:text-jways-400 hover:text-jways-700 dark:hover:text-jways-300 transition-colors"
+                  className="text-xs font-semibold text-emax-600 dark:text-emax-400 hover:text-emax-700 dark:hover:text-emax-300 transition-colors"
                 >
                   {t('dashboard.viewAll')}
                 </button>

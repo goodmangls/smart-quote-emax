@@ -193,7 +193,7 @@ export const MobileLayout: React.FC<Props> = ({
                     <div className="flex items-baseline space-x-1">
                       {isKorean ? (
                         <>
-                          <p className="text-lg font-bold text-jways-700 dark:text-jways-400">
+                          <p className="text-lg font-bold text-emax-700 dark:text-emax-400">
                             {formatKRW(result.totalQuoteAmount)}
                           </p>
                           <span className="text-[10px] text-gray-400">
@@ -202,7 +202,7 @@ export const MobileLayout: React.FC<Props> = ({
                         </>
                       ) : (
                         <>
-                          <p className="text-lg font-bold text-jways-700 dark:text-jways-400">
+                          <p className="text-lg font-bold text-emax-700 dark:text-emax-400">
                             {formatUSDInt(result.totalQuoteAmountUSD)}
                           </p>
                           <span className="text-[10px] text-gray-400">
@@ -225,7 +225,7 @@ export const MobileLayout: React.FC<Props> = ({
                     {/* View Details */}
                     <button
                       onClick={scrollToResults}
-                      className="flex items-center bg-jways-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-lg shadow-jways-600/25 hover:bg-jways-500 active:scale-95 transition-all"
+                      className="flex items-center bg-emax-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-lg shadow-emax-600/25 hover:bg-emax-500 active:scale-95 transition-all"
                     >
                       {t('calc.viewDetails')}
                       <ChevronDown className="w-3.5 h-3.5 ml-1" />

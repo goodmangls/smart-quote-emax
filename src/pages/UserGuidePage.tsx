@@ -104,13 +104,13 @@ const UserGuidePage: React.FC = () => {
   };
 
   const renderTipBox = (text: string) => (
-    <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 my-4">
-      <Lightbulb className="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+    <div className="flex items-start gap-3 bg-emax-50 dark:bg-emax-900/20 border border-emax-200 dark:border-emax-800 rounded-lg p-4 my-4">
+      <Lightbulb className="w-5 h-5 text-emax-500 dark:text-emax-400 flex-shrink-0 mt-0.5" />
       <div>
-        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+        <span className="text-xs font-bold text-emax-600 dark:text-emax-400 uppercase tracking-wider">
           {guide.tipLabel}
         </span>
-        <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">{text}</p>
+        <p className="text-sm text-emax-800 dark:text-emax-200 mt-1">{text}</p>
       </div>
     </div>
   );
@@ -140,7 +140,7 @@ const UserGuidePage: React.FC = () => {
           {/* Section Header */}
           <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-jways-100 dark:bg-jways-900/30 text-jways-600 dark:text-jways-400">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emax-100 dark:bg-emax-900/30 text-emax-600 dark:text-emax-400">
                 {SECTION_ICONS[key]}
               </div>
               <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ const UserGuidePage: React.FC = () => {
         {/* Page Title */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <BookOpen className="w-7 h-7 text-jways-600 dark:text-jways-400" />
+            <BookOpen className="w-7 h-7 text-emax-600 dark:text-emax-400" />
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               {guide.pageTitle}
             </h1>
@@ -277,7 +277,7 @@ const UserGuidePage: React.FC = () => {
               </span>
             )}
             {!isAdmin && (
-              <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-jways-100 dark:bg-jways-900/30 text-jways-600 dark:text-jways-400 rounded-full">
+              <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-emax-100 dark:bg-emax-900/30 text-emax-600 dark:text-emax-400 rounded-full">
                 {guide.memberBadge}
               </span>
             )}
@@ -312,7 +312,7 @@ const UserGuidePage: React.FC = () => {
                       onClick={() => scrollToSection(key)}
                       className={`w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors ${
                         activeSection === key
-                          ? 'bg-jways-50 dark:bg-jways-900/20 text-jways-600 dark:text-jways-400 font-semibold'
+                          ? 'bg-emax-50 dark:bg-emax-900/20 text-emax-600 dark:text-emax-400 font-semibold'
                           : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                       }`}
                     >
@@ -361,7 +361,7 @@ const UserGuidePage: React.FC = () => {
                           onClick={() => scrollToSection(key)}
                           className={`w-full flex items-center gap-2 px-4 py-2 text-left text-[13px] transition-colors group ${
                             activeSection === key
-                              ? 'bg-jways-50 dark:bg-jways-900/20 text-jways-600 dark:text-jways-400 font-semibold border-l-2 border-jways-500'
+                              ? 'bg-emax-50 dark:bg-emax-900/20 text-emax-600 dark:text-emax-400 font-semibold border-l-2 border-emax-500'
                               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 border-l-2 border-transparent'
                           }`}
                         >
