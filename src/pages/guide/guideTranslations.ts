@@ -53,7 +53,7 @@ export const guideTranslations: Record<string, GuideTranslation> = {
         items: [
           {
             title: 'Creating an Account',
-            description: 'Click "Sign Up" on the top-right corner. Fill in your email, password, company name, name, nationality, and optionally select your freight network memberships (WCA, MPL, EAN, JCtrans). Your account will be activated immediately after registration.',
+            description: 'Click "Sign Up" on the top-right corner. Fill in your name, email, and password. Your account will be activated immediately after registration.',
           },
           {
             title: 'Logging In',
@@ -358,7 +358,7 @@ export const guideTranslations: Record<string, GuideTranslation> = {
         items: [
           {
             title: '계정 만들기',
-            description: '우측 상단의 "회원가입"을 클릭하세요. 이메일, 비밀번호, 회사명, 이름, 국적을 입력하고, 선택적으로 물류 네트워크 가입 여부(WCA, MPL, EAN, JCtrans)를 선택합니다. 등록 후 즉시 계정이 활성화됩니다.',
+            description: '우측 상단의 "회원가입"을 클릭하세요. 이름, 이메일, 그리고 비밀번호를 입력합니다. 등록 후 즉시 계정이 활성화됩니다.',
           },
           {
             title: '로그인',

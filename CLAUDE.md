@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Smart Quote System for **Goodman GLS & J-Ways** - an internal logistics quoting tool that calculates international shipping costs across carriers (UPS, DHL, EMAX). React frontend with a Rails API backend, sharing mirrored calculation logic. Includes customer dashboard with live exchange rates, weather, jet fuel prices, notices, and account manager widgets. Role-based access (Admin/Member) with Slack notifications and Sentry error tracking.
+Smart Quote System for **E-MAX Worldwide Express** - an internal logistics quoting tool that calculates international shipping costs across carriers (UPS, DHL, FedEx, EMAX). React frontend with a Rails API backend, sharing mirrored calculation logic. Includes customer dashboard with live exchange rates, weather, jet fuel prices, notices, and account manager widgets. Role-based access (Admin/Member) with Slack notifications and Sentry error tracking.
 
 ## Development Commands
 
-### Frontend (React 19 + TypeScript 5.8 + Vite 6)
+### Frontend (React 19 + TypeScript 5.8 + Vite 6 + Node 22)
 
 ```bash
 npm run dev          # Dev server on http://localhost:5173
@@ -82,7 +82,7 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
         components/            # QuoteHistoryPage, QuoteHistoryTable, QuoteSearchBar, QuotePagination, QuoteDetailModal
         constants.ts           # Shared constants (STATUS_COLORS)
       admin/
-        components/            # TargetMarginRulesWidget, FscRateWidget, UserManagementWidget, CustomerManagement, AuditLogViewer, RateTableViewer
+        components/            # DiscountRulesWidget (formerly Margin), FscRateWidget, UserManagementWidget, CustomerManagement, AuditLogViewer, RateTableViewer
         components/surcharge/  # SurchargeManagementWidget, SurchargeForm, SurchargeTable, SurchargeCarrierLinks, SurchargeNotice
       dashboard/
         components/            # WelcomeBanner, QuoteHistoryCompact, AccountSettingsModal, WidgetError, WidgetSkeleton
@@ -149,8 +149,7 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
 /dashboard     → CustomerDashboard (ProtectedRoute)
 /quote         → QuoteCalculator isPublic=true (ProtectedRoute)
 /admin         → QuoteCalculator isPublic=false (ProtectedRoute requireAdmin)
-/schedule      → FlightSchedulePage (ProtectedRoute requireAdmin)
-/guide         → UserGuidePage (public)
+/guide         → UserGuidePage (public E-MAX Manual)
 *              → redirect to /
 ```
 
@@ -215,7 +214,7 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 
 ### Incoterm Policy
 
-UPS/DHL/EMAX express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
+UPS/DHL/FedEx/EMAX express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
 
 ## Dashboard Widgets
 
@@ -251,11 +250,11 @@ UPS/DHL/EMAX express shipments → **DAP only** (no exceptions). AI chatbot enfo
 
 ### Admin Widgets (visible at /admin only)
 
-- **FscRateWidget**: Tracks live DHL/UPS fuel surcharges with external verification links and manual override
-- **TargetMarginRulesWidget**: DB-driven margin rule CRUD, priority-based grouping (P100/P90/P50/P0), inline add/edit, soft delete
+- **FscRateWidget**: Tracks live DHL/UPS/FedEx fuel surcharges with external verification links and manual override
+- **DiscountRulesWidget**: DB-driven discount rule CRUD, priority-based grouping (P100/P90/P50/P0), inline add/edit, soft delete
 - **SurchargeManagementWidget**: Carrier-specific surcharge CRUD (split into SurchargeForm, SurchargeTable, SurchargeCarrierLinks, SurchargeNotice sub-components)
 - **CustomerManagement**: Customer CRUD with quote count badges
-- **UserManagementWidget**: User role/company/nationality/network management
+- **UserManagementWidget**: User role/account management
 - **RateTableViewer**: Read-only carrier rate table viewer
 - **AuditLogViewer**: All admin actions audit trail with search/filter
 
@@ -294,7 +293,7 @@ POST   /api/v1/auth/register     # Account creation
 PUT    /api/v1/auth/password     # Change Password
 
 # Admin Configuration
-GET    /api/v1/fsc/rates         # View Fuel Surcharges (DHL/UPS)
+GET    /api/v1/fsc/rates         # View Fuel Surcharges (DHL/UPS/FedEx)
 POST   /api/v1/fsc/update        # Update global FSC% rates
 GET    /api/v1/margin_rules          # List all rules
 POST   /api/v1/margin_rules          # Create rule
@@ -314,12 +313,13 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 ## Configuration
 
 - **Path alias**: `@/` -> `src/` (both vite.config.ts and tsconfig.json)
-- **Tailwind**: Custom `jways-*` color palette (blue theme), class-based dark mode
+- **Tailwind**: Custom `emax-*` color palette (red theme), class-based dark mode
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_EIA_API_KEY`
 - **Tariff sync**: Frontend tariff files in `src/config/` must stay in sync with backend `lib/constants/`
 - **Market defaults**: `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=41.75` (UPS 2026-03-23) in `src/config/rates.ts`
 - **Exchange rate policy**: Live API 자동세팅 비활성화, 매주 월요일 수동 업데이트 (하나은행 기준)
 - **Error tracking**: Sentry (`@sentry/browser`) integrated across all catch blocks
+- **Node version**: v22.0.0+ required for Vercel production builds
 
 ## Testing
 
@@ -330,7 +330,7 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 
 ## Deployment
 
-- **Frontend**: Vercel (production: `bridgelogis.com` / `smart-quote-main.vercel.app`) — auto-deploy on push to `origin/main`
+- **Frontend**: Vercel (production: `smart-quote-emax.vercel.app`) — auto-deploy on push to `origin/main`
 - **Backend**: Render.com (Docker, Singapore region, PostgreSQL) — deploys from separate `smart-quote-api.git` repo
 - **Config**: `render.yaml` for backend infrastructure
 - **Backend push**: `git subtree push --prefix=smart-quote-api api-deploy main` (required for backend changes)

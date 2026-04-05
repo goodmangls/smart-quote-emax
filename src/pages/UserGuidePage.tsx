@@ -219,8 +219,8 @@ const UserGuidePage: React.FC = () => {
             <div className="px-6 pb-5">
               {renderTipBox(
                 language === 'ko'
-                  ? '물류 네트워크(WCA, MPL, EAN, JCtrans) 가입 여부를 선택하면 맞춤형 서비스를 받을 수 있습니다.'
-                  : 'Selecting your freight network membership (WCA, MPL, EAN, JCtrans) enables customized services for your organization.'
+                  ? 'E-MAX Smart Quote는 모든 브라우저에서 최적화된 환경을 제공합니다. 모바일에서도 편리하게 이용하세요.'
+                  : 'E-MAX Smart Quote provides an optimized experience across all browsers. Enjoy seamless usage on mobile devices.'
               )}
             </div>
           )}

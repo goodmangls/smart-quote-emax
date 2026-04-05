@@ -1,14 +1,14 @@
-# Smart Quote System
+# E-MAX Smart Quote
 
 <div align="center">
-  <img src="/public/goodman-gls-logo.png" alt="Goodman GLS Logo" height="60" />
+  <img src="/public/icon.svg" alt="E-MAX Logo" height="80" />
 </div>
 
 <br />
 
-The **Smart Quote System** is a full-stack logistics quoting application for **Goodman GLS** and **J-Ways**. It calculates international shipping costs across multiple carriers (UPS, DHL), including export packing, surcharges, and margin analysis. React frontend with a Rails API backend and mirrored calculation logic.
+The **E-MAX Smart Quote** system is a full-stack logistics quoting application for **E-MAX Worldwide Express**. It calculates international shipping costs across multiple carriers (UPS, DHL, FedEx), including export packing, surcharges, and discount analysis. React frontend with a Rails API backend and mirrored calculation logic.
 
-**Live URL**: [https://bridgelogis.com](https://bridgelogis.com) / [https://smart-quote-main.vercel.app](https://smart-quote-main.vercel.app)
+**Live URL**: [https://smart-quote-emax.vercel.app](https://smart-quote-emax.vercel.app)
 
 ---
 
@@ -22,7 +22,7 @@ The **Smart Quote System** is a full-stack logistics quoting application for **G
 - **EAS/RAS Auto-Detection**: Postal code-based Extended/Remote Area Surcharge lookup (86 countries, 39,876 zip ranges, binary search O(log n), lazy-loaded)
 - **Surcharges**: FSC% fuel surcharge, DB-driven surcharges, manual surge fees, carrier-specific add-ons (UPS: 6 types, DHL: 19 types)
 - **Carrier comparison**: Side-by-side cost comparison across all carriers
-- **Incoterm Policy**: UPS/DHL/EMAX express shipments use DAP exclusively
+- **Incoterm Policy**: UPS/DHL/FedEx/EMAX express shipments use DAP exclusively
 
 ### Calculation Pipeline
 
@@ -31,7 +31,7 @@ The **Smart Quote System** is a full-stack logistics quoting application for **G
 3. **Add-on Services** - Auto-detected (AHS, OSP, OWT, DDP, Surge Fee, EAS/RAS) + user-selectable (19 DHL / 6 UPS add-ons)
 4. **Margin** - Dynamic margin resolution via `MarginRuleResolver` (priority-based first-match-wins algorithm with 5min cache), admin CRUD management, hardcoded fallback if API unavailable. Revenue = cost / (1 - margin%), rounded up to nearest KRW 100
 5. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX country support
-6. **PDF Output** - Branded PDF with packing type/cost breakdown, carrier add-on details, surcharge info
+6. **PDF Output** - Branded PDF with packing type/cost breakdown, carrier add-on details, surcharge info, and E-MAX Worldwide Express disclaimers
 
 ### Role-Based Access
 
@@ -68,11 +68,11 @@ The **Smart Quote System** is a full-stack logistics quoting application for **G
 
 | Widget | Purpose |
 |--------|---------|
-| **Target Margin Rules** | DB-driven margin rule CRUD with priority tiers (P100/P90/P50/P0) |
-| **FSC Rate Management** | Track/update DHL & UPS fuel surcharge percentages |
+| **Discount Rules** | DB-driven discount rule CRUD with priority tiers (P100/P90/P50/P0) |
+| **FSC Rate Management** | Track/update DHL, UPS & FedEx fuel surcharge percentages |
 | **Surcharge Management** | Carrier-specific surcharge CRUD |
 | **Customer Management** | Customer records with quote count badges |
-| **User Management** | Role assignment, company, nationality, network access |
+| **User Management** | Role assignment and account management |
 | **Rate Table Viewer** | Read-only carrier rate table reference |
 | **Audit Log** | Full audit trail of all admin actions |
 
@@ -100,7 +100,7 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 
 - **Smart Quote Assistant**: In-app chatbot powered by Claude API for system usage help and logistics Q&A
 - **Logistics knowledge**: Incoterms, customs, HS codes, ULD, common industry terms
-- **DAP policy enforcement**: Automatically informs users that UPS/DHL/EMAX shipments require DAP incoterm
+- **DAP policy enforcement**: Automatically informs users that UPS/DHL/FedEx/EMAX shipments require DAP incoterm
 - **Rich Interactions**: Markdown rendering support and randomly suggested quick-questions per session
 - **Smart Localization**: Auto-detects optimal language (Nationality → System → Timezone → Browser)
 - **Role-aware**: Different guides for Admin vs Member users
@@ -118,7 +118,7 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 
 | Layer        | Stack                                                                        |
 | ------------ | ---------------------------------------------------------------------------- |
-| **Frontend** | React 19, TypeScript 5.8, Vite 6, Tailwind CSS                               |
+| **Frontend** | React 19, TypeScript 5.8, Vite 6, Tailwind CSS (E-MAX Theme)        |
 | **Backend**  | Rails 8 API-only, Ruby 3.4, PostgreSQL                                       |
 | **Testing**  | Vitest + Testing Library (32 files, 1,193 tests), RSpec + FactoryBot (backend) |
 | **Deploy**   | Vercel (frontend), Render.com (backend, Docker, Singapore)                   |
@@ -170,7 +170,7 @@ smart-quote-api/               # Backend (Rails 8 API)
 
 ### Prerequisites
 
-- Node.js (v18+), npm
+- Node.js (v22.0.0+), npm
 - Ruby 3.4+, Bundler, PostgreSQL (for backend)
 
 ### Frontend
@@ -203,8 +203,7 @@ bin/rubocop          # Ruby linting
 | `/dashboard` | CustomerDashboard                | Protected  |
 | `/quote`     | QuoteCalculator (isPublic=true)  | Protected  |
 | `/admin`     | QuoteCalculator (isPublic=false) | Admin only |
-| `/schedule`  | FlightSchedulePage               | Admin only |
-| `/guide`     | UserGuidePage                    | Public     |
+| `/guide`     | UserGuidePage (E-MAX Manual)     | Public     |
 
 ### API Endpoints
 
@@ -258,4 +257,4 @@ POST   /api/v1/notifications/slack  # Slack webhook proxy
 
 ## Internal Use Only
 
-This system contains proprietary rate tables and logic for Goodman GLS / J-Ways internal operations.
+This system contains proprietary rate tables and logic for E-MAX Worldwide Express internal operations.
