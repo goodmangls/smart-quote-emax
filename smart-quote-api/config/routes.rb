@@ -70,4 +70,7 @@ Rails.application.routes.draw do
 
     end
   end
+
+  # Handle CORS preflight OPTIONS requests for all routes
+  match '*path', to: 'application#set_cors_headers', via: :options
 end
