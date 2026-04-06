@@ -28,8 +28,15 @@ class CorsRackMiddleware
   private
 
   def cors_headers(origin)
+    allowed_origin = if ENV["CORS_ORIGINS"]
+                       origins = ENV["CORS_ORIGINS"].split(",").map(&:strip)
+                       origins.include?(origin) ? origin : origins.first
+                     else
+                       origin || "*"
+                     end
+
     {
-      "Access-Control-Allow-Origin"   => origin || "*",
+      "Access-Control-Allow-Origin"   => allowed_origin,
       "Access-Control-Allow-Methods"  => ALLOWED_METHODS,
       "Access-Control-Allow-Headers"  => ALLOWED_HEADERS,
       "Access-Control-Expose-Headers" => EXPOSED_HEADERS,
