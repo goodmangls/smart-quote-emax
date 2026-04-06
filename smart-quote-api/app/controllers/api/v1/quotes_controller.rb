@@ -40,8 +40,7 @@ module Api
 
       # GET /api/v1/quotes
       def index
-        # Auto-expire stale drafts (validity_date passed)
-        scoped_quotes.stale_drafts.update_all(status: "expired")
+        expire_stale_drafts!
 
         quotes = QuoteSearcher.call(scoped_quotes, params)
                       .page(params[:page] || 1)
@@ -134,6 +133,14 @@ module Api
       end
 
       private
+
+      def expire_stale_drafts!
+        cache_key = "quotes:expire_stale_drafts"
+        return if Rails.cache.read(cache_key)
+
+        Quote.stale_drafts.update_all(status: "expired")
+        Rails.cache.write(cache_key, true, expires_in: 10.minutes)
+      end
 
       def scoped_quotes
         if current_user.role == "admin"

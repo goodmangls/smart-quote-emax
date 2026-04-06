@@ -57,6 +57,9 @@ Rails.application.routes.draw do
       # Exchange Rates (public - no auth required)
       get "exchange_rates", to: "exchange_rates#index"
 
+      # Jet Fuel Prices (public - proxies EIA API to keep key server-side)
+      get "jet_fuel", to: "jet_fuel#index"
+
       # FSC Rates
       get "fsc/rates", to: "fsc#rates"
       post "fsc/update", to: "fsc#update_rates"

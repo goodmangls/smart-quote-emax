@@ -19,6 +19,11 @@ class Rack::Attack
     req.ip if req.path == "/api/v1/auth/refresh" && req.post?
   end
 
+  # Throttle admin promote: 3 per hour per IP (brute-force protection)
+  throttle("auth/promote", limit: 3, period: 3600) do |req|
+    req.ip if req.path == "/api/v1/auth/promote" && req.post?
+  end
+
   # Throttle public calculate endpoint: 60 per minute per IP
   throttle("quotes/calculate", limit: 60, period: 60) do |req|
     req.ip if req.path == "/api/v1/quotes/calculate" && req.post?

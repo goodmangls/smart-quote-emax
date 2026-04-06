@@ -18,7 +18,6 @@ module JwtAuthenticatable
 
     decoded = JWT.decode(token, jwt_secret, true, algorithm: "HS256")
     payload = decoded[0]
-    return nil if payload["exp"] < Time.current.to_i
 
     User.find_by(id: payload["user_id"])
   rescue JWT::DecodeError => e
@@ -39,9 +38,13 @@ module JwtAuthenticatable
   end
 
   def encode_refresh_token(user)
+    jti = SecureRandom.uuid
+    user.update_column(:refresh_token_jti, jti)
+
     payload = {
       user_id: user.id,
       type: "refresh",
+      jti: jti,
       exp: 7.days.from_now.to_i
     }
     JWT.encode(payload, jwt_secret, "HS256")
@@ -51,8 +54,12 @@ module JwtAuthenticatable
     decoded = JWT.decode(token, jwt_secret, true, algorithm: "HS256")
     payload = decoded[0]
     return nil unless payload["type"] == "refresh"
-    return nil if payload["exp"] < Time.current.to_i
-    User.find_by(id: payload["user_id"])
+
+    user = User.find_by(id: payload["user_id"])
+    return nil unless user
+    return nil unless user.refresh_token_jti == payload["jti"]
+
+    user
   rescue JWT::DecodeError, JWT::ExpiredSignature
     nil
   end

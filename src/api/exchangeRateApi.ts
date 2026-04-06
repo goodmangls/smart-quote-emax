@@ -20,7 +20,10 @@ const TARGET_CURRENCIES: Record<string, { flag: string; currency: string }> = {
  */
 function buildRates(rawRates: Record<string, number>): ExchangeRate[] {
   const prevRaw = localStorage.getItem(PREV_RATES_KEY);
-  const prev: Record<string, number> = prevRaw ? JSON.parse(prevRaw) : {};
+  let prev: Record<string, number> = {};
+  if (prevRaw) {
+    try { prev = JSON.parse(prevRaw); } catch { /* corrupted localStorage — ignore */ }
+  }
 
   const rates: ExchangeRate[] = [];
   const newPrev: Record<string, number> = {};

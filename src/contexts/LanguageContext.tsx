@@ -18,7 +18,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const saved = localStorage.getItem('smartQuoteLanguage') as Language | null;
     // Guard against stale 'cn'/'ja' values saved before language consolidation
     if (saved === 'en' || saved === 'ko') return saved;
-    return 'en';
+    return 'ko';
   });
 
   const setLanguage = (lang: Language) => {

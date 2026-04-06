@@ -33,18 +33,29 @@ export const SignUpPage: React.FC = () => {
         return;
     }
 
+    if (password.length < 6) {
+        setError(t('settings.password.tooShort') || 'Password must be at least 6 characters.');
+        return;
+    }
+
     if (email.trim() && password.trim() && name.trim()) {
       setIsLoading(true);
       try {
-        const result = await signup(email.trim(), password.trim(), undefined, name.trim());
+        const result = await signup(
+          email.trim(), 
+          password.trim(), 
+          undefined, 
+          name.trim()
+        );
         if (result.success) {
-           navigate('/admin', { replace: true });
+           navigate('/quote', { replace: true });
         } else {
           setError(result.error || t('auth.emailExists'));
         }
-      } catch (e) {
-        Sentry.captureException(e);
-        setError(t('auth.emailExists'));
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        Sentry.captureException(err);
+        setError(message || t('auth.emailExists'));
       } finally {
         setIsLoading(false);
       }

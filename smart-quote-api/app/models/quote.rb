@@ -58,8 +58,15 @@ class Quote < ApplicationRecord
     return if reference_no.present?
 
     year = Time.current.year
-    last = self.class.where("reference_no LIKE ?", "SQ-#{year}-%").order(:reference_no).last
-    seq = last ? last.reference_no.split("-").last.to_i + 1 : 1
-    self.reference_no = "SQ-#{year}-#{seq.to_s.rjust(4, '0')}"
+    lock_key = "quote_ref_no_#{year}".hash.abs
+
+    self.class.connection.execute("SELECT pg_advisory_lock(#{lock_key})")
+    begin
+      last = self.class.where("reference_no LIKE ?", "SQ-#{year}-%").order(:reference_no).last
+      seq = last ? last.reference_no.split("-").last.to_i + 1 : 1
+      self.reference_no = "SQ-#{year}-#{seq.to_s.rjust(4, '0')}"
+    ensure
+      self.class.connection.execute("SELECT pg_advisory_unlock(#{lock_key})")
+    end
   end
 end

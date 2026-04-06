@@ -31,6 +31,13 @@ export const Header: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Force Korean for non-admins
+  useEffect(() => {
+    if (isAuthenticated && user?.role !== 'admin' && language !== 'ko') {
+      setLanguage('ko');
+    }
+  }, [isAuthenticated, user?.role, language, setLanguage]);
+
   const handleLogout = () => {
     logout();
     navigate('/');

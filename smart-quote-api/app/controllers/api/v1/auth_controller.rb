@@ -38,12 +38,13 @@ module Api
         render json: user_json(current_user)
       end
 
-      # POST /api/v1/auth/refresh — issue new access token using refresh token
+      # POST /api/v1/auth/refresh — issue new access + refresh token (rotation)
       def refresh
         user = decode_refresh_token(params[:refresh_token])
 
         if user
-          render json: { token: encode_token(user), user: user_json(user) }
+          new_refresh = encode_refresh_token(user)
+          render json: { token: encode_token(user), refresh_token: new_refresh, user: user_json(user) }
         else
           render json: { error: { code: "INVALID_TOKEN", message: "Invalid or expired refresh token" } }, status: :unauthorized
         end

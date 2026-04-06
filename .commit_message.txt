@@ -1,1 +1,1 @@
-✨ feat: 견적 공유 링크 기능 — /q/:token 공개 페이지 + SharedQuotePage 구현
+🔒 fix: 보안/안정성 개선 10건 — DB unique 인덱스, refresh token rotation, EIA 프록시, rate limiting, 캐리어 코드 중복 제거

@@ -86,8 +86,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok) return res.json();
         throw new Error('Refresh failed');
       })
-      .then((data: { token: string; user: User }) => {
+      .then((data: { token: string; refresh_token?: string; user: User }) => {
         setAccessToken(data.token);
+        if (data.refresh_token) setRefreshToken(data.refresh_token);
         setUser(data.user);
       })
       .catch(() => {
@@ -109,7 +110,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: JSON.stringify({ refresh_token: refreshToken }),
       })
         .then(res => { if (res.ok) return res.json(); throw new Error(); })
-        .then((data: { token: string }) => setAccessToken(data.token))
+        .then((data: { token: string; refresh_token?: string }) => {
+          setAccessToken(data.token);
+          if (data.refresh_token) setRefreshToken(data.refresh_token);
+        })
         .catch(() => { /* next API call will trigger 401 → retry logic */ });
     }, 14 * 60 * 1000);
     return () => clearInterval(interval);

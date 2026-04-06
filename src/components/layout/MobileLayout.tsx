@@ -82,20 +82,22 @@ export const MobileLayout: React.FC<Props> = ({
           </div>
 
           <div className="flex items-center space-x-1">
-             {/* Compact Language Switcher */}
-             <div className="relative">
-               <select
-                 value={language}
-                 onChange={(e) => setLanguage(e.target.value as 'en' | 'ko')}
-                 className="appearance-none bg-transparent text-xs text-gray-500 dark:text-gray-400 pl-5 pr-4 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer focus:outline-none"
-                 aria-label="Language"
-               >
-                 {LANGUAGES.map((l) => (
-                   <option key={l.code} value={l.code}>{l.flag} {l.label}</option>
-                 ))}
-               </select>
-               <Globe className="w-3.5 h-3.5 absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-             </div>
+             {/* Compact Language Switcher — Admin only */}
+             {isAdmin && (
+               <div className="relative">
+                 <select
+                   value={language}
+                   onChange={(e) => setLanguage(e.target.value as 'en' | 'ko')}
+                   className="appearance-none bg-transparent text-xs text-gray-500 dark:text-gray-400 pl-5 pr-4 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer focus:outline-none"
+                   aria-label="Language"
+                 >
+                   {LANGUAGES.map((l) => (
+                     <option key={l.code} value={l.code}>{l.flag} {l.label}</option>
+                   ))}
+                 </select>
+                 <Globe className="w-3.5 h-3.5 absolute left-1 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+               </div>
+             )}
 
              {/* Reset Button */}
              <button
