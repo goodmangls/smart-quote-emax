@@ -14,9 +14,10 @@ interface Props {
   hideMargin?: boolean;
   resolvedDiscount?: ResolvedDiscount | null;
   onDiscountChange?: (val: number) => void;
+  showUSD?: boolean;
 }
 
-export const FinancialSection: React.FC<Props> = ({ input, onFieldChange, isMobileView = false, effectiveDiscountPercent, hideMargin, resolvedDiscount, onDiscountChange }) => {
+export const FinancialSection: React.FC<Props> = ({ input, onFieldChange, isMobileView = false, effectiveDiscountPercent, hideMargin, resolvedDiscount, onDiscountChange, showUSD = true }) => {
   const { inputClass, labelClass, grayCardClass } = inputStyles;
   const ic = inputClass(isMobileView);
   const lc = labelClass(isMobileView);
@@ -30,7 +31,12 @@ export const FinancialSection: React.FC<Props> = ({ input, onFieldChange, isMobi
       <div className="flex items-center justify-between mb-4">
          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider flex items-center">
              <TrendingUp className="w-4 h-4 mr-2 text-emax-600 dark:text-emax-400" />
-             {t('calc.section.financial')}
+              {showUSD 
+                ? t('calc.section.financial')
+                : isKo 
+                  ? '재무 항목 적용' 
+                  : 'Financial Application'
+              }
          </h3>
          <div className="flex items-center gap-3">
              <a
@@ -63,28 +69,30 @@ export const FinancialSection: React.FC<Props> = ({ input, onFieldChange, isMobi
          </div>
       </div>
       <div className={financialGrid}>
-         <div>
-             <label className={lc}>Ex. Rate (KRW/USD)</label>
-             <div className="relative rounded-lg shadow-sm">
-                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                 <span className="text-gray-500 sm:text-sm font-bold">&#8361;</span>
-                 </div>
-                 <input
-                     type="number"
-                     step="any"
-                     min="1"
-                     value={input.exchangeRate}
-                     onChange={(e) => { const v = Number(e.target.value); onFieldChange('exchangeRate', isNaN(v) || v < 1 ? 1 : v); }}
-                     className={`${ic} pl-8 pr-20`}
-                     placeholder="1430"
-                     inputMode="decimal"
-                     autoComplete="off"
-                 />
-             </div>
-             <p className="mt-1 text-[9px] text-gray-400 dark:text-gray-500">
-               {t('calc.financial.exchangeHint')}
-             </p>
-         </div>
+         {showUSD && (
+            <div>
+                <label className={lc}>Ex. Rate (KRW/USD)</label>
+                <div className="relative rounded-lg shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span className="text-gray-500 sm:text-sm font-bold">&#8361;</span>
+                    </div>
+                    <input
+                        type="number"
+                        step="any"
+                        min="1"
+                        value={input.exchangeRate}
+                        onChange={(e) => { const v = Number(e.target.value); onFieldChange('exchangeRate', isNaN(v) || v < 1 ? 1 : v); }}
+                        className={`${ic} pl-8 pr-20`}
+                        placeholder="1430"
+                        inputMode="decimal"
+                        autoComplete="off"
+                    />
+                </div>
+                <p className="mt-1 text-[9px] text-gray-400 dark:text-gray-500">
+                  {t('calc.financial.exchangeHint')}
+                </p>
+            </div>
+          )}
          <div>
              <label className={lc}>FSC %</label>
              <div className="relative rounded-lg shadow-sm">
@@ -107,7 +115,7 @@ export const FinancialSection: React.FC<Props> = ({ input, onFieldChange, isMobi
                {t('calc.financial.fscHint')}
              </p>
          </div>
-         {!hideMargin && (
+         {(!hideMargin || !showUSD) && (
              <div>
                  <label className={lc}>Discount (%)</label>
                  <div className="relative rounded-lg shadow-sm">
@@ -139,7 +147,7 @@ export const FinancialSection: React.FC<Props> = ({ input, onFieldChange, isMobi
                     Applied: {effectiveDiscountPercent}%
                   </p>
                 )}
-                {resolvedDiscount && (
+                {resolvedDiscount && showUSD && (
                    <div className={`mt-1.5 flex items-start gap-1.5 text-[9px] leading-relaxed ${
                      resolvedDiscount.fallback
                        ? 'text-gray-400 dark:text-gray-500'

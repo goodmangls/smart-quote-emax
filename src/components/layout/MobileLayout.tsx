@@ -27,8 +27,11 @@ interface Props {
   scrollToResults: () => void;
   hideMargin?: boolean;
   resolvedDiscount?: ResolvedDiscount | null;
+  discountPercent: number;
   isAdmin?: boolean;
   isKorean?: boolean;
+  showUSD?: boolean;
+  onSwitchCarrier: (carrier: 'UPS' | 'DHL') => void;
 }
 
 export const MobileLayout: React.FC<Props> = ({
@@ -45,8 +48,11 @@ export const MobileLayout: React.FC<Props> = ({
   scrollToResults,
   hideMargin,
   resolvedDiscount,
+  discountPercent,
   isAdmin,
   isKorean = true,
+  showUSD = true,
+  onSwitchCarrier,
 }) => {
   const { language, setLanguage, t } = useLanguage();
   const prevCarrierRef = useRef(input.overseasCarrier);
@@ -148,6 +154,7 @@ export const MobileLayout: React.FC<Props> = ({
                    intlBase={result?.breakdown.intlBase} 
                    billableWeight={result?.billableWeight} 
                    resolvedDiscount={resolvedDiscount} 
+                   showUSD={showUSD}
                  />
                  {isAdmin && <AdminWidgets />}
               </div>
@@ -158,12 +165,13 @@ export const MobileLayout: React.FC<Props> = ({
                   <ResultSection
                     result={result}
                     input={input}
-                    hideMargin={hideMargin}
                     onDiscountChange={onDiscountChange}
                     onDownloadPdf={onDownloadPdf}
-                    onSwitchCarrier={(carrier) => setInput(prev => ({ ...prev, overseasCarrier: carrier }))}
-                    discountPercent={input.discountPercent}
+                    onSwitchCarrier={onSwitchCarrier}
+                    discountPercent={discountPercent}
+                    hideMargin={hideMargin}
                     isKorean={isKorean}
+                    showUSD={showUSD}
                   />
                  )}
               </div>
@@ -198,18 +206,22 @@ export const MobileLayout: React.FC<Props> = ({
                           <p className="text-lg font-bold text-emax-700 dark:text-emax-400">
                             {formatKRW(result.totalQuoteAmount)}
                           </p>
-                          <span className="text-[10px] text-gray-400">
-                            ({formatUSDInt(result.totalQuoteAmountUSD)})
-                          </span>
+                          {showUSD && (
+                            <span className="text-[10px] text-gray-400">
+                              ({formatUSDInt(result.totalQuoteAmountUSD)})
+                            </span>
+                          )}
                         </>
                       ) : (
                         <>
                           <p className="text-lg font-bold text-emax-700 dark:text-emax-400">
-                            {formatUSDInt(result.totalQuoteAmountUSD)}
+                            {showUSD ? formatUSDInt(result.totalQuoteAmountUSD) : formatKRW(result.totalQuoteAmount)}
                           </p>
-                          <span className="text-[10px] text-gray-400">
-                            ({formatKRW(result.totalQuoteAmount)})
-                          </span>
+                          {showUSD && (
+                            <span className="text-[10px] text-gray-400">
+                              ({formatKRW(result.totalQuoteAmount)})
+                            </span>
+                          )}
                         </>
                       )}
                     </div>

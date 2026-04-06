@@ -18,9 +18,10 @@ interface Props {
   billableWeight?: number;
   resolvedDiscount?: ResolvedDiscount | null;
   onDiscountChange?: (val: number) => void;
+  showUSD?: boolean;
 }
 
-export const InputSection: React.FC<Props> = ({ input, onChange, isMobileView = false, effectiveDiscountPercent, hideMargin, intlBase, billableWeight, resolvedDiscount, onDiscountChange }) => {
+export const InputSection: React.FC<Props> = ({ input, onChange, isMobileView = false, effectiveDiscountPercent, hideMargin, intlBase, billableWeight, resolvedDiscount, onDiscountChange, showUSD }) => {
 
   const updateField = <K extends keyof QuoteInput>(key: K, value: QuoteInput[K]) => {
     onChange({ ...input, [key]: value });
@@ -35,17 +36,16 @@ export const InputSection: React.FC<Props> = ({ input, onChange, isMobileView = 
       <RouteSection input={input} onFieldChange={updateField} isMobileView={isMobileView} />
       <CargoSection items={input.items} onChange={handleCargoChange} isMobileView={isMobileView} />
       <FscRateWidget readOnly={hideMargin} />
-      {!hideMargin && (
-        <FinancialSection 
-          input={input} 
-          onFieldChange={updateField} 
-          onDiscountChange={onDiscountChange}
-          isMobileView={isMobileView} 
-          effectiveDiscountPercent={effectiveDiscountPercent} 
-          hideMargin={hideMargin} 
-          resolvedDiscount={resolvedDiscount} 
-        />
-      )}
+      <FinancialSection 
+        input={input} 
+        onFieldChange={updateField} 
+        onDiscountChange={onDiscountChange}
+        isMobileView={isMobileView} 
+        effectiveDiscountPercent={effectiveDiscountPercent} 
+        hideMargin={hideMargin} 
+        resolvedDiscount={resolvedDiscount} 
+        showUSD={showUSD}
+      />
       <SeoulPickupSection input={input} onFieldChange={updateField} isMobileView={isMobileView} hideMargin={hideMargin} />
       <ServiceSection input={input} onFieldChange={updateField} isMobileView={isMobileView} intlBase={intlBase} billableWeight={billableWeight} hideMargin={hideMargin} />
     </div>

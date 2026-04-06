@@ -1,1 +1,1 @@
-📦 chore: UPS FSC 46.00% 적용 (2026-04-06)
+✨ feat: 최저가 캐리어 자동 선택 + Member Switch 기능 활성화

@@ -155,13 +155,15 @@ const drawCargoTable = async (doc: jsPDF, items: QuoteInput['items'], result: Qu
 
 // ─── Cost Breakdown Table ────────────────────────────────
 
-const drawCostTable = async (doc: jsPDF, result: QuoteResult, yPos: number, currency: CurrencyMode = 'both'): Promise<number> => {
-  const exchangeRate = result.totalQuoteAmount / result.totalQuoteAmountUSD;
+const drawCostTable = async (doc: jsPDF, result: QuoteResult, yPos: number, currency: CurrencyMode = 'both', showUSD: boolean = true): Promise<number> => {
+  const exchangeRate = result.totalQuoteAmountUSD > 0
+    ? result.totalQuoteAmount / result.totalQuoteAmountUSD
+    : 1400;
   const fmtAmt = (krw: number) => {
-    if (currency === 'usd') return pdfFormatUSD(krw / exchangeRate);
+    if (currency === 'usd' || (!showUSD && currency === 'both')) return pdfFormatUSD(krw / exchangeRate); // This case shouldn't happen with showUSD=false
     return pdfFormatKRW(krw);
   };
-  const amountHeader = currency === 'usd' ? 'Amount (USD)' : 'Amount (KRW)';
+  const amountHeader = (currency === 'usd') ? 'Amount (USD)' : 'Amount (KRW)';
   const autoTable = (await import('jspdf-autotable')).default;
 
   doc.setFont(FONTS.FAMILY, 'normal');
@@ -235,7 +237,7 @@ const drawCostTable = async (doc: jsPDF, result: QuoteResult, yPos: number, curr
 
 // ─── Quote Summary Box ───────────────────────────────────
 
-const drawQuoteSummary = (doc: jsPDF, input: QuoteInput, result: QuoteResult, yPos: number, currency: CurrencyMode = 'both'): number => {
+const drawQuoteSummary = (doc: jsPDF, input: QuoteInput, result: QuoteResult, yPos: number, currency: CurrencyMode = 'both', showUSD: boolean = true): number => {
   doc.setFont(FONTS.FAMILY, 'normal');
 
   // E-MAX Red summary box
@@ -254,9 +256,9 @@ const drawQuoteSummary = (doc: jsPDF, input: QuoteInput, result: QuoteResult, yP
   }
 
   doc.setFontSize(FONTS.SIZE_NORMAL);
-  if (currency === 'both') {
+  if (currency === 'both' && showUSD) {
     doc.text(`(Approx.${pdfFormatUSD(result.totalQuoteAmountUSD)})`, MARGIN_X + 8, yPos + 30);
-  } else if (currency === 'usd') {
+  } else if (currency === 'usd' && showUSD) {
     doc.text(`(Approx.${pdfFormatKRW(result.totalQuoteAmount)})`, MARGIN_X + 8, yPos + 30);
   }
 
@@ -348,8 +350,9 @@ export const generatePDF = async (
   input: QuoteInput,
   result: QuoteResult,
   referenceNo?: string,
-  options?: { isAdmin?: boolean; isKorean?: boolean }
+  options?: { isAdmin?: boolean; isKorean?: boolean; showUSD?: boolean }
 ) => {
+  const showUSD = options?.showUSD ?? true;
   const currency: CurrencyMode = options?.isAdmin ? 'both' : (options?.isKorean ? 'krw' : 'usd');
   const { jsPDF: JsPDF } = await import('jspdf');
   const doc = new JsPDF();
@@ -367,9 +370,9 @@ export const generatePDF = async (
   const volDivisor = carrier === 'EMAX' ? 6000 : 5000;
   yPos = await drawCargoTable(doc, input.items, result, yPos, input.packingType, volDivisor);
   doc.setFont(FONTS.FAMILY, 'normal');
-  yPos = await drawCostTable(doc, result, yPos, currency);
+  yPos = await drawCostTable(doc, result, yPos, currency, showUSD);
   doc.setFont(FONTS.FAMILY, 'normal');
-  yPos = drawQuoteSummary(doc, input, result, yPos, currency);
+  yPos = drawQuoteSummary(doc, input, result, yPos, currency, showUSD);
   yPos = drawWarnings(doc, result.warnings, yPos);
   drawDisclaimer(doc, yPos);
   drawFooter(doc);
@@ -384,7 +387,9 @@ export const generateComparisonPDF = async (
   upsResult: QuoteResult,
   dhlResult: QuoteResult,
   emaxResult?: QuoteResult,
+  options?: { showUSD?: boolean }
 ) => {
+  const showUSD = options?.showUSD ?? true;
   const { jsPDF: JsPDF } = await import('jspdf');
   const autoTable = (await import('jspdf-autotable')).default;
   const doc = new JsPDF();
@@ -426,8 +431,11 @@ export const generateComparisonPDF = async (
     ))],
     ['총 비용', ...results.map(r => pdfFormatKRW(r.breakdown.totalCost))],
     ['견적가 (KRW)', ...results.map(r => pdfFormatKRW(r.totalQuoteAmount))],
-    ['견적가 (USD)', ...results.map(r => pdfFormatUSD(r.totalQuoteAmountUSD))],
   ];
+
+  if (showUSD) {
+    bodyRows.push(['견적가 (USD)', ...results.map(r => pdfFormatUSD(r.totalQuoteAmountUSD))]);
+  }
 
   autoTable(doc, {
     startY: yPos,
@@ -472,7 +480,7 @@ export const generateComparisonPDF = async (
     doc.setFontSize(FONTS.SIZE_NORMAL);
     doc.setTextColor(...COLORS.PRIMARY);
     doc.text(
-      `→ ${carriers[cheapestIdx]}가 최저가: ${pdfFormatKRW(savings)} 절감 (Approx.${pdfFormatUSD(savings / input.exchangeRate)})`,
+      `→ ${carriers[cheapestIdx]}가 최저가: ${pdfFormatKRW(savings)} 절감${showUSD ? ` (Approx.${pdfFormatUSD(savings / input.exchangeRate)})` : ''}`,
       MARGIN_X,
       yPos
     );

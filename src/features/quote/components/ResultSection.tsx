@@ -15,12 +15,13 @@ interface Props {
   onSwitchCarrier?: (carrier: 'UPS' | 'DHL') => void;
   hideMargin?: boolean;
   isKorean?: boolean;
+  showUSD?: boolean;
 }
 
-export const ResultSection: React.FC<Props> = ({ result, input, onDiscountChange, onDownloadPdf, onSwitchCarrier, discountPercent, hideMargin, isKorean = false }) => {
+export const ResultSection: React.FC<Props> = ({ result, input, onDiscountChange, onDownloadPdf, onSwitchCarrier, discountPercent, hideMargin, isKorean = false, showUSD = true }) => {
   return (
     <div className="space-y-6 sticky top-6">
-      <QuoteSummaryCard result={result} onDownloadPdf={onDownloadPdf} isKorean={isKorean} hideMargin={hideMargin} />
+      <QuoteSummaryCard result={result} onDownloadPdf={onDownloadPdf} isKorean={isKorean} hideMargin={hideMargin} showUSD={showUSD} />
       <WarningAlerts warnings={result.warnings} />
       <KeyMetricsGrid result={result} hideMargin={hideMargin} />
 
@@ -31,6 +32,7 @@ export const ResultSection: React.FC<Props> = ({ result, input, onDiscountChange
           isKorean={isKorean}
           onSwitchCarrier={onSwitchCarrier}
           hideMargin={hideMargin}
+          showUSD={showUSD}
         />
       )}
 
@@ -40,6 +42,7 @@ export const ResultSection: React.FC<Props> = ({ result, input, onDiscountChange
         discountPercent={discountPercent}
         hideMargin={hideMargin}
         isKorean={isKorean}
+        showUSD={showUSD}
       />
     </div>
   );

@@ -10,12 +10,14 @@ interface Props {
   onDownloadPdf: () => void;
   isKorean?: boolean;
   hideMargin?: boolean;
+  showUSD?: boolean;
 }
 
-export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKorean = false, hideMargin }) => {
+export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKorean = false, hideMargin, showUSD = true }) => {
   // Admin (!hideMargin): always start with KRW + toggle available
   // Member (hideMargin): fixed based on nationality (KR→KRW, else→USD)
-  const [showKRW, setShowKRW] = useState(!hideMargin ? true : isKorean);
+  // If showUSD is false, strictly force KRW
+  const [showKRW, setShowKRW] = useState(!showUSD ? true : (!hideMargin ? true : isKorean));
   const { t } = useLanguage();
 
   const primaryAmount = showKRW
@@ -50,23 +52,25 @@ export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKor
             {hideMargin ? (
               <div className="flex flex-col mb-5 w-full">
                 <div className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-                  <span>{isKorean ? formatKRW(result.totalQuoteAmount) : formatUSD(result.totalQuoteAmountUSD)}</span>
+                  <span>{isKorean ? formatKRW(result.totalQuoteAmount) : (showUSD ? formatUSD(result.totalQuoteAmountUSD) : formatKRW(result.totalQuoteAmount))}</span>
                 </div>
               </div>
             ) : (
               <button
                 type="button"
-                onClick={() => setShowKRW(prev => !prev)}
-                className="flex flex-col mb-5 text-left group cursor-pointer w-full"
-                aria-label="Toggle currency display"
+                onClick={() => { if (showUSD) setShowKRW(prev => !prev); }}
+                className={`flex flex-col mb-5 text-left group w-full ${showUSD ? 'cursor-pointer' : 'cursor-default'}`}
+                aria-label={showUSD ? "Toggle currency display" : undefined}
               >
                   <div className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight flex items-center gap-2">
                       <span>{primaryAmount}</span>
-                      <ArrowUpDown className="w-5 h-5 text-emax-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {showUSD && <ArrowUpDown className="w-5 h-5 text-emax-300 opacity-0 group-hover:opacity-100 transition-opacity" />}
                   </div>
-                  <div className="text-lg text-emax-300 font-light mt-1 flex items-center">
-                      <span className="opacity-70 mr-2">&asymp;</span> {secondaryAmount} <span className="text-xs ml-1 opacity-50">{secondaryLabel}</span>
-                  </div>
+                  {showUSD && (
+                    <div className="text-lg text-emax-300 font-light mt-1 flex items-center">
+                        <span className="opacity-70 mr-2">&asymp;</span> {secondaryAmount} <span className="text-xs ml-1 opacity-50">{secondaryLabel}</span>
+                    </div>
+                  )}
               </button>
             )}
 

@@ -11,13 +11,14 @@ interface Props {
   discountPercent: number;
   hideMargin?: boolean;
   isKorean?: boolean;
+  showUSD?: boolean;
 }
 
-export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, discountPercent, hideMargin, isKorean = false }) => {
+export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, discountPercent, hideMargin, isKorean = false, showUSD = true }) => {
   const { cardClass } = resultStyles;
   const { t } = useLanguage();
   // Admin (!hideMargin): KRW default + toggle; Member: nationality-based fixed
-  const [showKRW, setShowKRW] = useState(!hideMargin ? true : isKorean);
+  const [showKRW, setShowKRW] = useState(!showUSD ? true : isKorean);
 
   const exchangeRate = result.totalQuoteAmountUSD > 0
     ? result.totalQuoteAmount / result.totalQuoteAmountUSD
@@ -46,7 +47,7 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
                 {t('quote.logisticsCost')}
             </h3>
             <div className="flex items-center gap-2">
-              {!hideMargin && (
+              {showUSD && (
                 <button
                   onClick={() => setShowKRW(prev => !prev)}
                   className="flex items-center gap-1 text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-300 transition-colors"
@@ -56,7 +57,7 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
                   {showKRW ? 'KRW' : 'USD'}
                 </button>
               )}
-              {!hideMargin && <span className="text-[10px] font-bold px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-gray-600 dark:text-gray-300 uppercase tracking-wide">Internal</span>}
+              {(!hideMargin || !showUSD) && <span className="text-[10px] font-bold px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-gray-600 dark:text-gray-300 uppercase tracking-wide">Internal</span>}
             </div>
         </div>
 
@@ -73,11 +74,11 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
                             <Plane className="w-4 h-4 mr-2 text-gray-400 flex-shrink-0" />
                             <span>Base Rate{!hideMargin ? ` (${result.carrier})` : ''}</span>
                         </div>
-                        <span className="font-medium">{formatCurrency(hideMargin ? baseWithDiscount : baseRate)}</span>
+                        <span className="font-medium">{formatCurrency((hideMargin && showUSD) ? baseWithDiscount : baseRate)}</span>
                     </div>
 
                     {/* Margin (on Base Rate) */}
-                    {!hideMargin && (
+                    {(!hideMargin || !showUSD) && (
                     <div className="flex justify-between items-center text-green-700 dark:text-green-400">
                         <div className="flex items-center">
                             <span className="mr-2 font-medium">{t('quote.discount')}</span>
@@ -99,7 +100,7 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
                     )}
 
                     {/* Subtotal: Base + Margin */}
-                    {!hideMargin && (
+                    {(!hideMargin || !showUSD) && (
                     <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 pl-6">
                         <span>Subtotal (Base - Discount)</span>
                         <span>{formatCurrency(baseWithDiscount)}</span>
@@ -214,9 +215,9 @@ export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, d
                     <span className="text-emax-900 dark:text-emax-100 font-extrabold text-lg">{t('quote.finalPrice')}</span>
                     <div className="flex flex-col items-end">
                         <span className="text-emax-900 dark:text-emax-100 font-extrabold text-lg">
-                          {showKRW ? formatKRW(result.totalQuoteAmount) : formatUSD(result.totalQuoteAmountUSD)}
+                          {showKRW ? formatKRW(result.totalQuoteAmount) : (showUSD ? formatUSD(result.totalQuoteAmountUSD) : formatKRW(result.totalQuoteAmount))}
                         </span>
-                        {!hideMargin && (
+                        {showUSD && (
                         <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-0.5">
                             ({t('quote.approx')} {showKRW ? formatUSD(result.totalQuoteAmountUSD) : formatKRW(result.totalQuoteAmount)})
                         </span>

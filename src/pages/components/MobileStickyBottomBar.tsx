@@ -7,9 +7,10 @@ interface Props {
   result: QuoteResult;
   isKorean: boolean;
   onViewDetails: () => void;
+  showUSD?: boolean;
 }
 
-export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onViewDetails }) => {
+export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onViewDetails, showUSD = true }) => {
   const { t } = useLanguage();
 
   return (
@@ -23,18 +24,22 @@ export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onVie
                 <p className="text-xl font-bold text-emax-700 dark:text-emax-400">
                   {formatKRW(result.totalQuoteAmount)}
                 </p>
-                <span className="text-xs text-gray-400 dark:text-gray-400">
-                  ({formatUSDInt(result.totalQuoteAmountUSD)})
-                </span>
+                {showUSD && (
+                  <span className="text-xs text-gray-400 dark:text-gray-400">
+                    ({formatUSDInt(result.totalQuoteAmountUSD)})
+                  </span>
+                )}
               </>
             ) : (
               <>
                 <p className="text-xl font-bold text-emax-700 dark:text-emax-400">
-                  {formatUSDInt(result.totalQuoteAmountUSD)}
+                  {showUSD ? formatUSDInt(result.totalQuoteAmountUSD) : formatKRW(result.totalQuoteAmount)}
                 </p>
-                <span className="text-xs text-gray-400 dark:text-gray-400">
-                  (≈ {formatKRW(result.totalQuoteAmount)})
-                </span>
+                {showUSD && (
+                  <span className="text-xs text-gray-400 dark:text-gray-400">
+                    (≈ {formatKRW(result.totalQuoteAmount)})
+                  </span>
+                )}
               </>
             )}
           </div>

@@ -40,7 +40,8 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-01', rate: 30.0 },
     { date: '2026-02', rate: 28.75 },
     { date: '2026-03', rate: 30.5 },
-    { date: '2026-04', rate: 39.0 },
+    { date: '2026-04-01', rate: 39.0 },
+    { date: '2026-04-13', rate: 46.0 },
   ],
   fedex: [
     { date: '2026-02-16', rate: 29.5 },

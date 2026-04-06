@@ -6,19 +6,9 @@ import { Footer } from '@/components/layout/Footer';
 import {
   BookOpen,
   Rocket,
-  LayoutDashboard,
   Calculator,
-  Save,
-  FileDown,
-  History,
-  Settings,
   Shield,
-  Percent,
-  Fuel,
-  AlertTriangle,
   Users,
-  UserCog,
-  Table2,
   ClipboardList,
   ChevronRight,
   Menu,
@@ -27,60 +17,32 @@ import {
   Lightbulb,
 } from 'lucide-react';
 import { guideTranslations, type GuideSection } from './guide/guideTranslations';
-import {
-  QuoteFlowDiagram,
-  DashboardLayoutDiagram,
-  CarrierComparisonVisual,
-  MarginPriorityDiagram,
-  VolWeightFormula,
-  QuoteSaveFlowDiagram,
-} from './guide/GuideVisuals';
 
 const MEMBER_SECTION_KEYS = [
-  'gettingStarted',
-  'dashboard',
-  'quoteCalculator',
-  'savingQuotes',
-  'pdfExport',
-  'quoteHistory',
-  'accountSettings',
+  'setup',
+  'calculator',
 ] as const;
 
 const ADMIN_SECTION_KEYS = [
-  'adminOverview',
-  'marginRules',
-  'fscManagement',
-  'surchargeManagement',
-  'customerManagement',
-  'userManagement',
-  'rateTableViewer',
+  'systemSettings',
+  'userOperations',
   'auditLog',
 ] as const;
 
 type SectionKey = (typeof MEMBER_SECTION_KEYS)[number] | (typeof ADMIN_SECTION_KEYS)[number];
 
 const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
-  gettingStarted: <Rocket className="w-5 h-5" />,
-  dashboard: <LayoutDashboard className="w-5 h-5" />,
-  quoteCalculator: <Calculator className="w-5 h-5" />,
-  savingQuotes: <Save className="w-5 h-5" />,
-  pdfExport: <FileDown className="w-5 h-5" />,
-  quoteHistory: <History className="w-5 h-5" />,
-  accountSettings: <Settings className="w-5 h-5" />,
-  adminOverview: <Shield className="w-5 h-5" />,
-  marginRules: <Percent className="w-5 h-5" />,
-  fscManagement: <Fuel className="w-5 h-5" />,
-  surchargeManagement: <AlertTriangle className="w-5 h-5" />,
-  customerManagement: <Users className="w-5 h-5" />,
-  userManagement: <UserCog className="w-5 h-5" />,
-  rateTableViewer: <Table2 className="w-5 h-5" />,
+  setup: <Rocket className="w-5 h-5" />,
+  calculator: <Calculator className="w-5 h-5" />,
+  systemSettings: <Shield className="w-5 h-5" />,
+  userOperations: <Users className="w-5 h-5" />,
   auditLog: <ClipboardList className="w-5 h-5" />,
 };
 
 const UserGuidePage: React.FC = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState<string>('gettingStarted');
+  const [activeSection, setActiveSection] = useState<string>('setup');
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin';
@@ -166,14 +128,12 @@ const UserGuidePage: React.FC = () => {
               .map((item, itemIndex) => (
               <div key={itemIndex} className="px-6 py-5">
                 <div className="flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5">
-                    {itemIndex + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1.5">
+                   <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1.5 flex items-center gap-2">
+                      <span className="w-1 h-1 rounded-full bg-emax-500" />
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed ml-3">
                       {item.description}
                     </p>
                   </div>
@@ -182,75 +142,22 @@ const UserGuidePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Section-specific visual diagrams */}
-          {key === 'dashboard' && (
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800/50">
-              <DashboardLayoutDiagram lang={language as 'en' | 'ko'} />
-            </div>
-          )}
-          {key === 'quoteCalculator' && (
-            <>
-              <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800/50">
-                <QuoteFlowDiagram lang={language as 'en' | 'ko'} />
-              </div>
-              <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800/50">
-                <VolWeightFormula lang={language as 'en' | 'ko'} />
-              </div>
-            </>
-          )}
-          {key === 'savingQuotes' && (
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800/50">
-              <QuoteSaveFlowDiagram lang={language as 'en' | 'ko'} />
-            </div>
-          )}
-          {key === 'adminOverview' && (
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800/50">
-              <CarrierComparisonVisual lang={language as 'en' | 'ko'} />
-            </div>
-          )}
-          {key === 'marginRules' && (
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800/50">
-              <MarginPriorityDiagram lang={language as 'en' | 'ko'} />
-            </div>
-          )}
-
-          {/* Section-specific tips and notes */}
-          {key === 'gettingStarted' && (
+          {/* Tips for Core Sections */}
+          {key === 'setup' && (
             <div className="px-6 pb-5">
               {renderTipBox(
                 language === 'ko'
-                  ? 'E-MAX Smart Quote는 모든 브라우저에서 최적화된 환경을 제공합니다. 모바일에서도 편리하게 이용하세요.'
-                  : 'E-MAX Smart Quote provides an optimized experience across all browsers. Enjoy seamless usage on mobile devices.'
+                  ? '모든 설정은 기기 간 실시간으로 동기화됩니다.'
+                  : 'All your preferences are synchronized across devices in real-time.'
               )}
             </div>
           )}
-
-          {key === 'quoteCalculator' && (
+          {key === 'calculator' && (
             <div className="px-6 pb-5">
               {renderNoteBox(
                 language === 'ko'
-                  ? '부피중량은 L x W x H / 5000으로 자동 계산됩니다. 실중량과 부피중량 중 큰 값이 적용됩니다.'
-                  : 'Volumetric weight is auto-calculated as L x W x H / 5000. The greater of actual vs volumetric weight is used.'
-              )}
-            </div>
-          )}
-
-          {key === 'savingQuotes' && (
-            <div className="px-6 pb-5">
-              {renderTipBox(
-                language === 'ko'
-                  ? '견적 참조번호(SQ-YYYY-NNNN)를 고객에게 전달하면 추후 조회가 용이합니다.'
-                  : 'Share the quote reference number (SQ-YYYY-NNNN) with your customer for easy future lookup.'
-              )}
-            </div>
-          )}
-
-          {key === 'marginRules' && (
-            <div className="px-6 pb-5">
-              {renderNoteBox(
-                language === 'ko'
-                  ? 'P100이 최고 우선순위입니다. 특정 사용자에 대한 고정 할인이 필요하면 P100 규칙을 생성하세요.'
-                  : 'P100 has the highest priority. Create a P100 rule when you need a fixed discount for a specific user.'
+                  ? '부피중량 계산 시 5000 계수가 자동으로 적용됩니다.'
+                  : 'A factor of 5000 is automatically applied for volumetric weight calculation.'
               )}
             </div>
           )}
@@ -263,29 +170,22 @@ const UserGuidePage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <BookOpen className="w-7 h-7 text-emax-600 dark:text-emax-400" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="mb-10 text-center sm:text-left">
+          <div className="inline-flex items-center gap-3 mb-2 px-4 py-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+            <BookOpen className="w-6 h-6 text-emax-600 dark:text-emax-400" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               {guide.pageTitle}
             </h1>
-            {isAdmin && (
-              <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full">
-                {guide.adminBadge}
-              </span>
-            )}
-            {!isAdmin && (
-              <span className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-emax-100 dark:bg-emax-900/30 text-emax-600 dark:text-emax-400 rounded-full">
-                {guide.memberBadge}
-              </span>
-            )}
           </div>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 ml-1">
+             {t('nav.smartQuote')} 플랫폼 사용에 도움이 되는 정보를 확인하세요.
+          </p>
         </div>
 
         {/* Mobile TOC Toggle */}
-        <div className="lg:hidden mb-4">
+        <div className="lg:hidden mb-6">
           <button
             onClick={() => setIsTocOpen(!isTocOpen)}
             className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm"
@@ -304,7 +204,7 @@ const UserGuidePage: React.FC = () => {
             <div className="mt-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
               <nav className="py-2">
                 {visibleSectionKeys.map((key, index) => {
-                  const section = guide.sections[key];
+                  const section = guide.sections[key as keyof typeof guide.sections];
                   const isAdminSection = (ADMIN_SECTION_KEYS as readonly string[]).includes(key);
                   return (
                     <button
@@ -322,7 +222,7 @@ const UserGuidePage: React.FC = () => {
                       <span className="flex-1 truncate">{section.title}</span>
                       {isAdminSection && (
                         <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded">
-                          {guide.adminBadge}
+                           A
                         </span>
                       )}
                     </button>
@@ -336,51 +236,37 @@ const UserGuidePage: React.FC = () => {
         {/* Desktop Layout: Sidebar + Content */}
         <div className="flex gap-8">
           {/* Desktop Sidebar TOC */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-20">
+          <aside className="hidden lg:block w-56 flex-shrink-0">
+            <div className="sticky top-24">
               <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-                  <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">
-                    {guide.tocTitle}
-                  </h3>
-                </div>
-                <nav className="py-2 max-h-[calc(100vh-12rem)] overflow-y-auto">
+                <nav className="py-2">
                   {visibleSectionKeys.map((key, index) => {
-                    const section = guide.sections[key];
+                    const section = guide.sections[key as keyof typeof guide.sections];
                     const isAdminSection = (ADMIN_SECTION_KEYS as readonly string[]).includes(key);
 
-                    // Insert divider before admin sections
-                    const showDivider = key === 'adminOverview';
-
                     return (
-                      <React.Fragment key={key}>
-                        {showDivider && (
-                          <div className="mx-4 my-2 border-t border-gray-200 dark:border-gray-700" />
+                      <button
+                        key={key}
+                        onClick={() => scrollToSection(key)}
+                        className={`w-full flex items-center gap-2 px-4 py-2.5 text-left text-[13px] transition-all group ${
+                          activeSection === key
+                            ? 'bg-emax-50 dark:bg-emax-900/20 text-emax-600 dark:text-emax-400 font-semibold border-l-2 border-emax-500'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 border-l-2 border-transparent'
+                        }`}
+                      >
+                        <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500 w-4">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="flex-1 truncate">{section.title}</span>
+                        {isAdminSection && (
+                           <Shield className="w-3 h-3 text-red-500 opacity-60" />
                         )}
-                        <button
-                          onClick={() => scrollToSection(key)}
-                          className={`w-full flex items-center gap-2 px-4 py-2 text-left text-[13px] transition-colors group ${
-                            activeSection === key
-                              ? 'bg-emax-50 dark:bg-emax-900/20 text-emax-600 dark:text-emax-400 font-semibold border-l-2 border-emax-500'
-                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 border-l-2 border-transparent'
+                        <ChevronRight
+                          className={`w-3 h-3 flex-shrink-0 transition-opacity ${
+                            activeSection === key ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'
                           }`}
-                        >
-                          <span className="text-[10px] font-mono text-gray-400 dark:text-gray-500 w-4">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <span className="flex-1 truncate">{section.title}</span>
-                          {isAdminSection && (
-                            <span className="px-1 py-0.5 text-[8px] font-bold uppercase bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 rounded">
-                              A
-                            </span>
-                          )}
-                          <ChevronRight
-                            className={`w-3 h-3 flex-shrink-0 transition-opacity ${
-                              activeSection === key ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'
-                            }`}
-                          />
-                        </button>
-                      </React.Fragment>
+                        />
+                      </button>
                     );
                   })}
                 </nav>
@@ -391,25 +277,8 @@ const UserGuidePage: React.FC = () => {
           {/* Main Content */}
           <main className="flex-1 min-w-0 space-y-6">
             {visibleSectionKeys.map((key, index) => {
-              const section = guide.sections[key];
-
-              // Insert admin divider
-              if (key === 'adminOverview') {
-                return (
-                  <React.Fragment key={key}>
-                    <div className="flex items-center gap-4 pt-4">
-                      <div className="flex-1 h-px bg-red-200 dark:bg-red-800" />
-                      <span className="text-xs font-bold uppercase tracking-wider text-red-500 dark:text-red-400 px-3 py-1 bg-red-50 dark:bg-red-900/20 rounded-full">
-                        {guide.adminBadge}
-                      </span>
-                      <div className="flex-1 h-px bg-red-200 dark:bg-red-800" />
-                    </div>
-                    {renderSection(key, section, index)}
-                  </React.Fragment>
-                );
-              }
-
-              return renderSection(key, section, index);
+               const section = guide.sections[key as keyof typeof guide.sections];
+               return renderSection(key as SectionKey, section, index);
             })}
           </main>
         </div>

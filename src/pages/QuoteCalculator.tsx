@@ -46,8 +46,9 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
   const { t } = useLanguage();
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
-  const canSaveAndViewHistory = !!user;
+  const canSaveAndViewHistory = !!user && user.role !== 'member';
   const hideMargin = isPublic || user?.role === 'member';
+  const showUSD = user?.role !== 'member';
   const isKorean = user?.nationality === 'KR';
 
   const [input, setInput] = useState<QuoteInput>(INITIAL_INPUT);
@@ -72,6 +73,28 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       return null;
     }
   }, [input]);
+
+  // Auto-select lowest-cost carrier when destination changes
+  const hasManuallySelectedCarrier = React.useRef(false);
+  const lastAutoSelectCountry = React.useRef<string>('');
+
+  React.useEffect(() => {
+    if (hasManuallySelectedCarrier.current) return;
+    if (!result) return;
+    if (lastAutoSelectCountry.current === input.destinationCountry) return;
+    lastAutoSelectCountry.current = input.destinationCountry;
+
+    try {
+      const altCarrier = input.overseasCarrier === 'DHL' ? 'UPS' : 'DHL';
+      const altFsc = altCarrier === 'DHL' ? DEFAULT_FSC_PERCENT_DHL : DEFAULT_FSC_PERCENT;
+      const altResult = calculateQuote({ ...input, overseasCarrier: altCarrier, fscPercent: altFsc });
+
+      if (altResult.totalQuoteAmount < result.totalQuoteAmount) {
+        setInput(prev => ({ ...prev, overseasCarrier: altCarrier, fscPercent: altFsc }));
+        setLastFscCarrier(altCarrier);
+      }
+    } catch { /* keep current carrier */ }
+  }, [input.destinationCountry, result, input.overseasCarrier, input]);
 
   const hasManuallyChangedDiscount = React.useRef(false);
   const discountResolutionTimeout = React.useRef<NodeJS.Timeout | null>(null);
@@ -137,7 +160,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
   };
 
   const handleReset = () => setShowResetConfirm(true);
-  const handleDownloadPdf = async () => result && await generatePDF(input, result, undefined, { isAdmin, isKorean });
+  const handleDownloadPdf = async () => result && await generatePDF(input, result, undefined, { isAdmin, isKorean, showUSD });
   const handleQuoteSaved = () => setCurrentView('history');
   const scrollToResults = () => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -157,6 +180,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
     resolvedDiscount,
     isAdmin,
     isKorean,
+    showUSD,
   };
 
   return (
@@ -177,7 +201,11 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       {currentView === 'calculator' ? (
         <>
           {isMobileView ? (
-            <MobileLayout {...layoutProps} />
+            <MobileLayout 
+              {...layoutProps} 
+              discountPercent={result?.discountPercent ?? 0}
+              onSwitchCarrier={(carrier) => setInput(prev => ({ ...prev, overseasCarrier: carrier }))}
+            />
           ) : (
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 lg:pb-8">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -192,6 +220,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
                     onDiscountChange={handleDiscountChange}
                     effectiveDiscountPercent={result?.discountPercent}
                     hideMargin={hideMargin}
+                    showUSD={showUSD}
                     intlBase={result?.breakdown.intlBase}
                     billableWeight={result?.billableWeight}
                     resolvedDiscount={resolvedDiscount}
@@ -206,9 +235,13 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
                       hideMargin={hideMargin}
                       onDiscountChange={handleDiscountChange}
                       onDownloadPdf={handleDownloadPdf}
-                      onSwitchCarrier={(carrier) => setInput(prev => ({ ...prev, overseasCarrier: carrier }))}
+                      onSwitchCarrier={(carrier) => {
+                        hasManuallySelectedCarrier.current = true;
+                        setInput(prev => ({ ...prev, overseasCarrier: carrier }));
+                      }}
                       discountPercent={input.discountPercent}
                       isKorean={isKorean}
+                      showUSD={showUSD}
                     />
                   )}
                 </div>
@@ -219,6 +252,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
             <MobileStickyBottomBar
               result={result}
               isKorean={isKorean}
+              showUSD={showUSD}
               onViewDetails={scrollToResults}
             />
           )}
@@ -237,7 +271,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
         message={t('calc.resetMessage')}
         confirmLabel={t('calc.resetQuote')}
         variant="warning"
-        onConfirm={() => { setShowResetConfirm(false); setInput(INITIAL_INPUT); }}
+        onConfirm={() => { setShowResetConfirm(false); setInput(INITIAL_INPUT); hasManuallySelectedCarrier.current = false; lastAutoSelectCountry.current = ''; }}
         onCancel={() => setShowResetConfirm(false)}
       />
     </div>

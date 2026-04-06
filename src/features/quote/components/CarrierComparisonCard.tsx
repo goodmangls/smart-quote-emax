@@ -4,18 +4,22 @@ import { calculateQuote } from '@/features/quote/services/calculationService';
 import { formatKRW, formatUSDInt } from '@/lib/format';
 import { ArrowRightLeft, Check, ArrowUpDown } from 'lucide-react';
 import { DEFAULT_FSC_PERCENT, DEFAULT_FSC_PERCENT_DHL } from '@/config/rates';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Props {
   input: QuoteInput;
   currentResult: QuoteResult;
   isKorean?: boolean;
   onSwitchCarrier: (carrier: 'UPS' | 'DHL') => void;
+  showUSD?: boolean;
   hideMargin?: boolean;
 }
 
-export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, isKorean = false, onSwitchCarrier, hideMargin }) => {
-  const [showKRW, setShowKRW] = useState(!hideMargin ? true : isKorean);
+export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, isKorean = false, onSwitchCarrier, showUSD = true }) => {
+  const [showKRW, setShowKRW] = useState(!showUSD ? true : isKorean);
+  const { t } = useLanguage();
   const altCarrier = input.overseasCarrier === 'DHL' ? 'UPS' : 'DHL';
+  const currentCarrier = input.overseasCarrier || 'UPS';
 
   const altResult = useMemo<QuoteResult | null>(() => {
     try {
@@ -36,7 +40,8 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
   const altAmount = altResult.totalQuoteAmount;
   const diff = altAmount - currentAmount;
   const diffPercent = currentAmount > 0 ? (diff / currentAmount) * 100 : 0;
-  const currentCarrier = input.overseasCarrier || 'UPS';
+  const currentIsLowest = currentAmount <= altAmount;
+  const altIsLowest = altAmount < currentAmount;
 
   const carrierColors: Record<string, string> = {
     UPS: 'bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800',
@@ -49,11 +54,11 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
         <div className="flex items-center gap-2">
           <ArrowRightLeft className="w-4 h-4 text-emax-500" />
           <h4 className="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-            Carrier Comparison
+            {t('quote.carrierComparison')}
           </h4>
         </div>
         <div className="flex items-center gap-2">
-          {!hideMargin && (
+          {showUSD && (
             <button
               onClick={() => setShowKRW(prev => !prev)}
               className="flex items-center gap-1 text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-300 transition-colors"
@@ -72,6 +77,7 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
           result={currentResult}
           showKRW={showKRW}
           isCurrent={true}
+          isLowest={currentIsLowest}
           colorClass={carrierColors[currentCarrier] || ''}
           onSelect={() => {}}
         />
@@ -80,12 +86,12 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
           result={altResult}
           showKRW={showKRW}
           isCurrent={false}
+          isLowest={altIsLowest}
           colorClass={carrierColors[altCarrier] || ''}
           diff={diff}
           diffPercent={diffPercent}
           exchangeRate={input.exchangeRate}
           onSelect={() => onSwitchCarrier(altCarrier as 'UPS' | 'DHL')}
-          hideSwitch={hideMargin}
         />
       </div>
     </div>
@@ -97,31 +103,38 @@ interface CarrierColumnProps {
   result: QuoteResult;
   showKRW: boolean;
   isCurrent: boolean;
+  isLowest: boolean;
   colorClass: string;
   diff?: number;
   diffPercent?: number;
   exchangeRate?: number;
   onSelect: () => void;
-  hideSwitch?: boolean;
 }
 
-const CarrierColumn: React.FC<CarrierColumnProps> = ({ carrier, result, showKRW, isCurrent, diff, diffPercent, exchangeRate = 1400, onSelect, hideSwitch }) => {
+const CarrierColumn: React.FC<CarrierColumnProps> = ({ carrier, result, showKRW, isCurrent, isLowest, diff, diffPercent, exchangeRate = 1400, onSelect }) => {
   return (
     <div className={`p-4 ${isCurrent ? 'bg-emax-50/50 dark:bg-emax-900/10' : ''}`}>
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-bold text-gray-900 dark:text-white">{carrier}</span>
-        {isCurrent ? (
-          <span className="flex items-center gap-1 text-[10px] font-semibold text-emax-600 dark:text-emax-400 bg-emax-100 dark:bg-emax-900/30 px-2 py-0.5 rounded-full">
-            <Check className="w-3 h-3" /> Selected
-          </span>
-        ) : !hideSwitch ? (
-          <button
-            onClick={onSelect}
-            className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-400 bg-gray-100 hover:bg-emax-50 dark:bg-gray-700 dark:hover:bg-emax-900/30 px-2 py-0.5 rounded-full transition-colors"
-          >
-            Switch
-          </button>
-        ) : null}
+        <div className="flex items-center gap-1">
+          {isLowest && (
+            <span className="text-[10px] font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
+              Lowest
+            </span>
+          )}
+          {isCurrent ? (
+            <span className="flex items-center gap-1 text-[10px] font-semibold text-emax-600 dark:text-emax-400 bg-emax-100 dark:bg-emax-900/30 px-2 py-0.5 rounded-full">
+              <Check className="w-3 h-3" /> Selected
+            </span>
+          ) : (
+            <button
+              onClick={onSelect}
+              className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-400 bg-gray-100 hover:bg-emax-50 dark:bg-gray-700 dark:hover:bg-emax-900/30 px-2 py-0.5 rounded-full transition-colors"
+            >
+              Switch
+            </button>
+          )}
+        </div>
       </div>
       <div className="space-y-2">
         <div>
