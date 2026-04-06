@@ -42,7 +42,5 @@ module SmartQuoteApi
     config.api_only = true
 
     # Custom CORS Rack middleware - handles OPTIONS preflight at lowest level
-    require_relative "../lib/cors_rack_middleware"
-    config.middleware.insert_before 0, CorsRackMiddleware
   end
 end

@@ -1,10 +1,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    if ENV["CORS_ORIGINS"].present?
-      origins(*ENV["CORS_ORIGINS"].split(",").map(&:strip))
-    else
-      origins '*'
-    end
+    origins '*'
+
     
     resource "*",
       headers: :any,
