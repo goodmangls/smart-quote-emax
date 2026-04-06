@@ -61,7 +61,7 @@ class QuoteCalculator
                          Calculators::DhlCost.call(
                            billable_weight: @billable_weight,
                            country: @input[:destinationCountry],
-                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT
+                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT_DHL
                          )
                        when 'EMAX'
                          Calculators::EmaxCost.call(
@@ -72,7 +72,7 @@ class QuoteCalculator
                          Calculators::FedexCost.call(
                            billable_weight: @billable_weight,
                            country: @input[:destinationCountry],
-                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT
+                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT_FEDEX
                          )
                        else
                          Calculators::UpsCost.call(
@@ -121,7 +121,13 @@ class QuoteCalculator
     @discount_amount = base_rate - @base_with_discount
 
     # FSC on (Discounted Base Rate) — EMAX has no FSC
-    fsc_rate = @carrier == 'EMAX' ? 0 : ((@input[:fscPercent] || 0) / 100.0)
+    fsc_val = @input[:fscPercent] || case @carrier
+                                     when 'DHL' then DEFAULT_FSC_PERCENT_DHL
+                                     when 'FDX', 'FEDEX' then DEFAULT_FSC_PERCENT_FEDEX
+                                     when 'UPS' then DEFAULT_FSC_PERCENT
+                                     else 0
+                                     end
+    fsc_rate = @carrier == 'EMAX' ? 0 : (fsc_val.to_f / 100.0)
     @intl_fsc_new = (@base_with_discount * fsc_rate).round
 
     # Add-ons (no discount applied)
