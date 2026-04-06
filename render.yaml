@@ -26,3 +26,4 @@ services:
         generateValue: true
       - key: CORS_ORIGINS
         value: 'https://smart-quote-emax.vercel.app'
+    healthCheckPath: /up
