@@ -64,6 +64,6 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start Puma directly (bypass Thruster which intercepts OPTIONS/preflight requests)
+# Use PORT env var (Render sets this automatically). Falls back to 3000 locally.
 EXPOSE 3000
-CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+CMD ["sh", "-c", "./bin/rails server -b 0.0.0.0 -p ${PORT:-3000}"]

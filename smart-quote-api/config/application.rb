@@ -41,17 +41,8 @@ module SmartQuoteApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    # CORS: Must be configured here in API-only mode for reliable middleware insertion
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins '*'
-        resource '*',
-          headers: :any,
-          methods: [:get, :post, :put, :patch, :delete, :options, :head],
-          expose: ['Authorization'],
-          credentials: false,
-          max_age: 600
-      end
-    end
+    # Custom CORS Rack middleware - handles OPTIONS preflight at lowest level
+    require_relative "../../lib/cors_rack_middleware"
+    config.middleware.insert_before 0, CorsRackMiddleware
   end
 end
