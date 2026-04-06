@@ -1,26 +1,28 @@
 databases:
-  - name: smart-quote-db-sg # Changed name to force new creation
-    databaseName: smart_quote_api_sg
+  - name: smart-quote-db-emax
+    databaseName: smart_quote_api_emax
     user: smart_quote_api
     plan: free
     region: singapore
 
 services:
   - type: web
-    name: smart-quote-api
+    name: smart-quote-api-emax
     runtime: docker
     dockerContext: smart-quote-api
     dockerfilePath: smart-quote-api/Dockerfile
     plan: free
-    region: singapore # Closest to KR/User
+    region: singapore
     envVars:
       - key: RAILS_MASTER_KEY
         sync: false
       - key: DATABASE_URL
         fromDatabase:
-          name: smart-quote-db-sg # Match the new DB name
+          name: smart-quote-db-emax
           property: connectionString
       - key: RAILS_LOG_TO_STDOUT
         value: 'true'
       - key: SECRET_KEY_BASE
         generateValue: true
+      - key: CORS_ORIGINS
+        value: 'https://smart-quote-emax.vercel.app'
