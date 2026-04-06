@@ -1,6 +1,6 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    allowed = ENV.fetch("CORS_ORIGINS", "https://smart-quote-main.vercel.app").split(",").map(&:strip)
+    allowed = ENV.fetch("CORS_ORIGINS", "https://smart-quote-emax.vercel.app, https://smart-quote-main.vercel.app").split(",").map(&:strip)
 
     # Safety: reject localhost in production
     if Rails.env.production? && allowed.any? { |o| o.include?("localhost") }
