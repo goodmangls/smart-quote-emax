@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_03_062214) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_06_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -137,8 +137,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_03_062214) do
     t.datetime "updated_at", null: false
     t.string "share_token"
     t.datetime "share_expires_at"
-    t.index ["reference_no"], name: "index_quotes_on_reference_no"
+    t.date "validity_date"
+    t.index ["destination_country"], name: "index_quotes_on_destination_country"
+    t.index ["reference_no"], name: "index_quotes_on_reference_no", unique: true
     t.index ["share_token"], name: "index_quotes_on_share_token", unique: true
+    t.index ["status", "validity_date"], name: "index_quotes_on_status_and_validity_date"
+    t.index ["user_id", "created_at"], name: "index_quotes_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_quotes_on_user_id"
   end
 
@@ -173,7 +177,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_03_062214) do
     t.string "role"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email"
+    t.string "refresh_token_jti"
+    t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
   end
 
   add_foreign_key "quotes", "users"

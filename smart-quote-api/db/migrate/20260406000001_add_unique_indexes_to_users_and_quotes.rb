@@ -9,6 +9,11 @@ class AddUniqueIndexesToUsersAndQuotes < ActiveRecord::Migration[8.0]
     add_index :quotes, :reference_no, unique: true
 
     # M6: quotes performance indexes for QuoteSearcher
+    # Ensure validity_date exists (might be missing due to out-of-sync migrations)
+    unless column_exists?(:quotes, :validity_date)
+      add_column :quotes, :validity_date, :date
+    end
+
     add_index :quotes, [:status, :validity_date], name: "index_quotes_on_status_and_validity_date"
     add_index :quotes, :destination_country
     add_index :quotes, [:user_id, :created_at], name: "index_quotes_on_user_id_and_created_at"
