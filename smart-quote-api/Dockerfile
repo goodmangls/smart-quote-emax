@@ -66,4 +66,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Use PORT env var (Render sets this automatically). Falls back to 3000 locally.
 EXPOSE 3000
-CMD ["sh", "-c", "./bin/rails server -b 0.0.0.0 -p ${PORT:-3000}"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
