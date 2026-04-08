@@ -1,1 +1,1 @@
-✨ feat: 최저가 캐리어 자동 선택 + Member Switch 기능 활성화
+🔐 fix: 인증 시스템 종합 수정 — API URL 불일치, JWT secret 안정화, Thruster 제거, docker-entrypoint DB 마이그레이션
