@@ -1,1 +1,1 @@
-🗄️ fix: users 테이블 networks 컬럼 누락 수정 — schema.rb + 안전 마이그레이션 추가
+🧹 chore: Gap 분석 후 정리 — bin/thrust 삭제, CORS_ORIGINS 환경변수 전환, 분석 보고서
