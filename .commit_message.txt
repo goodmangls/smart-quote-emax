@@ -1,1 +1,1 @@
-📋 docs: auth-system-recovery PDCA 완료 보고서 추가
+📦 chore: auth-system-recovery PDCA 아카이브 완료
