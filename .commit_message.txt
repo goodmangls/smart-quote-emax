@@ -1,1 +1,1 @@
-🔐 fix: 인증 시스템 종합 수정 — API URL 불일치, JWT secret 안정화, Thruster 제거, docker-entrypoint DB 마이그레이션
+🗄️ fix: users 테이블 networks 컬럼 누락 수정 — schema.rb + 안전 마이그레이션 추가
