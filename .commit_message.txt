@@ -1,1 +1,1 @@
-📦 chore: auth-system-recovery PDCA 아카이브 완료
+🏢 refactor: Discount Rules를 EMAX 단독 시스템용으로 정리 — 기본 할인율 15%
