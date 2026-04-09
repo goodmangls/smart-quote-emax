@@ -315,7 +315,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   //    = Final Quote
 
   const exchangeRate = input.exchangeRate || DEFAULT_EXCHANGE_RATE;
-  const safeDiscountPercent = Math.min(Math.max(input.discountPercent ?? 15, 0), MAX_DISCOUNT_PERCENT);
+  const safeDiscountPercent = Math.min(Math.max(input.discountPercent ?? 0, 0), MAX_DISCOUNT_PERCENT);
   const baseRate = carrierResult.intlBase;
 
   // Step 2: 정가에서 할인 적용 (base × (1 - discount%))
@@ -341,8 +341,8 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   const totalQuoteAmount = Math.ceil(rawQuoteAmount / 100) * 100; // Round up to nearest 100 KRW
   const totalQuoteAmountUSD = totalQuoteAmount / exchangeRate;
 
-  if (safeDiscountPercent < 10) {
-    userWarnings.push("Low Discount Alert: Discount is below 10%. Verification recommended.");
+  if (safeDiscountPercent > 0 && safeDiscountPercent < 5) {
+    userWarnings.push("Low Discount Alert: Discount is below 5%. Verification recommended.");
   }
 
   return {

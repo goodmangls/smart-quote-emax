@@ -31,7 +31,7 @@ export enum Incoterm {
     shippingMode?: 'Door-to-Door' | 'Door-to-Airport';
     packingType: PackingType;
     items: CargoItem[];
-    discountPercent: number; // Target discount in % (e.g. 15 for 15%)
+    discountPercent: number; // Target discount in % (default 0, 정가 그대로)
     dutyTaxEstimate: number; // For DDP only
     
     // Market Variables

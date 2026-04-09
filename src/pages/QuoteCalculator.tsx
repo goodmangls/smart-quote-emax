@@ -29,7 +29,7 @@ const INITIAL_INPUT: QuoteInput = {
   items: [
     { id: '1', width: 10, length: 10, height: 10, weight: 1, quantity: 1 }
   ],
-  discountPercent: 15,
+  discountPercent: 0,
   dutyTaxEstimate: 0,
   exchangeRate: DEFAULT_EXCHANGE_RATE,
   fscPercent: DEFAULT_FSC_PERCENT,
