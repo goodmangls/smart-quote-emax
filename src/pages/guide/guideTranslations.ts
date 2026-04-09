@@ -168,20 +168,8 @@ export const guideTranslations: Record<string, GuideTranslation> = {
         ],
       },
       history: {
-        title: '6. Quote History & PDF',
+        title: '6. PDF Export',
         items: [
-          {
-            title: 'Saving a Quote',
-            description: 'Click "Save Quote" after calculating to store the quote in the system. Each saved quote gets a unique reference number (SQ-YYYY-NNNN) and is linked to your account.',
-          },
-          {
-            title: 'Quote History Table',
-            description: 'Switch to the History tab to view all saved quotes. Search by reference number, destination, or customer. Filter by date range and sort by any column.',
-          },
-          {
-            title: 'Quote Detail Modal',
-            description: 'Click any row in the history table to open the detail view. It shows the full breakdown, applied discount, carrier info, and allows you to update the quote status or add notes.',
-          },
           {
             title: 'PDF Export',
             description: 'Download a professional PDF quote document. The PDF includes shipment details, cargo manifest, cost breakdown with all line items, and the total quote amount in KRW. Use this for customer communication or internal records.',
@@ -372,20 +360,8 @@ export const guideTranslations: Record<string, GuideTranslation> = {
         ],
       },
       history: {
-        title: '6. 견적 이력 및 PDF',
+        title: '6. PDF 내보내기',
         items: [
-          {
-            title: '견적 저장',
-            description: '계산 완료 후 "견적 저장" 버튼을 클릭하면 시스템에 저장됩니다. 각 견적에는 고유 참조번호(SQ-YYYY-NNNN)가 부여되며 계정에 연결됩니다.',
-          },
-          {
-            title: '견적 이력 테이블',
-            description: '히스토리 탭에서 저장된 모든 견적을 조회할 수 있습니다. 참조번호, 도착지, 고객명으로 검색하고 날짜 범위로 필터링할 수 있습니다.',
-          },
-          {
-            title: '견적 상세 보기',
-            description: '이력 테이블에서 행을 클릭하면 상세 보기가 열립니다. 전체 비용 내역, 적용 할인율, 캐리어 정보를 확인할 수 있고, 견적 상태 업데이트나 메모 추가가 가능합니다.',
-          },
           {
             title: 'PDF 견적서 내보내기',
             description: '전문적인 PDF 견적서를 다운로드할 수 있습니다. 배송 상세, 화물 목록, 비용 세부 내역이 포함되며 KRW 기준 총 견적 금액이 표시됩니다. 고객 커뮤니케이션이나 내부 기록용으로 활용하세요.',
