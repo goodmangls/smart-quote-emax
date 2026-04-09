@@ -21,7 +21,7 @@ export const SeoulPickupSection: React.FC<Props> = ({ input, onFieldChange, isMo
     <div className={cardClass}>
       <h3 className={sectionTitleClass}>
         <span className="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
-        {hideMargin ? t('calc.service.pickup.label').replace('(KRW)', '(USD)') : t('calc.service.pickup.label')}
+        {t('calc.service.pickup.label')}
       </h3>
       <div>
         <div className="relative">
@@ -34,7 +34,7 @@ export const SeoulPickupSection: React.FC<Props> = ({ input, onFieldChange, isMo
             {SEOUL_PICKUP_ZONES.map((zone, i) => (
               <option key={i} value={zone.cost}>
                 {isEn
-                  ? `${zone.districtsEn.join(', ')} — ${hideMargin ? `USD ${zone.costUsd}` : `${zone.cost.toLocaleString()} KRW`}`
+                  ? `${zone.districtsEn.join(', ')} — ${zone.cost.toLocaleString()} KRW`
                   : `${zone.districts.join(', ')} — ${zone.cost.toLocaleString()}원`
                 }
               </option>
