@@ -1,1 +1,1 @@
-💱 fix: 모든 Currency 기본 단위를 KRW로 통일 — showUSD default false
+📖 feat: User Guide 대폭 확장 — 화물 설정, 할인 적용, 캐리어 비교, 비용 세부 내역 가이드 추가

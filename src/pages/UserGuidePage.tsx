@@ -6,7 +6,11 @@ import { Footer } from '@/components/layout/Footer';
 import {
   BookOpen,
   Rocket,
+  Package,
   Calculator,
+  BarChart3,
+  FileText,
+  History,
   Shield,
   Users,
   ClipboardList,
@@ -20,7 +24,11 @@ import { guideTranslations, type GuideSection } from './guide/guideTranslations'
 
 const MEMBER_SECTION_KEYS = [
   'setup',
-  'calculator',
+  'cargo',
+  'financial',
+  'comparison',
+  'costBreakdown',
+  'history',
 ] as const;
 
 const ADMIN_SECTION_KEYS = [
@@ -33,7 +41,11 @@ type SectionKey = (typeof MEMBER_SECTION_KEYS)[number] | (typeof ADMIN_SECTION_K
 
 const SECTION_ICONS: Record<SectionKey, React.ReactNode> = {
   setup: <Rocket className="w-5 h-5" />,
-  calculator: <Calculator className="w-5 h-5" />,
+  cargo: <Package className="w-5 h-5" />,
+  financial: <Calculator className="w-5 h-5" />,
+  comparison: <BarChart3 className="w-5 h-5" />,
+  costBreakdown: <FileText className="w-5 h-5" />,
+  history: <History className="w-5 h-5" />,
   systemSettings: <Shield className="w-5 h-5" />,
   userOperations: <Users className="w-5 h-5" />,
   auditLog: <ClipboardList className="w-5 h-5" />,
@@ -142,7 +154,7 @@ const UserGuidePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Tips for Core Sections */}
+          {/* Tips & Notes for Sections */}
           {key === 'setup' && (
             <div className="px-6 pb-5">
               {renderTipBox(
@@ -152,12 +164,39 @@ const UserGuidePage: React.FC = () => {
               )}
             </div>
           )}
-          {key === 'calculator' && (
+          {key === 'cargo' && (
             <div className="px-6 pb-5">
               {renderNoteBox(
                 language === 'ko'
-                  ? '부피중량 계산 시 5000 계수가 자동으로 적용됩니다.'
-                  : 'A factor of 5000 is automatically applied for volumetric weight calculation.'
+                  ? '부피중량 계산 시 UPS/DHL은 5000 계수, EMAX는 6000 계수가 자동으로 적용됩니다. 실중량과 부피중량 중 큰 값이 적용됩니다.'
+                  : 'Volumetric weight uses a divisor of 5000 for UPS/DHL and 6000 for EMAX. The higher of actual vs. volumetric weight is applied.'
+              )}
+            </div>
+          )}
+          {key === 'financial' && (
+            <div className="px-6 pb-5">
+              {renderTipBox(
+                language === 'ko'
+                  ? '할인율 0%는 캐리어 정가 그대로입니다. 할인율을 조정하면 기본 운임만 변경되며, 할증료와 부가 비용에는 영향이 없습니다.'
+                  : 'A 0% discount means the full published tariff. Adjusting the discount only affects the base freight — surcharges and add-ons remain unchanged.'
+              )}
+            </div>
+          )}
+          {key === 'comparison' && (
+            <div className="px-6 pb-5">
+              {renderTipBox(
+                language === 'ko'
+                  ? '캐리어 비교 시 동일한 할인율과 FSC가 모든 캐리어에 일괄 적용됩니다. 공정한 비교를 위해 동일 조건으로 산출됩니다.'
+                  : 'The same discount rate and FSC % are applied to all carriers for a fair apples-to-apples comparison.'
+              )}
+            </div>
+          )}
+          {key === 'costBreakdown' && (
+            <div className="px-6 pb-5">
+              {renderNoteBox(
+                language === 'ko'
+                  ? '최종 견적 금액은 ₩100 단위로 올림 처리됩니다. 비용 세부 내역의 개별 항목 합계와 최종 금액이 소폭 다를 수 있습니다.'
+                  : 'The final quote amount is rounded up to the nearest ₩100. Individual line item totals may differ slightly from the final amount due to rounding.'
               )}
             </div>
           )}
