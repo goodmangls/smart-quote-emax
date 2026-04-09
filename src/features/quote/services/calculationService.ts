@@ -341,8 +341,8 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   const totalQuoteAmount = Math.ceil(rawQuoteAmount / 100) * 100; // Round up to nearest 100 KRW
   const totalQuoteAmountUSD = totalQuoteAmount / exchangeRate;
 
-  if (safeDiscountPercent > 0 && safeDiscountPercent < 5) {
-    userWarnings.push("Low Discount Alert: Discount is below 5%. Verification recommended.");
+  if (safeDiscountPercent >= 65) {
+    userWarnings.push("High Discount Alert: Discount is 65% or above. Verification recommended.");
   }
 
   return {
