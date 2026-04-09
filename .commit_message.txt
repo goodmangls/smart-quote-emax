@@ -1,1 +1,1 @@
-🏢 refactor: Discount Rules를 EMAX 단독 시스템용으로 정리 — 기본 할인율 15%
+💰 fix: UPS/DHL 프론트엔드 tariff를 정가 기준으로 통일 — 백엔드와 동기화, Range 5단계 정렬

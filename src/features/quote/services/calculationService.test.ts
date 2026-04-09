@@ -123,20 +123,20 @@ describe('calculationService', () => {
 
   describe('calculateUpsCosts', () => {
     it('uses 21-70 tier range rate for 20.3kg (boundary test)', () => {
-      // 20.3kg > 20kg exact table max → should use 21-70 range rate
-      // ceil(20.3) = 21, 21 * Z5 per-kg rate (12198) = 256158
+      // 20.3kg > 20kg exact table max → should use 21-44 range rate
+      // ceil(20.3) = 21, 21 * Z5 per-kg rate (24412) = 512652
       const result = calculateUpsCosts(20.3, 'US');
-      expect(result.intlBase).toBe(21 * 12198);
+      expect(result.intlBase).toBe(21 * 24412);
     });
 
     it('uses 71-299 tier range rate for 80kg', () => {
       const result = calculateUpsCosts(80, 'US');
-      expect(result.intlBase).toBe(80 * 11590);
+      expect(result.intlBase).toBe(80 * 23195);
     });
 
     it('uses 300+ tier range rate for 350kg', () => {
       const result = calculateUpsCosts(350, 'US');
-      expect(result.intlBase).toBe(350 * 11096);
+      expect(result.intlBase).toBe(350 * 22207);
     });
   });
 
@@ -145,7 +145,7 @@ describe('calculationService', () => {
   describe('calculateDhlCosts', () => {
     it('returns correct exact rate for DHL Z1 at 1kg', () => {
       const result = calculateDhlCosts(1, 'CN');
-      expect(result.intlBase).toBe(60914);
+      expect(result.intlBase).toBe(106688);
       expect(result.intlFsc).toBe(0); // FSC now calculated in orchestrator
       expect(result.intlWarRisk).toBe(0);
     });
@@ -157,7 +157,7 @@ describe('calculationService', () => {
 
     it('uses range rate for DHL Z1 at 50kg', () => {
       const result = calculateDhlCosts(50, 'CN');
-      expect(result.intlBase).toBe(50 * 7752);
+      expect(result.intlBase).toBe(50 * 13577);
     });
 
     it('carrier function returns intlFsc=0 (FSC calculated in orchestrator)', () => {
