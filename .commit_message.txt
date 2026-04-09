@@ -1,1 +1,1 @@
-📦 chore: magic-link-auth PDCA 문서 아카이브 — docs/archive/2026-04/magic-link-auth/ (96%, 1 iteration)
+✨ feat: App.tsx에 /dashboard 라우트 추가 — CustomerDashboard ProtectedRoute 연결로 magic link 인증 후 대시보드 리다이렉트 구현

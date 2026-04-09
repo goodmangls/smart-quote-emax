@@ -10,6 +10,7 @@ import { ToastProvider } from './components/ui/Toast';
 import { ChannelTalk } from './components/ChannelTalk';
 
 const QuoteCalculator = React.lazy(() => import('./pages/QuoteCalculator'));
+const CustomerDashboard = React.lazy(() => import('./pages/CustomerDashboard'));
 
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const SignUpPage = React.lazy(() => import('./pages/SignUpPage'));
@@ -41,6 +42,18 @@ function App() {
                     <Route path='/login' element={<LoginPage />} />
                     <Route path='/signup' element={<SignUpPage />} />
                     <Route path='/auth/verify' element={<MagicLinkVerifyPage />} />
+
+                    {/* Dashboard - Protected for Authenticated Users */}
+                    <Route
+                      path='/dashboard'
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <CustomerDashboard />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
 
                     {/* Internal Quote Route - Protected for Authenticated Users */}
                     <Route
