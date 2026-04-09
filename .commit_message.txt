@@ -1,1 +1,1 @@
-🔧 fix: 할인율 자동 설정 fallback을 0%로 통일 — 하드코딩 24%/32% 제거
+🔧 fix: 백엔드 DiscountRuleResolver DEFAULT_DISCOUNT 24% → 0% 변경

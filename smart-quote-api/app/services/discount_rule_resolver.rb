@@ -1,7 +1,7 @@
 class DiscountRuleResolver
   CACHE_KEY = "discount_rules_active"
   CACHE_TTL = 5.minutes
-  DEFAULT_DISCOUNT = 24.0
+  DEFAULT_DISCOUNT = 0.0 # 정가 기준, 할인 없음
 
   def self.resolve(email:, nationality:, weight:)
     new.resolve(email: email, nationality: nationality, weight: weight)

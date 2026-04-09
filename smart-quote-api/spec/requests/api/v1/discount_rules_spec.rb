@@ -179,7 +179,7 @@ RSpec.describe "Api::V1::DiscountRules", type: :request do
           headers: user_headers
 
       expect(response).to have_http_status(:ok)
-      expect(json["discountPercent"]).to eq(24.0)
+      expect(json["discountPercent"]).to eq(0.0)
       expect(json["matchedRule"]).to be_nil
       expect(json["fallback"]).to be true
     end

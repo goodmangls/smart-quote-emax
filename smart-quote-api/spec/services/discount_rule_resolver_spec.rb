@@ -89,7 +89,7 @@ RSpec.describe DiscountRuleResolver do
       Rails.cache.clear
 
       result = described_class.resolve(email: "test@example.com", nationality: "US", weight: 10)
-      expect(result[:discount_percent]).to eq(24.0)
+      expect(result[:discount_percent]).to eq(0.0)
       expect(result[:matched_rule]).to be_nil
       expect(result[:fallback]).to be true
     end
