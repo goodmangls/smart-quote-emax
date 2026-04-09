@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       post "auth/refresh",  to: "auth#refresh"
       put  "auth/password", to: "auth#update_password"
       post "auth/promote",  to: "auth#promote"
+      post "auth/magic_link",        to: "auth#request_magic_link"
+      post "auth/magic_link/verify", to: "auth#verify_magic_link"
 
       # Quotes (protected, except calculate)
       post "quotes/calculate", to: "quotes#calculate"

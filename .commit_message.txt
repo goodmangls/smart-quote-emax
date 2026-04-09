@@ -1,1 +1,1 @@
-📖 feat: User Guide 대폭 확장 — 화물 설정, 할인 적용, 캐리어 비교, 비용 세부 내역 가이드 추가
+📦 chore: magic-link-auth PDCA 문서 아카이브 — docs/archive/2026-04/magic-link-auth/ (96%, 1 iteration)

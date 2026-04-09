@@ -70,6 +70,33 @@ module Api
         end
       end
 
+      # POST /api/v1/auth/magic_link — send magic link email
+      def request_magic_link
+        user = User.find_by(email: params[:email]&.downcase&.strip)
+        if user
+          raw_token = MagicLinkToken.generate!(user)
+          AuthMailer.magic_link_email(user, raw_token).deliver_later
+        end
+        render json: { message: "Check your email" }, status: :ok
+      rescue => e
+        Rails.logger.error "MagicLink request error: #{e.message}"
+        render json: { message: "Check your email" }, status: :ok
+      end
+
+      # POST /api/v1/auth/magic_link/verify — verify token and issue JWT
+      def verify_magic_link
+        token = MagicLinkToken.find_valid_token!(params[:token])
+        user  = token.user
+        token.consume!
+        render json: {
+          token:         encode_token(user),
+          refresh_token: encode_refresh_token(user),
+          user:          user_json(user)
+        }, status: :ok
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: { code: "INVALID_TOKEN", message: "Invalid or expired magic link" } }, status: :unauthorized
+      end
+
       # POST /api/v1/auth/promote — one-time admin promotion (secret-protected)
       def promote
         secret = ENV["ADMIN_PROMOTE_SECRET"]

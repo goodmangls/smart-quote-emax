@@ -1,9 +1,16 @@
 {
   "activeFeature": null,
-  "phase": "idle",
+  "phase": null,
   "matchRate": null,
   "iteration": 0,
   "history": [
+    {
+      "feature": "magic-link-auth",
+      "phase": "archived",
+      "timestamp": "2026-04-09",
+      "action": "Archived to docs/archive/2026-04/magic-link-auth/ (96%)",
+      "matchRate": 96
+    },
     {
       "feature": "Save-Quote",
       "phase": "archived",
