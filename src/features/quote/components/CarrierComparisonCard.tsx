@@ -15,7 +15,7 @@ interface Props {
   hideMargin?: boolean;
 }
 
-export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, isKorean = false, onSwitchCarrier, showUSD = true }) => {
+export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, isKorean = false, onSwitchCarrier, showUSD = false }) => {
   const [showKRW, setShowKRW] = useState(!showUSD ? true : isKorean);
   const { t } = useLanguage();
   const altCarrier = input.overseasCarrier === 'DHL' ? 'UPS' : 'DHL';

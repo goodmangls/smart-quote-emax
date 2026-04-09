@@ -51,7 +51,7 @@ export const MobileLayout: React.FC<Props> = ({
   discountPercent,
   isAdmin,
   isKorean = true,
-  showUSD = true,
+  showUSD = false,
   onSwitchCarrier,
 }) => {
   const { language, setLanguage, t } = useLanguage();

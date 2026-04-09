@@ -49,7 +49,7 @@ const SharedQuotePage: React.FC = () => {
     );
   }
 
-  const isUsd = true; // Shared quotes always show USD for external partners
+  const isUsd = false; // KRW 기본 표시
   const totalDisplay = isUsd
     ? `$${data.totalQuoteAmountUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
     : `KRW ${data.totalQuoteAmount.toLocaleString('en-US')}`;

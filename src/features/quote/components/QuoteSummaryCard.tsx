@@ -13,7 +13,7 @@ interface Props {
   showUSD?: boolean;
 }
 
-export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKorean = false, hideMargin, showUSD = true }) => {
+export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKorean = false, hideMargin, showUSD = false }) => {
   // Admin (!hideMargin): always start with KRW + toggle available
   // Member (hideMargin): fixed based on nationality (KR→KRW, else→USD)
   // If showUSD is false, strictly force KRW

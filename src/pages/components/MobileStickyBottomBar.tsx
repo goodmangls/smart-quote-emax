@@ -10,7 +10,7 @@ interface Props {
   showUSD?: boolean;
 }
 
-export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onViewDetails, showUSD = true }) => {
+export const MobileStickyBottomBar: React.FC<Props> = ({ result, isKorean, onViewDetails, showUSD = false }) => {
   const { t } = useLanguage();
 
   return (

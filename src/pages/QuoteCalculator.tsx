@@ -48,7 +48,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
   const isAdmin = user?.role === 'admin';
   const canSaveAndViewHistory = !!user && user.role !== 'member';
   const hideMargin = isPublic || user?.role === 'member';
-  const showUSD = user?.role !== 'member';
+  const showUSD = false; // KRW 기본, 내부 사용자 전용
   const isKorean = user?.nationality === 'KR';
 
   const [input, setInput] = useState<QuoteInput>(INITIAL_INPUT);

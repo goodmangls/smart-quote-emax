@@ -14,7 +14,7 @@ interface Props {
   showUSD?: boolean;
 }
 
-export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, discountPercent, hideMargin, isKorean = false, showUSD = true }) => {
+export const CostBreakdownCard: React.FC<Props> = ({ result, onDiscountChange, discountPercent, hideMargin, isKorean = false, showUSD = false }) => {
   const { cardClass } = resultStyles;
   const { t } = useLanguage();
   // Admin (!hideMargin): KRW default + toggle; Member: nationality-based fixed

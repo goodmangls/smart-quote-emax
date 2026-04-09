@@ -1,1 +1,1 @@
-🔧 fix: 백엔드 DiscountRuleResolver DEFAULT_DISCOUNT 24% → 0% 변경
+💱 fix: 모든 Currency 기본 단위를 KRW로 통일 — showUSD default false
