@@ -114,12 +114,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       if (resolvedDiscount) {
         defaultDiscount = resolvedDiscount.discountPercent;
       } else {
-        const weight = result.billableWeight;
-        if (isKorean) {
-          defaultDiscount = weight >= 20 ? 19 : 24;
-        } else {
-          defaultDiscount = weight >= 20 ? 24 : 32;
-        }
+        defaultDiscount = 0; // 정가 기준, 할인 없음
       }
 
       if (input.discountPercent !== defaultDiscount) {
