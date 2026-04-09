@@ -289,7 +289,7 @@ describe('calculationService', () => {
       expect(result.warnings).toEqual(
         expect.arrayContaining([expect.stringContaining('Collect Term')])
       );
-      // New structure: EXW and DAP produce same quote (margin on base rate, FSC on base+margin)
+      // EXW and DAP produce same quote (discount on base rate, FSC on discounted base)
       // EXW only adds a warning that freight may be billed to consignee
       const dapResult = calculateQuote({ ...baseInput, incoterm: Incoterm.DAP });
       expect(result.totalQuoteAmount).toBe(dapResult.totalQuoteAmount);

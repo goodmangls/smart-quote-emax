@@ -18,7 +18,7 @@ import { DHL_EXACT_RATES, DHL_RANGE_RATES } from "@/config/dhl_tariff";
 import { FEDEX_EXACT_RATES, FEDEX_RANGE_RATES } from "@/config/fedex_tariff";
 import { EMAX_RATES, EMAX_HANDLING_CHARGE } from "@/config/emax_tariff";
 import { applyPackingDimensions } from "@/lib/packing-utils";
-import { MAX_MARGIN_PERCENT } from "@/config/business-rules";
+import { MAX_DISCOUNT_PERCENT } from "@/config/business-rules";
 import { calculateDhlAddOnCosts } from "./dhlAddonCalculator";
 import { calculateUpsAddOnCosts } from "./upsAddonCalculator";
 
@@ -307,26 +307,26 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   // 4a. Extra Pick-up in Seoul cost
   const pickupInSeoul = input.pickupInSeoulCost ?? 0;
 
-  // 5. New Calculation Structure:
-  //    Step 1: Base Rate (carrier tariff)
-  //    Step 2: + Margin (on Base Rate only)
-  //    Step 3: + FSC ((Base Rate + Margin) × FSC%)
+  // 5. Calculation Structure (할인율 기반):
+  //    Step 1: Base Rate (캐리어 정가 tariff)
+  //    Step 2: 할인 적용 (정가 × (1 - 할인율%))
+  //    Step 3: FSC (할인 적용 후 Base × FSC%)
   //    Step 4: + Add-ons (Packing, Seoul Pickup, Surcharges, Carrier Add-ons, Duty)
   //    = Final Quote
 
   const exchangeRate = input.exchangeRate || DEFAULT_EXCHANGE_RATE;
-  const safeDiscountPercent = Math.min(Math.max(input.discountPercent ?? 15, 0), MAX_MARGIN_PERCENT);
+  const safeDiscountPercent = Math.min(Math.max(input.discountPercent ?? 15, 0), MAX_DISCOUNT_PERCENT);
   const baseRate = carrierResult.intlBase;
 
-  // Step 2: Discount on Base Rate (base × (1 - discount%))
+  // Step 2: 정가에서 할인 적용 (base × (1 - discount%))
   const baseWithDiscount = baseRate * (1 - safeDiscountPercent / 100);
   const discountAmount = baseRate - baseWithDiscount;
 
-  // Step 3: FSC on (Discounted Base Rate) — EMAX has no FSC
+  // Step 3: FSC on discounted base — EMAX has no FSC
   const fscRate = carrier === 'EMAX' ? 0 : (input.fscPercent || 0) / 100;
   const intlFscNew = Math.round(baseWithDiscount * fscRate);
 
-  // Step 4: Add-ons (no margin applied)
+  // Step 4: Add-ons (할인 미적용)
   const addOnTotal = packingTotal + pickupInSeoul + surgeCost + carrierAddOnTotal + destDuty + carrierResult.intlWarRisk;
 
   // Collect term handling
@@ -334,7 +334,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     userWarnings.push("Collect Term: International Freight calculated for reference but may be billed to Consignee/Partner.");
   }
 
-  // Final totals — costFsc is the actual FSC cost (without margin) paid to carrier
+  // Final totals — costFsc is the FSC on 정가 base (할인 전), totalCostAmount is 정가 기준 총액
   const costFsc = Math.round(baseRate * fscRate);
   const totalCostAmount = baseRate + costFsc + carrierResult.intlWarRisk + surgeCost + packingTotal + carrierAddOnTotal + destDuty + pickupInSeoul;
   const rawQuoteAmount = baseWithDiscount + intlFscNew + addOnTotal;

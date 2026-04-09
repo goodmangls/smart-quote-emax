@@ -7,7 +7,7 @@ export const SURGE_THRESHOLDS = {
     MAX_LIMIT_GIRTH_CM: 400
 };
 
-export const MAX_MARGIN_PERCENT = 80; // Maximum margin rate (%)
+export const MAX_DISCOUNT_PERCENT = 80; // Maximum discount rate (%)
 
 export const PACKING_WEIGHT_BUFFER = 1.1; // 10% weight increase
 export const PACKING_WEIGHT_ADDITION = 10; // 10kg addition per item

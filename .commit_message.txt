@@ -1,1 +1,1 @@
-💰 fix: UPS/DHL 프론트엔드 tariff를 정가 기준으로 통일 — 백엔드와 동기화, Range 5단계 정렬
+🏷️ refactor: margin 용어를 discount(할인율)로 통일 — 정가 tariff 기준 할인 모델 명확화
