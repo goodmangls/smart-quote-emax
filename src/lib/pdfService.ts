@@ -352,8 +352,8 @@ export const generatePDF = async (
   referenceNo?: string,
   options?: { isAdmin?: boolean; isKorean?: boolean; showUSD?: boolean }
 ) => {
-  const showUSD = options?.showUSD ?? true;
-  const currency: CurrencyMode = options?.isAdmin ? 'both' : (options?.isKorean ? 'krw' : 'usd');
+  const showUSD = options?.showUSD ?? false;
+  const currency: CurrencyMode = 'krw'; // KRW 기본, 내부 사용자 전용
   const { jsPDF: JsPDF } = await import('jspdf');
   const doc = new JsPDF();
 
@@ -389,7 +389,7 @@ export const generateComparisonPDF = async (
   emaxResult?: QuoteResult,
   options?: { showUSD?: boolean }
 ) => {
-  const showUSD = options?.showUSD ?? true;
+  const showUSD = options?.showUSD ?? false;
   const { jsPDF: JsPDF } = await import('jspdf');
   const autoTable = (await import('jspdf-autotable')).default;
   const doc = new JsPDF();
