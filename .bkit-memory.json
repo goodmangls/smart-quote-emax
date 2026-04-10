@@ -7,9 +7,9 @@
     {
       "feature": "magic-link-auth",
       "phase": "archived",
-      "timestamp": "2026-04-09",
-      "action": "Archived to docs/archive/2026-04/magic-link-auth/ (96%)",
-      "matchRate": 96
+      "timestamp": "2026-04-10",
+      "action": "Archived to docs/archive/2026-04/magic-link-auth/ (100%) — E2E 14개 포함 42개 테스트 100% 통과, SendGrid 인증 완료",
+      "matchRate": 100
     },
     {
       "feature": "Save-Quote",
