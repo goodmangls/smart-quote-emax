@@ -66,7 +66,7 @@ RSpec.describe Quote, type: :model do
 
         result = Quote.recent.to_a
 
-        expect(result).to eq([new_quote, old_quote])
+        expect(result).to eq([ new_quote, old_quote ])
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.describe Quote, type: :model do
         us_quote = create(:quote, destination_country: "US")
         create(:quote, destination_country: "JP")
 
-        expect(Quote.by_destination("US").to_a).to eq([us_quote])
+        expect(Quote.by_destination("US").to_a).to eq([ us_quote ])
       end
 
       it "returns all when country is blank" do
@@ -91,7 +91,7 @@ RSpec.describe Quote, type: :model do
         draft = create(:quote, status: "draft")
         create(:quote, :sent)
 
-        expect(Quote.by_status("draft").to_a).to eq([draft])
+        expect(Quote.by_status("draft").to_a).to eq([ draft ])
       end
 
       it "returns all when status is blank" do
@@ -125,7 +125,7 @@ RSpec.describe Quote, type: :model do
         quote = create(:quote, reference_no: "SQ-2026-0099")
         create(:quote, reference_no: "SQ-2026-0100")
 
-        expect(Quote.search_text("0099").to_a).to eq([quote])
+        expect(Quote.search_text("0099").to_a).to eq([ quote ])
       end
 
       it "searches by destination_country" do

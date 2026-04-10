@@ -10,7 +10,7 @@ module Calculators
     end
 
     def call
-      country_key = @country == 'CN' ? 'CN' : 'VN'
+      country_key = @country == "CN" ? "CN" : "VN"
       per_kg_rate = Constants::EmaxTariff::EMAX_RATES[country_key] || 10000
 
       multiplier_weight = @billable_weight.ceil
@@ -28,7 +28,7 @@ module Calculators
         intl_fsc: 0,
         intl_war_risk: 0,
         applied_zone: "E-MAX #{country_key}",
-        transit_time: 'E-MAX Direct'
+        transit_time: "E-MAX Direct"
       }
     end
   end

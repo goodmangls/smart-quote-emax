@@ -28,7 +28,7 @@ class CreateSurcharges < ActiveRecord::Migration[8.0]
     end
 
     add_index :surcharges, :code, unique: true
-    add_index :surcharges, [:is_active, :effective_from, :effective_to], name: "idx_surcharges_active_dates"
+    add_index :surcharges, [ :is_active, :effective_from, :effective_to ], name: "idx_surcharges_active_dates"
     add_index :surcharges, :carrier
   end
 end

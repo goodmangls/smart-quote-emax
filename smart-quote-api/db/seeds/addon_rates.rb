@@ -94,7 +94,7 @@ dhl_rates = [
   { code: "LBM", carrier: "DHL", name_en: "Lithium Metal Battery (PI969 Sec II)", name_ko: "리튬 메탈 배터리",
     charge_type: "fixed", unit: "shipment", amount: 10_000,
     fsc_applicable: false, selectable: true, sort_order: 19,
-    description: "리튬 메탈 배터리 포함 물품" },
+    description: "리튬 메탈 배터리 포함 물품" }
 ]
 
 ups_rates = [
@@ -118,7 +118,7 @@ ups_rates = [
     charge_type: "per_carton", unit: "carton", amount: 21_400,
     fsc_applicable: true, auto_detect: true, selectable: false, sort_order: 4,
     description: "AHS Weight(>25kg) 또는 AHS Dim(L>122cm, W>76cm) 또는 특수포장",
-    detect_rules: { "weight_threshold" => 25, "max_longest" => 122, "max_second" => 76, "packing_types" => ["WOODEN_BOX", "SKID"] } },
+    detect_rules: { "weight_threshold" => 25, "max_longest" => 122, "max_second" => 76, "packing_types" => [ "WOODEN_BOX", "SKID" ] } },
 
   { code: "ADC", carrier: "UPS", name_en: "Address Correction", name_ko: "주소정정",
     charge_type: "per_carton", unit: "carton", amount: 15_100,
@@ -128,7 +128,7 @@ ups_rates = [
     charge_type: "fixed", unit: "shipment", amount: 28_500,
     fsc_applicable: false, auto_detect: true, selectable: false, sort_order: 6,
     condition: "DDP",
-    description: "DDP incoterm 선택 시 자동 부과" },
+    description: "DDP incoterm 선택 시 자동 부과" }
 ]
 
 (dhl_rates + ups_rates).each do |attrs|

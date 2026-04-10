@@ -14,8 +14,8 @@ class AddUniqueIndexesToUsersAndQuotes < ActiveRecord::Migration[8.0]
       add_column :quotes, :validity_date, :date
     end
 
-    add_index :quotes, [:status, :validity_date], name: "index_quotes_on_status_and_validity_date"
+    add_index :quotes, [ :status, :validity_date ], name: "index_quotes_on_status_and_validity_date"
     add_index :quotes, :destination_country
-    add_index :quotes, [:user_id, :created_at], name: "index_quotes_on_user_id_and_created_at"
+    add_index :quotes, [ :user_id, :created_at ], name: "index_quotes_on_user_id_and_created_at"
   end
 end

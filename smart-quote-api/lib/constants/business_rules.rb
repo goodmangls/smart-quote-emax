@@ -2,10 +2,10 @@ module Constants
   module BusinessRules
     SURGE_THRESHOLDS = {
         AHS_WEIGHT_KG: 25,
-        AHS_DIM_LONG_SIDE_CM: 122, 
+        AHS_DIM_LONG_SIDE_CM: 122,
         AHS_DIM_SECOND_SIDE_CM: 76,
-        LPS_LENGTH_GIRTH_CM: 300, 
-        MAX_LIMIT_LENGTH_CM: 274, 
+        LPS_LENGTH_GIRTH_CM: 300,
+        MAX_LIMIT_LENGTH_CM: 274,
         MAX_LIMIT_GIRTH_CM: 400
     }
 
@@ -18,8 +18,8 @@ module Constants
         { maxWeight: 11000, maxCBM: Float::INFINITY, label: "11t Truck" }
     ]
 
-    PACKING_WEIGHT_BUFFER = 1.1 
-    PACKING_WEIGHT_ADDITION = 10 
+    PACKING_WEIGHT_BUFFER = 1.1
+    PACKING_WEIGHT_ADDITION = 10
     INITIAL_DISCOUNT = 15
   end
 end

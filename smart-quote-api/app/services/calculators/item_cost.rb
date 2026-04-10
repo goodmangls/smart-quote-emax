@@ -3,7 +3,7 @@ module Calculators
     include Constants::Rates
     include Constants::BusinessRules
 
-    def self.call(items:, packing_type:, manual_packing_cost: nil, volumetric_divisor: 5000, carrier: 'UPS')
+    def self.call(items:, packing_type:, manual_packing_cost: nil, volumetric_divisor: 5000, carrier: "UPS")
       new(items, packing_type, manual_packing_cost, volumetric_divisor, carrier).call
     end
 
@@ -33,7 +33,7 @@ module Calculators
         quantity = item[:quantity].to_i
 
         # Packing impact
-        if @packing_type != 'NONE'
+        if @packing_type != "NONE"
           l += 10
           w += 10
           h += 15
@@ -41,7 +41,7 @@ module Calculators
 
           surface_area_m2 = (2 * (l*w + l*h + w*h)) / 10000.0
           packing_material_cost += surface_area_m2 * PACKING_MATERIAL_BASE_COST * quantity
-          labor_per_item = @packing_type == 'VACUUM' ? PACKING_LABOR_UNIT_COST * 1.5 : PACKING_LABOR_UNIT_COST
+          labor_per_item = @packing_type == "VACUUM" ? PACKING_LABOR_UNIT_COST * 1.5 : PACKING_LABOR_UNIT_COST
           packing_labor_cost += labor_per_item * quantity
         end
 

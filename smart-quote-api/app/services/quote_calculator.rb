@@ -11,7 +11,7 @@ class QuoteCalculator
   end
 
   def call
-    @carrier = @input[:overseasCarrier] || 'UPS'
+    @carrier = @input[:overseasCarrier] || "UPS"
     @user_warnings = []
 
     calculate_items
@@ -25,17 +25,17 @@ class QuoteCalculator
   private
 
   def calculate_items
-    volumetric_divisor = @carrier == 'EMAX' ? 6000 : 5000
+    volumetric_divisor = @carrier == "EMAX" ? 6000 : 5000
     @item_result = Calculators::ItemCost.call(
       items: @input[:items],
-      packing_type: @input[:packingType] || 'NONE',
+      packing_type: @input[:packingType] || "NONE",
       manual_packing_cost: @input[:manualPackingCost],
       volumetric_divisor: volumetric_divisor,
       carrier: @carrier
     )
 
     @packing_fumigation_cost = 0
-    if (@input[:packingType] || 'NONE') != 'NONE'
+    if (@input[:packingType] || "NONE") != "NONE"
       @packing_fumigation_cost = FUMIGATION_FEE
     end
     if @input[:manualPackingCost] && @input[:manualPackingCost] >= 0
@@ -43,44 +43,44 @@ class QuoteCalculator
     end
 
     @packing_total = @item_result[:packing_material_cost] + @item_result[:packing_labor_cost] + @packing_fumigation_cost
-    @billable_weight = [@item_result[:total_actual_weight], @item_result[:total_packed_volumetric_weight]].max
+    @billable_weight = [ @item_result[:total_actual_weight], @item_result[:total_packed_volumetric_weight] ].max
     @user_warnings = @item_result[:warnings].dup
 
     if @item_result[:total_packed_volumetric_weight] > @item_result[:total_actual_weight] * 1.2
       @user_warnings << "High Volumetric Weight Detected (>20% over actual). Consider Repacking."
     end
 
-    if @carrier == 'EMAX' && !['CN', 'VN'].include?(@input[:destinationCountry])
+    if @carrier == "EMAX" && ![ "CN", "VN" ].include?(@input[:destinationCountry])
       @user_warnings << "EMAX only services China (CN) and Vietnam (VN). Using VN fallback rate — verify with carrier."
     end
   end
 
   def calculate_overseas
     @overseas_result = case @carrier
-                       when 'DHL'
+    when "DHL"
                          Calculators::DhlCost.call(
                            billable_weight: @billable_weight,
                            country: @input[:destinationCountry],
                            fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT_DHL
                          )
-                       when 'EMAX'
+    when "EMAX"
                          Calculators::EmaxCost.call(
                            billable_weight: @billable_weight,
                            country: @input[:destinationCountry]
                          )
-                       when 'FDX', 'FEDEX'
+    when "FDX", "FEDEX"
                          Calculators::FedexCost.call(
                            billable_weight: @billable_weight,
                            country: @input[:destinationCountry],
                            fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT_FEDEX
                          )
-                       else
+    else
                          Calculators::UpsCost.call(
                            billable_weight: @billable_weight,
                            country: @input[:destinationCountry],
                            fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT
                          )
-                       end
+    end
   end
 
   def calculate_surcharges
@@ -95,7 +95,7 @@ class QuoteCalculator
 
     # UPS Surge Fee (급증수수료) — auto-detect for Middle East / Israel
     @ups_surge_total = 0
-    if @carrier == 'UPS'
+    if @carrier == "UPS"
       ups_surge_fee_result = Calculators::UpsSurgeFee.call(
         country: @input[:destinationCountry],
         billable_weight: @billable_weight,
@@ -107,13 +107,13 @@ class QuoteCalculator
     @manual_surge_cost = @input[:manualSurgeCost] || 0
     @surge_cost = @system_surcharge_total + @manual_surge_cost + @ups_surge_total
 
-    @dest_duty = @input[:incoterm] == 'DDP' ? (@input[:dutyTaxEstimate] || 0) : 0
+    @dest_duty = @input[:incoterm] == "DDP" ? (@input[:dutyTaxEstimate] || 0) : 0
     @pickup_in_seoul = @input[:pickupInSeoulCost] || 0
   end
 
   def calculate_totals
     exchange_rate = @input[:exchangeRate] || DEFAULT_EXCHANGE_RATE
-    @safe_discount_percent = [(@input[:discountPercent] || 0).to_f, 0].max.clamp(0, 100)
+    @safe_discount_percent = [ (@input[:discountPercent] || 0).to_f, 0 ].max.clamp(0, 100)
     base_rate = @overseas_result[:intl_base]
 
     # Apply Discount on Published Base Rate
@@ -122,19 +122,19 @@ class QuoteCalculator
 
     # FSC on (Discounted Base Rate) — EMAX has no FSC
     fsc_val = @input[:fscPercent] || case @carrier
-                                     when 'DHL' then DEFAULT_FSC_PERCENT_DHL
-                                     when 'FDX', 'FEDEX' then DEFAULT_FSC_PERCENT_FEDEX
-                                     when 'UPS' then DEFAULT_FSC_PERCENT
+                                     when "DHL" then DEFAULT_FSC_PERCENT_DHL
+                                     when "FDX", "FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
+                                     when "UPS" then DEFAULT_FSC_PERCENT
                                      else 0
                                      end
-    fsc_rate = @carrier == 'EMAX' ? 0 : (fsc_val.to_f / 100.0)
+    fsc_rate = @carrier == "EMAX" ? 0 : (fsc_val.to_f / 100.0)
     @intl_fsc_new = (@base_with_discount * fsc_rate).round
 
     # Add-ons (no discount applied)
     # Note: carrierAddOnTotal (DHL 19 + UPS 6 add-ons) is frontend-only
     add_on_total = @packing_total + @pickup_in_seoul + @surge_cost + @dest_duty + @overseas_result[:intl_war_risk]
 
-    if ['EXW', 'FOB'].include?(@input[:incoterm])
+    if [ "EXW", "FOB" ].include?(@input[:incoterm])
       @user_warnings << "Collect Term: International Freight calculated for reference but may be billed to Consignee/Partner."
     end
 
@@ -152,7 +152,7 @@ class QuoteCalculator
       totalCostAmount: @total_cost_amount,
       discountAmount: @discount_amount,
       discountPercent: @safe_discount_percent.round(2),
-      currency: 'KRW',
+      currency: "KRW",
       totalActualWeight: @item_result[:total_actual_weight],
       totalVolumetricWeight: @item_result[:total_packed_volumetric_weight],
       billableWeight: @billable_weight,

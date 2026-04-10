@@ -38,9 +38,9 @@ class SurchargeResolver
       surcharges.each do |s|
         applied_amount = if s[:charge_type] == "rate"
                            (intl_base * s[:amount] / 100.0).round(0)
-                         else
+        else
                            s[:amount].round(0)
-                         end
+        end
 
         total += applied_amount
         applied << s.merge(applied_amount: applied_amount)

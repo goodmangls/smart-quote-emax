@@ -4,7 +4,7 @@ module Api
       include JwtAuthenticatable
 
       before_action :authenticate_user!
-      before_action :require_admin!, only: [:update_rates]
+      before_action :require_admin!, only: [ :update_rates ]
 
       # GET /api/v1/fsc/rates
       def rates

@@ -37,7 +37,7 @@ class DiscountRuleResolver
     "Japan" => "JP", "JP" => "JP",
     "Vietnam" => "VN", "VN" => "VN",
     "Taiwan" => "TW", "TW" => "TW",
-    "Singapore" => "SG", "SG" => "SG",
+    "Singapore" => "SG", "SG" => "SG"
   }.freeze
 
   def nationality_matches?(rule_value, input_value)

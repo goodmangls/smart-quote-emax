@@ -1,7 +1,7 @@
 admin_password = ENV.fetch("ADMIN_DEFAULT_PASSWORD", "password")
 
 [
-  { email: "jhlim725@gmail.com", name: "Admin", company: "E-MAX Worldwide Express" },
+  { email: "jhlim725@gmail.com", name: "Admin", company: "E-MAX Worldwide Express" }
 ].each do |attrs|
   User.find_or_create_by!(email: attrs[:email]) do |u|
     u.password = admin_password

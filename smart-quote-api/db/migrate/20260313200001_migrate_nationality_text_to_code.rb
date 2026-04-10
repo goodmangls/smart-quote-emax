@@ -7,7 +7,7 @@ class MigrateNationalityTextToCode < ActiveRecord::Migration[8.0]
     "Vietnam" => "VN",
     "Taiwan" => "TW",
     "Singapore" => "SG",
-    "Other" => nil,
+    "Other" => nil
   }.freeze
 
   def up

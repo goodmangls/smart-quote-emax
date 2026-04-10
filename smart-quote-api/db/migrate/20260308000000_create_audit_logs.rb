@@ -13,7 +13,7 @@ class CreateAuditLogs < ActiveRecord::Migration[8.0]
     end
 
     add_index :audit_logs, :action
-    add_index :audit_logs, [:resource_type, :resource_id]
+    add_index :audit_logs, [ :resource_type, :resource_id ]
     add_index :audit_logs, :created_at
   end
 end

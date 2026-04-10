@@ -37,8 +37,8 @@ class CreateAddonRates < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :addon_rates, [:carrier, :code], unique: true
-    add_index :addon_rates, [:carrier, :is_active], name: "idx_addon_rates_carrier_active"
+    add_index :addon_rates, [ :carrier, :code ], unique: true
+    add_index :addon_rates, [ :carrier, :is_active ], name: "idx_addon_rates_carrier_active"
     add_index :addon_rates, :sort_order
   end
 end

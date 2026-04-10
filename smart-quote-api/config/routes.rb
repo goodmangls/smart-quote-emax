@@ -69,10 +69,9 @@ Rails.application.routes.draw do
       # Quote Sharing
       post "quotes/:quote_id/share", to: "quote_shares#create"
       get "shared/:token", to: "quote_shares#show"
-
     end
   end
 
   # Handle CORS preflight OPTIONS requests for all routes
-  match '*path', to: 'application#set_cors_headers', via: :options
+  match "*path", to: "application#set_cors_headers", via: :options
 end
