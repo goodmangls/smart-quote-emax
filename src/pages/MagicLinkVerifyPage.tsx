@@ -8,21 +8,14 @@ export const MagicLinkVerifyPage: React.FC = () => {
   const { verifyMagicLink } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<'verifying' | 'error'>('verifying');
-  const [errorMessage, setErrorMessage] = useState('');
+  const token = searchParams.get('token');
+  const [status, setStatus] = useState<'verifying' | 'error'>(token ? 'verifying' : 'error');
+  const [errorMessage, setErrorMessage] = useState(token ? '' : t('auth.magicLink.invalidToken'));
   const attempted = useRef(false);
 
   useEffect(() => {
-    if (attempted.current) return;
+    if (attempted.current || !token) return;
     attempted.current = true;
-
-    const token = searchParams.get('token');
-
-    if (!token) {
-      setErrorMessage(t('auth.magicLink.invalidToken'));
-      setStatus('error');
-      return;
-    }
 
     verifyMagicLink(token).then((result) => {
       if (result.success) {
@@ -32,7 +25,7 @@ export const MagicLinkVerifyPage: React.FC = () => {
         setStatus('error');
       }
     });
-  }, [searchParams, verifyMagicLink, navigate, t]);
+  }, [token, verifyMagicLink, navigate, t]);
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-950'>
