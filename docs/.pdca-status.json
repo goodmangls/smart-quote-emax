@@ -110,6 +110,20 @@
       "matchRate": 100,
       "iterations": 0,
       "note": "Post-hoc PDCA. Code analysis → 10 HIGH fixes → 100% match. No Plan/Design (audit-driven)."
+    },
+    "backend-critical-fixes": {
+      "phase": "archived",
+      "planDoc": "docs/archive/2026-04/backend-critical-fixes/backend-critical-fixes.plan.md",
+      "designDoc": null,
+      "analysisDoc": "docs/archive/2026-04/backend-critical-fixes/backend-critical-fixes.analysis.md",
+      "reportDoc": "docs/archive/2026-04/backend-critical-fixes/backend-critical-fixes.report.md",
+      "startedAt": "2026-03-29",
+      "completedAt": "2026-04-10",
+      "archivedAt": "2026-04-10",
+      "archivedTo": "docs/archive/2026-04/backend-critical-fixes/",
+      "matchRate": 100,
+      "iterations": 0,
+      "note": "7/7 Critical+High fixes: SQL injection, keyword arg, AuditLog ACTIONS, require_admin! DRY, N+1 쿼리, 에러 노출/포맷. No Design doc (plan-only)."
     }
   },
   "pipeline": {

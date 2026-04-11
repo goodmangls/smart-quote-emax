@@ -1,9 +1,16 @@
 {
   "activeFeature": null,
-  "phase": null,
-  "matchRate": null,
+  "phase": "archived",
+  "matchRate": 100,
   "iteration": 0,
   "history": [
+    {
+      "feature": "backend-critical-fixes",
+      "phase": "archived",
+      "timestamp": "2026-04-10",
+      "action": "Archived to docs/archive/2026-04/backend-critical-fixes/ (100%) — 7/7 fixes: SQL injection, keyword args, AuditLog ACTIONS, require_admin! DRY, N+1 쿼리, 에러 노출/포맷 표준화",
+      "matchRate": 100
+    },
     {
       "feature": "magic-link-auth",
       "phase": "archived",
