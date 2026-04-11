@@ -12,6 +12,8 @@ class User < ApplicationRecord
 
   VALID_NETWORKS = %w[WCA MPL EAN JCtrans].freeze
 
+  ADMIN_EMAILS = (ENV["ADMIN_EMAILS"] || "").split(",").map(&:strip).map(&:downcase).freeze
+
   after_initialize :set_default_role, if: :new_record?
   validates :password, length: { minimum: 6 }, if: :password_required?
 
@@ -20,12 +22,13 @@ class User < ApplicationRecord
   private
 
   def set_default_role
-    if email&.downcase&.strip == "jhlim725@gmail.com"
+    if email && ADMIN_EMAILS.include?(email.downcase.strip)
       self.role = "admin"
     else
       self.role ||= "member"
     end
   end
+
 
   def downcase_email
     self.email = email.downcase.strip

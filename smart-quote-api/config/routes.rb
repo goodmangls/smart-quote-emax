@@ -72,6 +72,5 @@ Rails.application.routes.draw do
     end
   end
 
-  # Handle CORS preflight OPTIONS requests for all routes
-  match "*path", to: "application#set_cors_headers", via: :options
+  # CORS preflight OPTIONS requests are handled by rack-cors middleware (config/initializers/cors.rb)
 end

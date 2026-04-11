@@ -8,6 +8,8 @@ class AuditLog < ApplicationRecord
     surcharge.created surcharge.updated surcharge.deleted
     addon_rate.created addon_rate.updated addon_rate.deleted
     fsc.updated
+    customer.created customer.updated customer.deleted
+    user.created user.updated user.deleted user.role_changed
   ].freeze
 
   validates :action, presence: true, inclusion: { in: ACTIONS }

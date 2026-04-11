@@ -47,7 +47,7 @@ module Api
                       .per([ (params[:per_page] || 20).to_i, 100 ].min)
 
         render json: {
-          quotes: quotes.map { |q| QuoteSerializer.summary(q) },
+          quotes: QuoteSerializer.summaries(quotes),
           pagination: {
             currentPage: quotes.current_page,
             totalPages: quotes.total_pages,
@@ -172,25 +172,27 @@ module Api
       end
 
       def input_attributes(input)
+        i = input.stringify_keys
         {
-          origin_country: input["originCountry"] || input[:originCountry] || "KR",
-          destination_country: input["destinationCountry"] || input[:destinationCountry],
-          destination_zip: input["destinationZip"] || input[:destinationZip],
-          domestic_region_code: input["domesticRegionCode"] || input[:domesticRegionCode] || "A",
-          is_jeju_pickup: input["isJejuPickup"] || input[:isJejuPickup] || false,
-          incoterm: input["incoterm"] || input[:incoterm],
-          packing_type: input["packingType"] || input[:packingType] || "NONE",
-          discount_percent: input["discountPercent"] || input[:discountPercent] || 15,
-          duty_tax_estimate: input["dutyTaxEstimate"] || input[:dutyTaxEstimate] || 0,
-          exchange_rate: input["exchangeRate"] || input[:exchangeRate],
-          fsc_percent: input["fscPercent"] || input[:fscPercent],
-          manual_domestic_cost: input["manualDomesticCost"] || input[:manualDomesticCost],
-          manual_packing_cost: input["manualPackingCost"] || input[:manualPackingCost],
-          manual_surge_cost: input["manualSurgeCost"] || input[:manualSurgeCost],
-          pickup_in_seoul_cost: input["pickupInSeoulCost"] || input[:pickupInSeoulCost],
-          overseas_carrier: input["overseasCarrier"] || input[:overseasCarrier] || "UPS"
+          origin_country:       i["originCountry"]      || "KR",
+          destination_country:  i["destinationCountry"],
+          destination_zip:      i["destinationZip"],
+          domestic_region_code: i["domesticRegionCode"] || "A",
+          is_jeju_pickup:       i["isJejuPickup"]       || false,
+          incoterm:             i["incoterm"],
+          packing_type:         i["packingType"]        || "NONE",
+          discount_percent:     i["discountPercent"]    || 15,
+          duty_tax_estimate:    i["dutyTaxEstimate"]    || 0,
+          exchange_rate:        i["exchangeRate"],
+          fsc_percent:          i["fscPercent"],
+          manual_domestic_cost: i["manualDomesticCost"],
+          manual_packing_cost:  i["manualPackingCost"],
+          manual_surge_cost:    i["manualSurgeCost"],
+          pickup_in_seoul_cost: i["pickupInSeoulCost"],
+          overseas_carrier:     i["overseasCarrier"]    || "UPS"
         }
       end
+
 
       def result_attributes(result)
         {

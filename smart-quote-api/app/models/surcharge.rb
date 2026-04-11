@@ -1,6 +1,6 @@
 class Surcharge < ApplicationRecord
   CHARGE_TYPES = %w[fixed rate].freeze
-  CARRIERS = %w[UPS DHL EMAX].freeze
+  CARRIERS = %w[UPS DHL FDX EMAX].freeze
 
   validates :code, presence: true, uniqueness: true, length: { maximum: 50 }
   validates :name, presence: true, length: { maximum: 100 }

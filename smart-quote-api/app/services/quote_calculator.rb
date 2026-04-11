@@ -56,30 +56,16 @@ class QuoteCalculator
   end
 
   def calculate_overseas
+    fsc = @input[:fscPercent] || default_fsc_for(@carrier)
     @overseas_result = case @carrier
     when "DHL"
-                         Calculators::DhlCost.call(
-                           billable_weight: @billable_weight,
-                           country: @input[:destinationCountry],
-                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT_DHL
-                         )
+      Calculators::DhlCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
     when "EMAX"
-                         Calculators::EmaxCost.call(
-                           billable_weight: @billable_weight,
-                           country: @input[:destinationCountry]
-                         )
+      Calculators::EmaxCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry])
     when "FDX", "FEDEX"
-                         Calculators::FedexCost.call(
-                           billable_weight: @billable_weight,
-                           country: @input[:destinationCountry],
-                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT_FEDEX
-                         )
+      Calculators::FedexCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
     else
-                         Calculators::UpsCost.call(
-                           billable_weight: @billable_weight,
-                           country: @input[:destinationCountry],
-                           fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT
-                         )
+      Calculators::UpsCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
     end
   end
 
@@ -101,7 +87,7 @@ class QuoteCalculator
         billable_weight: @billable_weight,
         fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT
       )
-      @ups_surge_total = ups_surge_fee_result[:total]
+      @ups_surge_total = ups_surge_fee_result ? ups_surge_fee_result[:total] : 0
     end
 
     @manual_surge_cost = @input[:manualSurgeCost] || 0
@@ -121,12 +107,7 @@ class QuoteCalculator
     @discount_amount = base_rate - @base_with_discount
 
     # FSC on (Discounted Base Rate) — EMAX has no FSC
-    fsc_val = @input[:fscPercent] || case @carrier
-                                     when "DHL" then DEFAULT_FSC_PERCENT_DHL
-                                     when "FDX", "FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
-                                     when "UPS" then DEFAULT_FSC_PERCENT
-                                     else 0
-                                     end
+    fsc_val  = @input[:fscPercent] || default_fsc_for(@carrier)
     fsc_rate = @carrier == "EMAX" ? 0 : (fsc_val.to_f / 100.0)
     @intl_fsc_new = (@base_with_discount * fsc_rate).round
 
@@ -179,5 +160,16 @@ class QuoteCalculator
         totalCost: @total_cost_amount
       }
     }
+  end
+
+  # Single source of truth for carrier FSC default rates.
+  # EMAX returns 0 since it has no FSC.
+  def default_fsc_for(carrier)
+    case carrier
+    when "DHL"         then DEFAULT_FSC_PERCENT_DHL
+    when "FDX","FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
+    when "EMAX"        then 0
+    else                    DEFAULT_FSC_PERCENT  # UPS and others
+    end
   end
 end

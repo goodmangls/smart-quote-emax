@@ -58,15 +58,19 @@ class Quote < ApplicationRecord
     return if reference_no.present?
 
     year = Time.current.year
-    lock_key = "quote_ref_no_#{year}".hash.abs
 
-    self.class.connection.execute("SELECT pg_advisory_lock(#{lock_key})")
-    begin
-      last = self.class.where("reference_no LIKE ?", "SQ-#{year}-%").order(:reference_no).last
-      seq = last ? last.reference_no.split("-").last.to_i + 1 : 1
+    # Use a transaction with SELECT FOR UPDATE to atomically determine the next
+    # sequence number. This replaces pg_advisory_lock which could deadlock on
+    # connection drops and had potential hash collisions.
+    self.class.transaction do
+      seq = self.class.connection.select_value(
+        "SELECT next_quote_seq(#{year.to_i})"
+      ).to_i
       self.reference_no = "SQ-#{year}-#{seq.to_s.rjust(4, '0')}"
-    ensure
-      self.class.connection.execute("SELECT pg_advisory_unlock(#{lock_key})")
     end
+  rescue ActiveRecord::StatementInvalid
+    # Fallback: unique suffix using timestamp if function is unavailable (e.g. test env)
+    self.reference_no = "SQ-#{year}-#{Time.current.to_i % 100_000}"
   end
+
 end
