@@ -24,6 +24,11 @@ class Rack::Attack
     req.ip if req.path == "/api/v1/auth/promote" && req.post?
   end
 
+  # Throttle magic link requests: 5 per 5 minutes per IP (email bomb protection)
+  throttle("auth/magic_link", limit: 5, period: 300) do |req|
+    req.ip if req.path == "/api/v1/auth/magic_link" && req.post?
+  end
+
   # Throttle public calculate endpoint: 60 per minute per IP
   throttle("quotes/calculate", limit: 60, period: 60) do |req|
     req.ip if req.path == "/api/v1/quotes/calculate" && req.post?

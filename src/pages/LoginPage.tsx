@@ -19,6 +19,7 @@ export const LoginPage: React.FC = () => {
   const [magicEmail, setMagicEmail] = useState('');
   const [magicSent, setMagicSent] = useState(false);
   const [magicLoading, setMagicLoading] = useState(false);
+  const [magicError, setMagicError] = useState('');
 
   const { login, requestMagicLink } = useAuth();
   const { t, setLanguage } = useLanguage();
@@ -32,10 +33,15 @@ export const LoginPage: React.FC = () => {
   const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!magicEmail.trim()) return;
+    setMagicError('');
     setMagicLoading(true);
     try {
-      await requestMagicLink(magicEmail.trim());
-      setMagicSent(true);
+      const result = await requestMagicLink(magicEmail.trim());
+      if (result.success) {
+        setMagicSent(true);
+      } else {
+        setMagicError(result.error ?? t('auth.magicLink.sendError'));
+      }
     } finally {
       setMagicLoading(false);
     }
@@ -191,6 +197,11 @@ export const LoginPage: React.FC = () => {
                   </div>
                 ) : (
                   <form className='space-y-5' onSubmit={handleMagicLinkSubmit}>
+                    {magicError && (
+                      <div className='p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl'>
+                        {magicError}
+                      </div>
+                    )}
                     <div>
                       <label
                         htmlFor='magic-email'

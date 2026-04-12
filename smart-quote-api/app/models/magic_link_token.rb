@@ -6,6 +6,12 @@ class MagicLinkToken < ApplicationRecord
   validates :token_digest, presence: true, uniqueness: true
   validates :expires_at, presence: true
 
+  scope :stale, -> { where("expires_at < ? OR used_at IS NOT NULL", 1.day.ago) }
+
+  def self.cleanup_stale!
+    stale.delete_all
+  end
+
   def self.generate!(user)
     raw_token = SecureRandom.urlsafe_base64(32)
     digest    = Digest::SHA256.hexdigest(raw_token)

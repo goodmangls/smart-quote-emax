@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -38,9 +38,9 @@ export const MagicLinkVerifyPage: React.FC = () => {
         ) : (
           <>
             <p className='text-red-400 text-sm mb-4'>{errorMessage}</p>
-            <a href='/login' className='text-emax-400 hover:underline text-sm'>
+            <Link to='/login' className='text-emax-400 hover:underline text-sm'>
               {t('auth.magicLink.backToLogin')}
-            </a>
+            </Link>
           </>
         )}
       </div>

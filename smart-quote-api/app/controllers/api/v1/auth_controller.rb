@@ -75,11 +75,15 @@ module Api
         user = User.find_by(email: params[:email]&.downcase&.strip)
         if user
           raw_token = MagicLinkToken.generate!(user)
-          AuthMailer.magic_link_email(user, raw_token).deliver_later
+          AuthMailer.magic_link_email(user, raw_token).deliver_now
         end
         render json: { message: "Check your email" }, status: :ok
+      rescue Net::SMTPAuthenticationError, Net::SMTPServerBusy, Net::SMTPSyntaxError,
+             Net::SMTPFatalError, Net::SMTPUnknownError, Errno::ECONNREFUSED, Timeout::Error => e
+        Rails.logger.error "MagicLink SMTP delivery failed: #{e.class} - #{e.message}"
+        render json: { error: { code: "EMAIL_DELIVERY_FAILED", message: "Failed to send email. Please try again." } }, status: :service_unavailable
       rescue => e
-        Rails.logger.error "MagicLink request error: #{e.message}"
+        Rails.logger.error "MagicLink request error: #{e.class} - #{e.message}"
         render json: { message: "Check your email" }, status: :ok
       end
 
