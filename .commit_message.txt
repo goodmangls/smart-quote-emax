@@ -1,1 +1,1 @@
-📦 docs: backend-critical-fixes PDCA 아카이브 완료 (docs/archive/2026-04/)
+📦 chore: Magic Link PDCA 아카이브 — 보안 강화 사이클 완료 (~92%)

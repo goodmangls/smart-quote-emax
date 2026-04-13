@@ -5,6 +5,13 @@
   "iteration": 0,
   "history": [
     {
+      "feature": "magic-link",
+      "phase": "archived",
+      "timestamp": "2026-04-13",
+      "action": "Archived to docs/archive/2026-04/magic-link/ (~92%) — Rate Limiter 추가, stale 토큰 cleanup, 에러 UX 링크 추가 (3개 Gap 수정)",
+      "matchRate": 92
+    },
+    {
       "feature": "backend-critical-fixes",
       "phase": "archived",
       "timestamp": "2026-04-10",
