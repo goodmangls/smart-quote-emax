@@ -80,10 +80,13 @@ module Api
         render json: { message: "Check your email" }, status: :ok
       rescue Net::SMTPAuthenticationError, Net::SMTPServerBusy, Net::SMTPSyntaxError,
              Net::SMTPFatalError, Net::SMTPUnknownError, Errno::ECONNREFUSED, Timeout::Error => e
-        Rails.logger.error "MagicLink SMTP delivery failed: #{e.class} - #{e.message}"
+        Rails.logger.error "[MagicLink] SMTP delivery failed: #{e.class} - #{e.message}"
         render json: { error: { code: "EMAIL_DELIVERY_FAILED", message: "Failed to send email. Please try again." } }, status: :service_unavailable
+      rescue ActiveRecord::StatementInvalid, ActiveRecord::ConnectionNotEstablished => e
+        Rails.logger.error "[MagicLink] DB error (migration may not have run): #{e.class} - #{e.message}"
+        render json: { error: { code: "INTERNAL_ERROR", message: "Service temporarily unavailable. Please try again." } }, status: :internal_server_error
       rescue => e
-        Rails.logger.error "MagicLink request error: #{e.class} - #{e.message}"
+        Rails.logger.error "[MagicLink] Unexpected error: #{e.class} - #{e.message}\n#{e.backtrace&.first(3)&.join("\n")}"
         render json: { message: "Check your email" }, status: :ok
       end
 
