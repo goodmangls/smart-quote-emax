@@ -1,9 +1,16 @@
 {
   "activeFeature": null,
   "phase": "archived",
-  "matchRate": 100,
+  "matchRate": 97,
   "iteration": 0,
   "history": [
+    {
+      "feature": "magic-link-emax",
+      "phase": "archived",
+      "timestamp": "2026-04-14",
+      "action": "Archived to docs/archive/2026-04/magic-link-emax/ (97%) — 코드 갭 0건, 운영 갭 1건(FRONTEND_URL), 허용 편차 2건, 12/12 구현 완료",
+      "matchRate": 97
+    },
     {
       "feature": "magic-link",
       "phase": "archived",
