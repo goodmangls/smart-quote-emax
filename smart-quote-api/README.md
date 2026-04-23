@@ -1,64 +1,71 @@
 # Smart Quote API
 
-This is the API backend for the Smart Quote application, built with Ruby on Rails 8.
+Rails 8 API-only backend for **E-MAX Smart Quote** — calculates international shipping costs for UPS, DHL, FedEx, and EMAX carriers.
+
+**Frontend repo**: `../` (monorepo root)  
+**Deploy**: Render.com (Docker, Singapore region)
+
+---
+
+## Tech Stack
+
+- **Ruby** 3.4 / **Rails** 8 API-only
+- **PostgreSQL** (Render managed)
+- **JWT** authentication
+- **RSpec** + FactoryBot
 
 ## Prerequisites
 
-- Ruby 3.4.5
+- Ruby 3.4+, Bundler
 - PostgreSQL
-- Docker (for deployment with Kamal)
 
 ## Setup
 
-1. **Install dependencies:**
-
-   ```bash
-   bundle install
-   ```
-
-2. **Database Setup:**
-
-   Ensure PostgreSQL is running, then create and migrate the database:
-
-   ```bash
-   bin/rails db:prepare
-   ```
-
-## Running the Application
-
-Start the Rails server:
-
 ```bash
-bin/rails server
+bundle install
+bin/rails db:prepare   # create + migrate
+bin/rails db:seed      # optional: seed addon rates
 ```
 
-The API will be available at `http://localhost:3000`.
-
-## Testing
-
-Run the test suite:
+## Running
 
 ```bash
-bin/rails test
+bin/rails server       # API on http://localhost:3000
 ```
 
-## Code Quality & Security
+## Testing & Linting
 
-- **Linting:** Run `bin/rubocop` to check for code style issues.
-- **Security:** Run `bin/brakeman` to scan for security vulnerabilities.
+```bash
+bundle exec rspec      # RSpec test suite
+bin/rubocop            # Ruby style linting
+bin/brakeman           # Security scan
+```
+
+## Tariff Data
+
+Published carrier rate tables are stored in `storage/tariffs/`:
+
+| File | Description |
+|------|-------------|
+| `DHL 정가.pdf` / `.txt` | DHL Express Worldwide 2026 정가 |
+| `UPS 정가.pdf` / `.txt` | UPS Express Saver 2026 정가 (Eff. 01-Feb-26) |
+| `FDX 정가.pdf` / `.txt` | FedEx International Priority 2026 정가 (Eff. 2026.01.05) |
+
+These PDFs are the **source of truth**. Constants in `lib/constants/` must match. Frontend `src/config/` must stay in sync with `lib/constants/`.
 
 ## Deployment
 
-This application is configured for deployment using [Kamal](https://kamal-deploy.org/).
+Backend deploys to **Render.com** from a separate `smart-quote-api.git` remote.
 
-1. **Setup Kamal:**
+From the **monorepo root**:
 
-   ```bash
-   kamal setup
-   ```
+```bash
+# Push backend changes
+git subtree push --prefix=smart-quote-api api-deploy main
+```
 
-2. **Deploy:**
-
-   ```bash
-   kamal deploy
-   ```
+After deploy, if new add-on rates were seeded:
+```bash
+# Run in Render Shell
+rails runner db/seeds/addon_rates.rb
+```

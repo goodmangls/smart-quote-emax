@@ -14,10 +14,10 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 
 ## Key Features
 
-### Multi-Carrier Quoting (UPS, DHL)
+### Multi-Carrier Quoting (UPS, DHL, FedEx, EMAX)
 
-- **Zone-based pricing**: Config-driven country-to-zone mapping (Z1-Z10 for UPS, Z1-Z8 for DHL) with exact rate tables (0.5-20kg in 0.5kg steps) and range rates (>20kg per-kg)
-- **Shared rate lookup**: Common `lookupCarrierRate()` engine for UPS/DHL (exact table -> range table -> fallback)
+- **Zone-based pricing**: Config-driven country-to-zone mapping (Z1-Z10 for UPS, Z1-Z8 for DHL, ZA-ZY for FedEx) with exact rate tables (0.5-20.5kg) and range rates (per-kg)
+- **Shared rate lookup**: Common `lookupCarrierRate()` engine for all carriers (exact table → range table → fallback)
 - **UPS Surge Fee**: Auto-detected for Middle East (KRW 2,004/kg) and Israel (KRW 4,722/kg) destinations, FSC applicable
 - **EAS/RAS Auto-Detection**: Postal code-based Extended/Remote Area Surcharge lookup (86 countries, 39,876 zip ranges, binary search O(log n), lazy-loaded)
 - **Surcharges**: FSC% fuel surcharge, DB-driven surcharges, manual surge fees, carrier-specific add-ons (UPS: 6 types, DHL: 19 types)
@@ -134,7 +134,9 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
     types.ts                   # Core TypeScript types & enums
     i18n/translations.ts       # 4-language translation dictionary (en/ko/cn/ja)
     config/                    # Rate tables, business rules, shared utilities
-      ups_zones.ts / dhl_zones.ts  # Config-driven zone mappings
+      ups_tariff.ts / dhl_tariff.ts / fedex_tariff.ts  # Carrier rate tables (synced with backend & PDF originals)
+      fsc-history.ts             # FSC historical rates with localStorage persistence
+      ups_zones.ts / dhl_zones.ts / fedex_zones.ts  # Config-driven zone mappings
       addon-utils.ts             # Shared add-on types, normalizers, fee calculators
       ups_addons.ts / dhl_addons.ts  # Carrier add-on rates + surge fee config
       ups_eas_lookup.ts          # EAS/RAS postal code lookup (binary search, lazy-load)
@@ -163,7 +165,8 @@ smart-quote-api/               # Backend (Rails 8 API)
   app/services/                # QuoteCalculator, QuoteSearcher, QuoteExporter, QuoteSerializer, MarginRuleResolver
     calculators/               # ItemCost, SurgeCost, UpsCost, DhlCost, EmaxCost, DomesticCost, UpsSurgeFee
   app/controllers/api/v1/      # Quotes, MarginRules, Surcharges, AddonRates, Customers, Users, Auth, Fsc, AuditLogs, Notifications, Chat
-  lib/constants/               # Tariff tables (synced with frontend)
+  lib/constants/               # Tariff tables (synced with frontend src/config/)
+                               # Source of truth: storage/tariffs/*.pdf
 ```
 
 ## Getting Started

@@ -56,14 +56,16 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
     types/dashboard.ts         # Dashboard types (ExchangeRate, PortWeather, LogisticsNews, AccountManager)
     i18n/translations.ts       # 4-language dictionary (en/ko/cn/ja, 390+ keys)
     config/                    # Rate tables, business rules, UI constants
-      ups_tariff.ts            # UPS Z1-Z10 rate tables (synced with backend)
-      dhl_tariff.ts            # DHL Z1-Z8 rate tables (synced with backend)
+      ups_tariff.ts            # UPS Z1-Z10 rate tables (synced with backend, Eff. 01-Feb-26)
+      dhl_tariff.ts            # DHL Z1-Z8 rate tables (synced with backend, 2026 정가)
+      fedex_tariff.ts          # FedEx IP ZA-ZY rate tables (synced with backend, Eff. 2026.01.05)
       emax_tariff.ts           # EMAX per-country rate tables (CN, VN only)
-      rates.ts                 # KRW cost constants, DEFAULT_EXCHANGE_RATE=1450, DEFAULT_FSC_PERCENT=41.75
+      fsc-history.ts           # FSC historical rates with localStorage persistence (UPS/DHL/FedEx)
+      rates.ts                 # KRW cost constants, DEFAULT_EXCHANGE_RATE=1450, DEFAULT_FSC_PERCENT=47.5 (UPS), 47.75 (DHL), 45.5 (FedEx)
       business-rules.ts        # Surge thresholds, packing weight buffer/addition
       options.ts               # Country options, carrier options, incoterm options
       addon-utils.ts           # Shared AddonRateLike/NormalizedRate types, calcAddonFee(), findRate()
-      ups_zones.ts / dhl_zones.ts  # Config-driven zone mappings (Record<string, ZoneInfo>)
+      ups_zones.ts / dhl_zones.ts / fedex_zones.ts  # Config-driven zone mappings (Record<string, ZoneInfo>)
       ups_addons.ts            # UPS add-on rates (6) + Surge Fee config (Israel/ME)
       dhl_addons.ts            # DHL add-on rates (19) with auto-detect (OSP, OWT)
       ups_eas_lookup.ts        # EAS/RAS postal code lookup (binary search, lazy-load from public/data/)
@@ -115,15 +117,17 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
     quote_searcher.rb          # Search/filter chain for quotes
     quote_exporter.rb          # CSV export with 10K limit
     quote_serializer.rb        # Quote summary/detail serialization
-    margin_rule_resolver.rb    # Priority-based margin resolution (5min cache, first-match-wins)
+    discount_rule_resolver.rb  # Priority-based discount resolution (first-match-wins)
+    surcharge_resolver.rb      # System surcharge calculation (War Risk, PSS, EBS, etc.)
+    addon_rate_resolver.rb     # Add-on rate lookup
     calculators/
+      base_rate_lookup.rb      # Shared zone/weight rate lookup (exact -> range -> fallback)
       item_cost.rb             # Packing dimensions, volumetric weight, material/labor
-      surge_cost.rb            # Surcharge logic
       ups_cost.rb / ups_zone.rb
       ups_surge_fee.rb         # UPS Surge Fee auto-calc (Israel/Middle East)
       dhl_cost.rb / dhl_zone.rb
+      fedex_cost.rb / fedex_zone.rb
       emax_cost.rb
-      domestic_cost.rb         # Domestic pickup cost
   app/controllers/api/v1/
     quotes_controller.rb       # Quote CRUD (uses QuoteSearcher, QuoteExporter, QuoteSerializer)
     margin_rules_controller.rb # CRUD + resolve endpoint (admin guard, audit log)
@@ -315,8 +319,9 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 - **Path alias**: `@/` -> `src/` (both vite.config.ts and tsconfig.json)
 - **Tailwind**: Custom `emax-*` color palette (red theme), class-based dark mode
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_EIA_API_KEY`
-- **Tariff sync**: Frontend tariff files in `src/config/` must stay in sync with backend `lib/constants/`
-- **Market defaults**: `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=41.75` (UPS 2026-03-23) in `src/config/rates.ts`
+- **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.
+- **Market defaults** (as of 2026-04-20): `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=47.5` (UPS), `DEFAULT_FSC_PERCENT_DHL=47.75`, `DEFAULT_FSC_PERCENT_FEDEX=45.5` in `src/config/rates.ts`
+- **FSC history**: `src/config/fsc-history.ts` tracks weekly UPS and monthly DHL/FedEx FSC rates. Update when rates change.
 - **Exchange rate policy**: Live API 자동세팅 비활성화, 매주 월요일 수동 업데이트 (하나은행 기준)
 - **Error tracking**: Sentry (`@sentry/browser`) integrated across all catch blocks
 - **Node version**: v22.0.0+ required for Vercel production builds
