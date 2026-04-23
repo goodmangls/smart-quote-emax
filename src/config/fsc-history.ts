@@ -35,6 +35,8 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-03-23', rate: 41.75 },
     { date: '2026-03-30', rate: 46.25 },
     { date: '2026-04-06', rate: 46.00 },
+    { date: '2026-04-13', rate: 46.75 },
+    { date: '2026-04-20', rate: 47.50 },
   ],
   dhl: [
     { date: '2026-01', rate: 30.0 },
@@ -42,6 +44,7 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-03', rate: 30.5 },
     { date: '2026-04-01', rate: 39.0 },
     { date: '2026-04-13', rate: 46.0 },
+    { date: '2026-04-20', rate: 47.75 },
   ],
   fedex: [
     { date: '2026-02-16', rate: 29.5 },
@@ -50,6 +53,10 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-03-09', rate: 32.25 },
     { date: '2026-03-16', rate: 34.5 },
     { date: '2026-03-23', rate: 34.5 },
+    { date: '2026-03-30', rate: 38.0 },
+    { date: '2026-04-06', rate: 41.5 },
+    { date: '2026-04-13', rate: 43.5 },
+    { date: '2026-04-20', rate: 45.50 },
   ],
 };
 
