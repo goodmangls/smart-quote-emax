@@ -1,1 +1,1 @@
-📦 refactor: DHL RANGE_RATES 구간 세분화 — 30.1-70, 70.1-300, 300.1+ 분리 (요율 동일, 향후 구간별 요율 적용 대비)
+🐛 fix: Frontend calculationService range-rate 공식을 backend 와 정렬 — Frontend/Backend 요율 계산 불일치 해소 (base+overage 공식)

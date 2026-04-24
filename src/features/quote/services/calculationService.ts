@@ -72,7 +72,11 @@ const lookupCarrierRate = (
 
   const range = rangeRates.find(r => billableWeight >= r.min && billableWeight <= r.max);
   if (range && range.rates[zoneKey]) {
-    return Math.ceil(billableWeight) * range.rates[zoneKey];
+    const weights = Object.keys(zoneRates).map(Number).sort((a, b) => a - b);
+    const maxExactWeight = weights[weights.length - 1];
+    const maxExactRate = zoneRates[maxExactWeight];
+    const overageKg = Math.ceil(billableWeight) - maxExactWeight;
+    return maxExactRate + overageKg * range.rates[zoneKey];
   }
 
   if (zoneRates) {

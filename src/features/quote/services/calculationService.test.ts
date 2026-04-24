@@ -122,21 +122,27 @@ describe('calculationService', () => {
   // --- UPS Cost Tests ---
 
   describe('calculateUpsCosts', () => {
-    it('uses 21-70 tier range rate for 20.3kg (boundary test)', () => {
-      // 20.3kg > 20kg exact table max → should use 21-44 range rate
-      // ceil(20.3) = 21, 21 * Z5 per-kg rate (24412) = 512652
+    // UPS Z5 (US) exact table 최대 무게 = 20kg, Z5[20] = 660000
+    // Range 요율은 backend 와 동일한 "base(maxExactRate) + overage × range_rate" 공식 사용
+    // (backend mirror: smart-quote-api/app/services/calculators/base_rate_lookup.rb)
+
+    it('uses fallback path for 20.3kg dead-zone (20 < w < 20.5 range min)', () => {
+      // 20.3kg: exact miss (Z5[20.5] 미정의), range miss (20.3 < 20.5),
+      // fallback 경로: ceil(20.3)=21 × UPS_RANGE_RATES[20.5-44].Z5(32100) = 674,100
       const result = calculateUpsCosts(20.3, 'US');
-      expect(result.intlBase).toBe(21 * 24412);
+      expect(result.intlBase).toBe(21 * 32100);
     });
 
-    it('uses 71-299 tier range rate for 80kg', () => {
+    it('uses 70.1-99 tier range rate for 80kg (base+overage formula)', () => {
+      // Z5[20](660000) + (80 - 20) × 30500 = 2,490,000
       const result = calculateUpsCosts(80, 'US');
-      expect(result.intlBase).toBe(80 * 23195);
+      expect(result.intlBase).toBe(660000 + (80 - 20) * 30500);
     });
 
-    it('uses 300+ tier range rate for 350kg', () => {
+    it('uses 299.1+ tier range rate for 350kg (base+overage formula)', () => {
+      // Z5[20](660000) + (350 - 20) × 29200 = 10,296,000
       const result = calculateUpsCosts(350, 'US');
-      expect(result.intlBase).toBe(350 * 22207);
+      expect(result.intlBase).toBe(660000 + (350 - 20) * 29200);
     });
   });
 
@@ -145,7 +151,7 @@ describe('calculationService', () => {
   describe('calculateDhlCosts', () => {
     it('returns correct exact rate for DHL Z1 at 1kg', () => {
       const result = calculateDhlCosts(1, 'CN');
-      expect(result.intlBase).toBe(106688);
+      expect(result.intlBase).toBe(DHL_EXACT_RATES['Z1'][1]);
       expect(result.intlFsc).toBe(0); // FSC now calculated in orchestrator
       expect(result.intlWarRisk).toBe(0);
     });
@@ -155,9 +161,11 @@ describe('calculationService', () => {
       expect(result.intlBase).toBe(DHL_EXACT_RATES['Z5'][5]);
     });
 
-    it('uses range rate for DHL Z1 at 50kg', () => {
+    it('uses range rate for DHL Z1 at 50kg (base+overage formula)', () => {
+      // DHL Z1 exact max = 30kg. base + overage × range rate:
+      //   Z1[30](630300) + (50 - 30) × 20400 = 1,038,300
       const result = calculateDhlCosts(50, 'CN');
-      expect(result.intlBase).toBe(50 * 13577);
+      expect(result.intlBase).toBe(DHL_EXACT_RATES['Z1'][30] + (50 - 30) * 20400);
     });
 
     it('carrier function returns intlFsc=0 (FSC calculated in orchestrator)', () => {
@@ -179,10 +187,11 @@ describe('calculationService', () => {
       expect(result.intlBase).toBe(FEDEX_EXACT_RATES['ZV'][1]);
     });
 
-    it('uses range rate for FedEx ZF (US) at 50kg', () => {
+    it('uses range rate for FedEx ZF (US) at 50kg (base+overage formula)', () => {
+      // FedEx ZF exact max = 20.5kg. base + overage × range rate(44.1-99):
+      //   ZF[20.5](630600) + (50 - 20.5) × 29100 = 1,489,050
       const result = calculateFedexCosts(50, 'US');
-      // 50 * ZF rate at [44.1-70] range (22000) = 1100000
-      expect(result.intlBase).toBe(50 * 22000);
+      expect(result.intlBase).toBe(FEDEX_EXACT_RATES['ZF'][20.5] + (50 - 20.5) * 29100);
     });
   });
 
