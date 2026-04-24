@@ -14,7 +14,6 @@ import { DHL_EXACT_RATES } from '@/config/dhl_tariff';
 import { FEDEX_EXACT_RATES } from '@/config/fedex_tariff';
 
 describe('calculationService', () => {
-
   // --- Zone Mapping Tests ---
 
   describe('determineUpsZone', () => {
@@ -96,7 +95,7 @@ describe('calculationService', () => {
       expect(determineDhlZone('XX')).toEqual({ rateKey: 'Z8', label: 'Rest of World' });
     });
   });
-  
+
   describe('determineFedexZone', () => {
     it('maps US to ZF', () => {
       expect(determineFedexZone('US')).toEqual({ rateKey: 'ZF', label: 'US/CA/NZ/MX' });
@@ -296,7 +295,7 @@ describe('calculationService', () => {
     it('EXW incoterm: shows Collect Term warning', () => {
       const result = calculateQuote({ ...baseInput, incoterm: Incoterm.EXW });
       expect(result.warnings).toEqual(
-        expect.arrayContaining([expect.stringContaining('Collect Term')])
+        expect.arrayContaining([expect.stringContaining('Collect Term')]),
       );
       // EXW and DAP produce same quote (discount on base rate, FSC on discounted base)
       // EXW only adds a warning that freight may be billed to consignee
@@ -315,10 +314,14 @@ describe('calculationService', () => {
     });
 
     it('manual surge cost is applied when provided', () => {
-      const result = calculateQuote({ ...baseInput, overseasCarrier: 'UPS', manualSurgeCost: 50000 });
+      const result = calculateQuote({
+        ...baseInput,
+        overseasCarrier: 'UPS',
+        manualSurgeCost: 50000,
+      });
       expect(result.breakdown.intlSurge).toBe(50000);
       expect(result.totalCostAmount).toBeGreaterThan(
-        calculateQuote({ ...baseInput, overseasCarrier: 'UPS' }).totalCostAmount
+        calculateQuote({ ...baseInput, overseasCarrier: 'UPS' }).totalCostAmount,
       );
     });
 
@@ -341,7 +344,8 @@ describe('calculationService', () => {
       });
       expect(result.breakdown.intlSurge).toBe(20000);
       expect(result.totalCostAmount).toBeGreaterThan(
-        calculateQuote({ ...baseInput, overseasCarrier: 'EMAX', destinationCountry: 'CN' }).totalCostAmount
+        calculateQuote({ ...baseInput, overseasCarrier: 'EMAX', destinationCountry: 'CN' })
+          .totalCostAmount,
       );
     });
 
