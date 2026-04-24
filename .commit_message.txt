@@ -1,1 +1,1 @@
-🛡️ security-perf-hardening PDCA 완료 (98%): 폰트 번들 3MB 제거(TTF+fetch loader+6 test), .env dead VITE_ 키(Slack/EIA) 정리, npm audit 15→11, CLAUDE.md ENV policy, docs 아카이브
+🗑️ chore: Google Maps 3D 기능 제거 — googleMapsLoader.ts/google-maps-3d.d.ts 삭제, vite-env.d.ts/.env/.env.example/CLAUDE.md에서 VITE_GOOGLE_MAPS_API_KEY 정리 (호출자 0건이라 dead code, 회귀 0)
