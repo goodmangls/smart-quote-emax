@@ -8,3 +8,4 @@
 | backend-critical-fixes | 100% | 2026-04-10 | [plan](backend-critical-fixes/backend-critical-fixes.plan.md), [analysis](backend-critical-fixes/backend-critical-fixes.analysis.md), [report](backend-critical-fixes/backend-critical-fixes.report.md) |
 | magic-link | ~92% | 2026-04-13 | [analysis](magic-link/magic-link.analysis.md), [report](magic-link/magic-link.report.md) |
 | magic-link-emax | 97% | 2026-04-14 | [analysis](magic-link-emax/magic-link-emax.analysis.md), [report](magic-link-emax/magic-link-emax.report.md) |
+| security-perf-hardening | 98% | 2026-04-24 | [plan](security-perf-hardening/security-perf-hardening.plan.md), [design](security-perf-hardening/security-perf-hardening.design.md), [analysis](security-perf-hardening/security-perf-hardening.analysis.md), [report](security-perf-hardening/security-perf-hardening.report.md) |

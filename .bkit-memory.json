@@ -1,9 +1,48 @@
 {
   "activeFeature": null,
   "phase": "archived",
-  "matchRate": 97,
+  "matchRate": 98,
   "iteration": 0,
   "history": [
+    {
+      "feature": "security-perf-hardening",
+      "phase": "archived",
+      "timestamp": "2026-04-24",
+      "action": "Archived to docs/archive/2026-04/security-perf-hardening/ (98%) — 폰트 청크 1055KB gzip 제거(TTF fetch loader+6 test), VITE_ dead 키 2건 삭제, npm audit 15→11(non-breaking), 코드 갭 0건. 운영 갭 2건(GCP Referrer/Vercel env)은 별도 체크리스트",
+      "matchRate": 98
+    },
+    {
+      "feature": "security-perf-hardening",
+      "phase": "completed",
+      "timestamp": "2026-04-24",
+      "action": "Report 생성 완료 — docs/04-report/features/security-perf-hardening.report.md (308 lines). Match Rate 98%",
+      "matchRate": 98
+    },
+    {
+      "feature": "security-perf-hardening",
+      "phase": "check",
+      "timestamp": "2026-04-24",
+      "action": "Gap 분석 완료 — Match Rate 98% (코드 갭 0건, 허용 편차 3건[woff2/preload/CLAUDE.md 확장], 운영 갭 2건[GCP Referrer/Vercel env]), DoD 7/8 + audit high 11건 허용 보류. Iteration 불필요(≥90%)",
+      "matchRate": 98
+    },
+    {
+      "feature": "security-perf-hardening",
+      "phase": "do",
+      "timestamp": "2026-04-24",
+      "action": "Do 완료 — C3-a(npm audit 15→11), C1(TTF 2.27MB public 배치+pdfFontLoader fetch 재작성+test 6건+base64.ts 삭제, 1055KB gzipped 청크 제거), C2(env dead Slack/EIA 키 삭제+CLAUDE.md ENV policy). lint/tsc/298테스트 통과, 번들 시크릿 grep 0 hits"
+    },
+    {
+      "feature": "security-perf-hardening",
+      "phase": "design",
+      "timestamp": "2026-04-24",
+      "action": "Design document created — 실제 build 분석으로 범위 축소(Slack/EIA는 이미 Rails 프록시 → serverless 신규작성 취소, dead .env 키 삭제만). C3→C1→C2 구현 순서 확정"
+    },
+    {
+      "feature": "security-perf-hardening",
+      "phase": "plan",
+      "timestamp": "2026-04-24",
+      "action": "Plan document created — CRITICAL 3건(C1 폰트3MB 분리 / C2 VITE_ 키 프록시화 / C3 npm audit 15건) 하드닝 스프린트"
+    },
     {
       "feature": "magic-link-emax",
       "phase": "archived",

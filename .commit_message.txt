@@ -1,1 +1,1 @@
-✨ chore: prettier auto-format calculationService.test.ts (whitespace only, no logic change)
+🛡️ security-perf-hardening PDCA 완료 (98%): 폰트 번들 3MB 제거(TTF+fetch loader+6 test), .env dead VITE_ 키(Slack/EIA) 정리, npm audit 15→11, CLAUDE.md ENV policy, docs 아카이브

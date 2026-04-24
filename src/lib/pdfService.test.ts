@@ -36,10 +36,10 @@ vi.mock('jspdf', () => {
       addFileToVFS = mockAddFileToVFS;
       addFont = mockAddFont;
       internal = {
-        pageSize: { height: 297, width: 210 }
+        pageSize: { height: 297, width: 210 },
       };
       getCurrentPageInfo = () => ({ pageNumber: 1 });
-    }
+    },
   };
 });
 
@@ -47,10 +47,6 @@ vi.mock('jspdf-autotable', () => ({
   default: vi.fn((doc: Record<string, unknown>) => {
     doc.lastAutoTable = { finalY: 150 };
   }),
-}));
-
-vi.mock('@/assets/fonts/NotoSansKR-Regular-base64', () => ({
-  default: 'FAKE_BASE64_FONT_DATA',
 }));
 
 vi.mock('@/assets/logo-base64', () => ({
