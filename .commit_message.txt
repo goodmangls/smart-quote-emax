@@ -1,1 +1,1 @@
-🗑️ chore: Google Maps 3D 기능 제거 — googleMapsLoader.ts/google-maps-3d.d.ts 삭제, vite-env.d.ts/.env/.env.example/CLAUDE.md에서 VITE_GOOGLE_MAPS_API_KEY 정리 (호출자 0건이라 dead code, 회귀 0)
+🔧 fix(build): Vercel "tsc: command not found" 해결 — build 스크립트에서 tsc 분리("vite build"만), type-check는 별도 npm script + CI(npx tsc --noEmit)에서 검증
