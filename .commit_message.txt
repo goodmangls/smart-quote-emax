@@ -1,1 +1,1 @@
-🔧 fix(build): Vercel "tsc: command not found" 해결 — build 스크립트에서 tsc 분리("vite build"만), type-check는 별도 npm script + CI(npx tsc --noEmit)에서 검증
+🧹 chore(test): tariff-pdf-verify 옛 PDF 데이터 테스트 삭제 — 옛 UPS_PDF/DHL_PDF Record(현 PDF와 무관)가 938건 false negative 발생, 진실은 backend Ruby + frontend TS(둘 다 PDF 일치)이므로 옛 검증 파일 제거. /check 전 검증 통과(lint/tsc/build/298 tests)
