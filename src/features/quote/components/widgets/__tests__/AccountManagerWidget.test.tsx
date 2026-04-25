@@ -10,7 +10,7 @@ describe('AccountManagerWidget', () => {
 
   it('renders first manager by default', () => {
     render(<AccountManagerWidget />);
-    expect(screen.getByText('Charlie Lee')).toBeInTheDocument();
+    expect(screen.getByText('Jaehong Lim')).toBeInTheDocument();
     expect(screen.getByText('widget.manager.role.ops')).toBeInTheDocument();
     expect(screen.getByText('widget.manager.dept.ops')).toBeInTheDocument();
   });
@@ -19,7 +19,7 @@ describe('AccountManagerWidget', () => {
     render(<AccountManagerWidget />);
     expect(screen.getByText('+82-2-6961-5763')).toBeInTheDocument();
     expect(screen.getByText('+82-10-2620-7048')).toBeInTheDocument();
-    expect(screen.getByText('ch.lee@jways.co.kr')).toBeInTheDocument();
+    expect(screen.getByText('jhlim725@gmail.com')).toBeInTheDocument();
   });
 
   it('shows working hours', () => {
@@ -40,8 +40,8 @@ describe('AccountManagerWidget', () => {
 
   it('renders email as mailto link', () => {
     render(<AccountManagerWidget />);
-    const emailLink = screen.getByText('ch.lee@jways.co.kr').closest('a');
-    expect(emailLink).toHaveAttribute('href', 'mailto:ch.lee@jways.co.kr');
+    const emailLink = screen.getByText('jhlim725@gmail.com').closest('a');
+    expect(emailLink).toHaveAttribute('href', 'mailto:jhlim725@gmail.com');
   });
 
   it('renders phone as tel link', () => {

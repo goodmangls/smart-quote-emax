@@ -5,6 +5,45 @@
   "iteration": 0,
   "history": [
     {
+      "feature": "emax-design-system",
+      "phase": "archived",
+      "timestamp": "2026-04-25",
+      "action": "Archived to docs/archive/2026-04/emax-design-system/ (98%) — DESIGN.md 158 LOC + 56 colors, jways 완전 제거, @google/design.md@0.1.1 CLI + scripts/design-diff.mjs CI 통합, 코드 갭 0건. _INDEX.md 갱신 완료",
+      "matchRate": 98
+    },
+    {
+      "feature": "emax-design-system",
+      "phase": "completed",
+      "timestamp": "2026-04-25",
+      "action": "Report 생성 완료 — docs/04-report/features/emax-design-system.report.md. Match Rate 98%, DoD 9/9, 코드 갭 0건. Archive 준비 완료",
+      "matchRate": 98
+    },
+    {
+      "feature": "emax-design-system",
+      "phase": "check",
+      "timestamp": "2026-04-25",
+      "action": "Gap 분석 완료 — Match Rate 98% (코드 갭 0건, 허용 편차 1건[Phase 4 export flat/nested 차이로 의도 보류], 운영 갭 0건, 추가 수정 1건[react-dom 19.2.5 bump]). DoD 9/9 충족, iteration 불필요",
+      "matchRate": 98
+    },
+    {
+      "feature": "emax-design-system",
+      "phase": "do",
+      "timestamp": "2026-04-25",
+      "action": "Do 완료 — Phase1(DESIGN.md 루트 작성 56 colors+8 typo+8 rounded+motion), Phase2(jways palette tailwind.config.cjs 제거), Phase3(@google/design.md@0.1.1 CLI 설치+scripts/design-diff.mjs+package.json scripts+ci.yml step+CLAUDE.md policy), Phase4 보류(export flat key라 회귀 리스크), react-dom 19.2.4→19.2.5 버전 충돌 fix. 검증: lint/tsc/build/298 tests/design:lint 0err/design:diff 56 tokens sync"
+    },
+    {
+      "feature": "emax-design-system",
+      "phase": "design",
+      "timestamp": "2026-04-25",
+      "action": "Design 작성 — DESIGN.md front matter 초안(MD3 semantic + raw emax/accent/gray), @google/design.md@0.1.1 CLI 전략(alpha+fallback), scripts/design-diff.mjs 자체 구현 설계, 4-Phase 순서 확정. 선행: AccountManager 담당자→임재홍/jhlim725@gmail.com + admin fixture→emax.co.kr + 코드 jways grep 0건"
+    },
+    {
+      "feature": "emax-design-system",
+      "phase": "plan",
+      "timestamp": "2026-04-25",
+      "action": "Plan 작성 — Google DESIGN.md spec 도입(Phase 1 DESIGN.md 작성 + Phase 2 jways palette 제거 + Phase 3 @google/design.md CLI + 선택 Phase 4 export), 사용자 3가지 확정(빨강 브랜드 / jways 제거 / CLI 도입)"
+    },
+    {
       "feature": "security-perf-hardening",
       "phase": "archived",
       "timestamp": "2026-04-24",

@@ -316,8 +316,9 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 
 ## Configuration
 
+- **Design tokens**: `DESIGN.md` at the repo root is the **single source of truth** for colors, typography, spacing, rounding, and motion (Google DESIGN.md spec via `@google/design.md` CLI). `tailwind.config.cjs` is a consumer — when a token changes in `DESIGN.md`, mirror it in the Tailwind config and run `npm run design:diff` to verify. CI hard-fails on drift (`design:lint` is advisory while the CLI is alpha).
 - **Path alias**: `@/` -> `src/` (both vite.config.ts and tsconfig.json)
-- **Tailwind**: Custom `emax-*` color palette (red theme), class-based dark mode
+- **Tailwind**: Custom `emax-*` (brand red) and `accent-*` (informational sky) palettes, class-based dark mode. See `DESIGN.md` for rationale and do/don't.
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SENTRY_DSN`, `VITE_CHANNEL_TALK_PLUGIN_KEY`, `VITE_ENABLE_SENTRY`
 - **ENV policy**: `VITE_*` keys are inlined into the client bundle at build time — use only for keys that are safe to expose to browsers (Supabase anon, public DSNs, public SDK keys with referrer/origin restrictions). Server-side secrets (Slack webhooks, EIA API key, admin tokens) MUST live only in the Rails API or Vercel serverless environment variables without the `VITE_` prefix. Slack alerts and EIA jet-fuel requests are already proxied through the Rails backend (`/api/v1/notifications/slack`, `/api/v1/jet_fuel`) — do not re-introduce `VITE_SLACK_WEBHOOK_URL` or `VITE_EIA_API_KEY`.
 - **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.

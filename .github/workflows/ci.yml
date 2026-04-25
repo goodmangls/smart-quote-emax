@@ -18,6 +18,8 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint
+      - run: npm run design:lint || true  # advisory while @google/design.md is alpha
+      - run: npm run design:diff           # hard fail if DESIGN.md drifts from tailwind.config.cjs
       - run: npx vitest run
 
   e2e:

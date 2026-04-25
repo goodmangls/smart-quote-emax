@@ -9,3 +9,4 @@
 | magic-link | ~92% | 2026-04-13 | [analysis](magic-link/magic-link.analysis.md), [report](magic-link/magic-link.report.md) |
 | magic-link-emax | 97% | 2026-04-14 | [analysis](magic-link-emax/magic-link-emax.analysis.md), [report](magic-link-emax/magic-link-emax.report.md) |
 | security-perf-hardening | 98% | 2026-04-24 | [plan](security-perf-hardening/security-perf-hardening.plan.md), [design](security-perf-hardening/security-perf-hardening.design.md), [analysis](security-perf-hardening/security-perf-hardening.analysis.md), [report](security-perf-hardening/security-perf-hardening.report.md) |
+| emax-design-system | 98% | 2026-04-25 | [plan](emax-design-system/emax-design-system.plan.md), [design](emax-design-system/emax-design-system.design.md), [analysis](emax-design-system/emax-design-system.analysis.md), [report](emax-design-system/emax-design-system.report.md) |
