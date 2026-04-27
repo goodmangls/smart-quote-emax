@@ -1,6 +1,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { FscRates } from '@/api/fscApi';
-import { DEFAULT_FSC_PERCENT, DEFAULT_FSC_PERCENT_DHL, DEFAULT_FSC_PERCENT_FEDEX, FEDEX_FSC_URL } from '@/config/rates';
+import {
+  DEFAULT_FSC_PERCENT,
+  DEFAULT_FSC_PERCENT_DHL,
+  DEFAULT_FSC_PERCENT_FEDEX,
+  FEDEX_FSC_URL,
+} from '@/config/rates';
 import {
   Fuel,
   RefreshCw,
@@ -29,14 +34,17 @@ interface FscRateWidgetProps {
 
 export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
   // rates.ts is the single source of truth for FSC (DB auto-apply disabled)
-  const data: FscRates = useMemo(() => ({
-    rates: {
-      UPS: { international: DEFAULT_FSC_PERCENT, domestic: DEFAULT_FSC_PERCENT },
-      DHL: { international: DEFAULT_FSC_PERCENT_DHL, domestic: DEFAULT_FSC_PERCENT_DHL },
-      FEDEX: { international: DEFAULT_FSC_PERCENT_FEDEX, domestic: DEFAULT_FSC_PERCENT_FEDEX },
-    },
-    updatedAt: new Date().toISOString(),
-  }), []);
+  const data: FscRates = useMemo(
+    () => ({
+      rates: {
+        UPS: { international: DEFAULT_FSC_PERCENT, domestic: DEFAULT_FSC_PERCENT },
+        DHL: { international: DEFAULT_FSC_PERCENT_DHL, domestic: DEFAULT_FSC_PERCENT_DHL },
+        FEDEX: { international: DEFAULT_FSC_PERCENT_FEDEX, domestic: DEFAULT_FSC_PERCENT_FEDEX },
+      },
+      updatedAt: new Date().toISOString(),
+    }),
+    [],
+  );
   const loading = false;
 
   // History state
@@ -91,55 +99,56 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
 
   const latestUps = history.ups.length > 0 ? history.ups[history.ups.length - 1].rate : null;
   const latestDhl = history.dhl.length > 0 ? history.dhl[history.dhl.length - 1].rate : null;
-  const latestFedex = history.fedex.length > 0 ? history.fedex[history.fedex.length - 1].rate : null;
+  const latestFedex =
+    history.fedex.length > 0 ? history.fedex[history.fedex.length - 1].rate : null;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Fuel className="w-4 h-4 text-emax-500" />
-          <h4 className="text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+    <div className='bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm'>
+      <div className='px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <Fuel className='w-4 h-4 text-emax-500' />
+          <h4 className='text-xs font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider'>
             FSC Rates (International)
           </h4>
         </div>
         <button
           onClick={fetchRates}
           disabled={loading}
-          className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors"
+          className='text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors'
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       {loading && !data ? (
-        <div className="p-6 text-center text-xs text-gray-400">
-          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+        <div className='p-6 text-center text-xs text-gray-400'>
+          <Loader2 className='w-4 h-4 animate-spin mx-auto' />
         </div>
       ) : data ? (
-        <div className="divide-y divide-gray-100 dark:divide-gray-700">
+        <div className='divide-y divide-gray-100 dark:divide-gray-700'>
           {(['UPS', 'DHL', 'FEDEX'] as const).map((carrier) => {
             const rates = data.rates[carrier];
             const link = carrierLinks[carrier];
 
             return (
-              <div key={carrier} className="px-4 py-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-gray-900 dark:text-white">
+              <div key={carrier} className='px-4 py-3'>
+                <div className='flex items-center justify-between mb-2'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-xs font-bold text-gray-900 dark:text-white'>
                       {carrier}
                     </span>
                     <a
                       href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-emax-500 transition-colors"
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-gray-400 hover:text-emax-500 transition-colors'
                       title={`${carrier} 공식 연료 할증료 페이지 열기`}
                     >
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className='w-3.5 h-3.5' />
                     </a>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+                <p className='text-xl font-bold text-gray-900 dark:text-white'>
                   {rates.international}%
                 </p>
               </div>
@@ -147,129 +156,127 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
           })}
         </div>
       ) : (
-        <div className="p-6 text-center text-xs text-gray-400">Failed to load rates</div>
+        <div className='p-6 text-center text-xs text-gray-400'>Failed to load rates</div>
       )}
 
       {/* ────────────── Historical Chart Section ────────────── */}
-      <div className="border-t border-gray-100 dark:border-gray-700">
+      <div className='border-t border-gray-100 dark:border-gray-700'>
         <button
           onClick={() => setShowHistory((v) => !v)}
-          className="w-full px-4 py-2 flex items-center justify-between text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors"
+          className='w-full px-4 py-2 flex items-center justify-between text-[10px] font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors'
         >
           <span>History</span>
-          {showHistory ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          {showHistory ? (
+            <ChevronUp className='w-3.5 h-3.5' />
+          ) : (
+            <ChevronDown className='w-3.5 h-3.5' />
+          )}
         </button>
 
         {showHistory && (
-          <div className="px-4 pb-4 space-y-3">
+          <div className='px-4 pb-4 space-y-3'>
             {/* SVG Chart */}
-            <div className="rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20 p-2">
+            <div className='rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/20 p-2'>
               <FscChart lines={chartLines} />
             </div>
 
             {/* Legend */}
-            <div className="flex items-center gap-4 text-[10px] text-gray-500 dark:text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-500" />
-                <span>
-                  UPS (Weekly){latestUps !== null ? ` — ${latestUps}%` : ''}
-                </span>
+            <div className='flex items-center gap-4 text-[10px] text-gray-500 dark:text-gray-400'>
+              <div className='flex items-center gap-1.5'>
+                <span className='inline-block w-2.5 h-2.5 rounded-full bg-blue-500' />
+                <span>UPS (Weekly){latestUps !== null ? ` — ${latestUps}%` : ''}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-500" />
-                <span>
-                  DHL (Monthly){latestDhl !== null ? ` — ${latestDhl}%` : ''}
-                </span>
+              <div className='flex items-center gap-1.5'>
+                <span className='inline-block w-2.5 h-2.5 rounded-full bg-amber-500' />
+                <span>DHL (Weekly){latestDhl !== null ? ` — ${latestDhl}%` : ''}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-orange-500" />
-                <span>
-                  FedEx {latestFedex !== null ? ` — ${latestFedex}%` : ''}
-                </span>
+              <div className='flex items-center gap-1.5'>
+                <span className='inline-block w-2.5 h-2.5 rounded-full bg-orange-500' />
+                <span>FedEx {latestFedex !== null ? ` — ${latestFedex}%` : ''}</span>
               </div>
             </div>
 
             {/* Update frequency notes */}
-            <div className="text-[10px] text-gray-400 dark:text-gray-500 space-y-0.5">
+            <div className='text-[10px] text-gray-400 dark:text-gray-500 space-y-0.5'>
               <p>UPS: 매주 월요일 갱신 (Weekly, every Monday)</p>
-              <p>DHL: 매월 1일 갱신 (Monthly, 1st of month)</p>
+              <p>DHL: 매주 월요일 갱신 (Weekly, every Monday — 2026-04경 Monthly→Weekly 전환)</p>
               <p>FedEx: 매주 월요일 갱신 (Weekly, every Monday)</p>
             </div>
 
             {/* Add Entry Form */}
-            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-3 space-y-2">
-              <p className="text-[10px] font-semibold text-gray-600 dark:text-gray-300">
+            <div className='rounded-lg border border-gray-200 dark:border-gray-600 p-3 space-y-2'>
+              <p className='text-[10px] font-semibold text-gray-600 dark:text-gray-300'>
                 Add History Entry
               </p>
-              <div className="flex flex-wrap items-end gap-2">
+              <div className='flex flex-wrap items-end gap-2'>
                 <div>
-                  <label className="block text-[10px] text-gray-400 mb-0.5">Carrier</label>
+                  <label className='block text-[10px] text-gray-400 mb-0.5'>Carrier</label>
                   <select
                     value={addCarrier}
                     onChange={(e) => setAddCarrier(e.target.value as 'ups' | 'dhl' | 'fedex')}
-                    className="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                   >
-                    <option value="ups">UPS</option>
-                    <option value="dhl">DHL</option>
-                    <option value="fedex">FedEx</option>
+                    <option value='ups'>UPS</option>
+                    <option value='dhl'>DHL</option>
+                    <option value='fedex'>FedEx</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] text-gray-400 mb-0.5">
-                    Date {addCarrier === 'dhl' ? '(YYYY-MM)' : '(YYYY-MM-DD)'}
+                  <label className='block text-[10px] text-gray-400 mb-0.5'>
+                    Date (YYYY-MM-DD)
                   </label>
                   <input
-                    type={addCarrier === 'dhl' ? 'month' : 'date'}
+                    type='date'
                     value={addDate}
                     onChange={(e) => setAddDate(e.target.value)}
-                    className="px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-gray-400 mb-0.5">Rate (%)</label>
+                  <label className='block text-[10px] text-gray-400 mb-0.5'>Rate (%)</label>
                   <input
-                    type="number"
-                    step="0.25"
+                    type='number'
+                    step='0.25'
                     min={0}
                     max={100}
                     value={addRate}
                     onChange={(e) => setAddRate(e.target.value)}
-                    placeholder="38.50"
-                    className="w-20 px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    placeholder='38.50'
+                    className='w-20 px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                   />
                 </div>
                 <button
                   onClick={handleAddEntry}
                   disabled={!addDate || !addRate}
-                  className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white bg-emax-600 hover:bg-emax-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors"
+                  className='flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white bg-emax-600 hover:bg-emax-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors'
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className='w-3 h-3' />
                   Add
                 </button>
               </div>
             </div>
 
             {/* Entry list with delete */}
-            <div className="max-h-40 overflow-y-auto space-y-1">
+            <div className='max-h-40 overflow-y-auto space-y-1'>
               {(['ups', 'dhl', 'fedex'] as const).map((carrier) => (
                 <div key={carrier}>
-                  <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase mb-0.5">
+                  <p className='text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase mb-0.5'>
                     {carrier}
                   </p>
                   {history[carrier].map((entry) => (
                     <div
                       key={`${carrier}-${entry.date}`}
-                      className="flex items-center justify-between py-0.5 px-1 text-[10px] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/30 rounded"
+                      className='flex items-center justify-between py-0.5 px-1 text-[10px] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/30 rounded'
                     >
                       <span>
                         {entry.date} — {entry.rate}%
                       </span>
                       <button
                         onClick={() => handleRemoveEntry(carrier, entry.date)}
-                        className="text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition-colors"
-                        title="Delete entry"
+                        className='text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition-colors'
+                        title='Delete entry'
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className='w-3 h-3' />
                       </button>
                     </div>
                   ))}
@@ -281,8 +288,8 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
       </div>
 
       {data && (
-        <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700">
-          <span className="text-[10px] text-gray-400 dark:text-gray-400">
+        <div className='px-4 py-2 border-t border-gray-100 dark:border-gray-700'>
+          <span className='text-[10px] text-gray-400 dark:text-gray-400'>
             Source: rates.ts (single source of truth)
           </span>
         </div>

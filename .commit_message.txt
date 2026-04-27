@@ -1,1 +1,1 @@
-📦 pdca archive: emax-design-system — docs/archive/2026-04/emax-design-system/ 이동 (98%), 4개 문서 archive + _INDEX.md 갱신
+⛽ chore: FSC 요율 업데이트 + DHL Weekly 전환 UI 통일 — UPS 47.5%→45.5% / DHL 47.75%→48.0% / FedEx 45.5%→43.5% (2026-04-27, src/config/rates.ts + smart-quote-api/lib/constants/rates.rb + src/config/fsc-history.ts), FscRateWidget DHL date input을 YYYY-MM(month picker)→YYYY-MM-DD(date picker)로 통일 + Legend "DHL (Monthly)"→"DHL (Weekly)" + 안내 문구 갱신

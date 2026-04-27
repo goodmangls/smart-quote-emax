@@ -34,9 +34,10 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-03-16', rate: 38.5 },
     { date: '2026-03-23', rate: 41.75 },
     { date: '2026-03-30', rate: 46.25 },
-    { date: '2026-04-06', rate: 46.00 },
+    { date: '2026-04-06', rate: 46.0 },
     { date: '2026-04-13', rate: 46.75 },
-    { date: '2026-04-20', rate: 47.50 },
+    { date: '2026-04-20', rate: 47.5 },
+    { date: '2026-04-27', rate: 45.5 },
   ],
   dhl: [
     { date: '2026-01', rate: 30.0 },
@@ -45,6 +46,7 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-04-01', rate: 39.0 },
     { date: '2026-04-13', rate: 46.0 },
     { date: '2026-04-20', rate: 47.75 },
+    { date: '2026-04-27', rate: 48.0 },
   ],
   fedex: [
     { date: '2026-02-16', rate: 29.5 },
@@ -56,18 +58,21 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-03-30', rate: 38.0 },
     { date: '2026-04-06', rate: 41.5 },
     { date: '2026-04-13', rate: 43.5 },
-    { date: '2026-04-20', rate: 45.50 },
+    { date: '2026-04-20', rate: 45.5 },
+    { date: '2026-04-27', rate: 43.5 },
   ],
 };
 
 function isValidEntry(e: unknown): e is FscHistoryEntry {
   if (typeof e !== 'object' || e === null) return false;
   const entry = e as Record<string, unknown>;
-  return typeof entry.date === 'string'
-    && entry.date.length > 0
-    && typeof entry.rate === 'number'
-    && isFinite(entry.rate)
-    && entry.rate >= 0;
+  return (
+    typeof entry.date === 'string' &&
+    entry.date.length > 0 &&
+    typeof entry.rate === 'number' &&
+    isFinite(entry.rate) &&
+    entry.rate >= 0
+  );
 }
 
 /** Load FSC history from localStorage, falling back to default seed data. */
