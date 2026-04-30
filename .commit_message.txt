@@ -1,1 +1,1 @@
-🧹 chore: emax_cost.rb trailing whitespace 1건 정리 — line 16 1글자, 다른 세션 commit으로 유입된 rubocop offense. 검증: rubocop touched-file 0 offense.
+📱 견적 비교(/compare) 모바일: 슬롯 가로 스냅·테이블 스크롤·터치 타겟·Route/Cargo isMobileView·접근성 aria-label

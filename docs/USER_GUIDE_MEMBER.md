@@ -133,7 +133,7 @@ A comparison card shows estimated costs across all carriers side-by-side for qui
 
 ### Dedicated Quote Comparison (`/compare`)
 
-From the header **Comparison** link (Korean: **견적 비교**), open the comparison workspace. Enter route and cargo once, then set up to **three** slots (carrier + target discount %). A summary table updates live. Quotes are **not** saved here—use **Smart Quote** (`/quote`) to save official quotes.
+From the header **Comparison** link (Korean: **견적 비교**), open the comparison workspace. Enter route and cargo once, then set up to **three** slots (carrier + target discount %). **Each slot uses that carrier’s default fuel surcharge (FSC)**, consistent with the Smart Quote calculator when you switch carriers. UI text follows your language toggle (Korean / English). A summary table updates live. Quotes are **not** saved here—use **Smart Quote** (`/quote`) to save official quotes.
 
 > **Note**: As a Member, the margin breakdown is hidden. You see the final quoted price only.
 
