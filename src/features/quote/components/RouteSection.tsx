@@ -176,9 +176,9 @@ export const RouteSection: React.FC<Props> = ({ input, onFieldChange, isMobileVi
             >
               <option value='UPS'>UPS</option>
               <option value='DHL'>DHL</option>
-              <option value='EMAX'>EMAX</option>
               <option value='FEDEX'>FedEx</option>
               <option value='OCS'>OCS</option>
+              <option value='EMAX'>EMAX</option>
             </select>
             {selectChevron}
           </div>

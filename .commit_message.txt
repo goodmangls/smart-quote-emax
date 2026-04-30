@@ -1,1 +1,1 @@
-🔧 fix: Carrier dropdown에 EMAX 옵션 노출 — RouteSection.tsx에 한 줄(`<option value='EMAX'>EMAX</option>`) 추가. 타입/calculationService/backend emax_cost.rb 모두 살아있었으나 dropdown 옵션 코드에서만 누락된 pre-existing drift. 비대상 destination 선택 시 calculationService가 이미 "EMAX only services CN/VN" warning 출력. 검증: lint/type-check/89 tests 통과.
+🎨 chore: Carrier dropdown 순서 조정 — UPS / DHL / FedEx / OCS / EMAX 순서로 노출 (사용자 요청). RouteSection.tsx EMAX option을 마지막 위치로 이동. 검증: lint / type-check 통과.
