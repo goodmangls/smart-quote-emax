@@ -113,8 +113,9 @@ class QuoteCalculator
     @discount_amount = base_rate - @base_with_discount
 
     if @carrier == "EMAX"
-      # E-MAX FSC is 15-day variable per KG. Valid until May 15.
-      fsc_per_kg = @input[:destinationCountry] == "CN" ? 2000 : 2100
+      # E-MAX FSC is 15-day variable per KG. Source: Constants::EmaxTariff::EMAX_FSC_PER_KG.
+      fsc_per_kg = Constants::EmaxTariff::EMAX_FSC_PER_KG[@input[:destinationCountry]] ||
+                   Constants::EmaxTariff::EMAX_FSC_PER_KG["VN"]
       @intl_fsc_new = (@billable_weight * fsc_per_kg).round
     else
       fsc_val  = @input[:fscPercent] || default_fsc_for(@carrier)
