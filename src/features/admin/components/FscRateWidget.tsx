@@ -7,6 +7,7 @@ import {
   DEFAULT_FSC_PERCENT_OCS,
   FEDEX_FSC_URL,
 } from '@/config/rates';
+import { EMAX_FSC_PER_KG } from '@/config/emax_tariff';
 import {
   Fuel,
   RefreshCw,
@@ -157,6 +158,19 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
               </div>
             );
           })}
+
+          {/* EMAX — per-kg, not percentage. CN/VN only. */}
+          <div className='px-4 py-3'>
+            <div className='flex items-center justify-between mb-2'>
+              <span className='text-xs font-bold text-gray-900 dark:text-white'>EMAX</span>
+              <span className='text-[10px] text-gray-400'>per-kg · CN/VN only</span>
+            </div>
+            <p className='text-base font-bold text-gray-900 dark:text-white'>
+              CN {EMAX_FSC_PER_KG.CN.toLocaleString()}원/kg
+              <span className='text-gray-400 mx-2'>·</span>
+              VN {EMAX_FSC_PER_KG.VN.toLocaleString()}원/kg
+            </p>
+          </div>
         </div>
       ) : (
         <div className='p-6 text-center text-xs text-gray-400'>Failed to load rates</div>

@@ -7,3 +7,10 @@ export const EMAX_RATES: Record<string, number> = {
 };
 
 export const EMAX_HANDLING_CHARGE = 15000;
+
+// EMAX FSC is per-kg KRW (no percentage), 15-day variable.
+// Source of truth shared with calculationService.ts EMAX FSC branch.
+export const EMAX_FSC_PER_KG: Record<string, number> = {
+  'CN': 2000,
+  'VN': 2100,
+};

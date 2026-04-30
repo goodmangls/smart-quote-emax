@@ -1,1 +1,1 @@
-🎨 chore: Carrier dropdown 순서 조정 — UPS / DHL / FedEx / OCS / EMAX 순서로 노출 (사용자 요청). RouteSection.tsx EMAX option을 마지막 위치로 이동. 검증: lint / type-check 통과.
+⛽ feat: FscRateWidget에 EMAX FSC per-kg 정보 노출 — emax_tariff.ts에 EMAX_FSC_PER_KG 상수(CN=2000, VN=2100원/kg) 추가하고 widget에 EMAX 블록 노출. EMAX FSC는 percentage가 아닌 per-kg 구조라 기존 4-carrier carrier map 뒤에 별도 블록으로 표시(외부 link 없음, "per-kg · CN/VN only" 라벨). FscRates 타입/API 변경 없음(EMAX는 admin update 미대상). calculationService.ts 인라인 리터럴(2000/2100) 정리는 별도 cleanup 사이클로 분리. 검증: lint / type-check 통과.
