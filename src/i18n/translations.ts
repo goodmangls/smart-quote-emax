@@ -8,6 +8,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.signup': '회원가입',
     'nav.logout': '로그아웃',
     'nav.dashboard': '대시보드',
+    'nav.compare': '견적 비교',
     'nav.admin': '관리자 패널',
     'nav.guide': '가이드',
 
@@ -346,6 +347,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.signup': 'Sign Up',
     'nav.logout': 'Logout',
     'nav.dashboard': 'Dashboard',
+    'nav.compare': 'Comparison',
     'nav.admin': 'Admin Panel',
     'nav.guide': 'Guide',
     'nav.history': 'Quote History',

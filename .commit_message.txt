@@ -1,1 +1,1 @@
-✅ chore: calculationParity snapshot 갱신 — d092735(EMAX exact tariff table 도입)으로 EMAX intlBase/intlFsc/totalCost 변경분 반영(emax_cn_full_loaded, emax_vn_pickup_and_surge fixture). 24 라인 +/- 12. 의도된 EMAX 가격 인상(~10-15%)이라 새 값 채택. 검증: 310/310 tests 통과.
+🔧 fix: 견적 비교 페이지 타입 정합화(QuoteInput/Breakdown/totalQuoteAmount, FEDEX 기본값, ESLint) + 멤버 가이드 `/compare` 안내

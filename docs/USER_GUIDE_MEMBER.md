@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** International Logistics Quoting System
 >
-> Version 3.1 | Last Updated: 2026-03-17
+> Version 3.2 | Last Updated: 2026-04-30
 
 ---
 
@@ -58,7 +58,7 @@ After login, you land on the **Customer Dashboard** (`/dashboard`).
 
 - **New Quote** button navigates to `/quote`
 - **View All** link opens full quote history
-- Header menu provides access to Dashboard, Quote Calculator, and Account Settings
+- Header menu provides access to Dashboard, Quote Calculator, **Quote Comparison** (`/compare`), and Account Settings
 
 ---
 
@@ -130,6 +130,10 @@ When entering a destination ZIP code, the system automatically checks against 86
 ### Carrier Comparison
 
 A comparison card shows estimated costs across all carriers side-by-side for quick decision-making.
+
+### Dedicated Quote Comparison (`/compare`)
+
+From the header **Comparison** link (Korean: **견적 비교**), open the comparison workspace. Enter route and cargo once, then set up to **three** slots (carrier + target discount %). A summary table updates live. Quotes are **not** saved here—use **Smart Quote** (`/quote`) to save official quotes.
 
 > **Note**: As a Member, the margin breakdown is hidden. You see the final quoted price only.
 

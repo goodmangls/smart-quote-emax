@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Globe, Moon, Sun, LogOut, Settings, Menu, X, BookOpen } from 'lucide-react';
+import { Globe, Moon, Sun, LogOut, Settings, Menu, X, BookOpen, Scale } from 'lucide-react';
 import { AccountSettingsModal } from '@/features/dashboard/components/AccountSettingsModal';
 
 const LANGUAGES = [
@@ -70,6 +70,10 @@ export const Header: React.FC = () => {
                    </div>
                     <Link to="/quote" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-white transition-colors">
                       {t('nav.smartQuote')}
+                    </Link>
+                    <Link to="/compare" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-emax-600 dark:hover:text-white transition-colors flex items-center gap-1">
+                      <Scale className="w-4 h-4" />
+                      {t('nav.compare')}
                     </Link>
 
                     {user?.role === 'admin' && (
@@ -186,6 +190,10 @@ export const Header: React.FC = () => {
 
                 <Link to="/quote" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600 font-medium">
                   {t('nav.smartQuote')}
+                </Link>
+                <Link to="/compare" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-1.5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">
+                  <Scale className="w-4 h-4" />
+                  {t('nav.compare')}
                 </Link>
                 {user?.role === 'admin' && (
                     <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-emax-600">

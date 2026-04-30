@@ -17,6 +17,7 @@ const SignUpPage = React.lazy(() => import('./pages/SignUpPage'));
 const MagicLinkVerifyPage = React.lazy(() => import('./pages/MagicLinkVerifyPage'));
 const UserGuidePage = React.lazy(() => import('./pages/UserGuidePage'));
 const SharedQuotePage = React.lazy(() => import('./pages/SharedQuotePage'));
+const QuoteComparison = React.lazy(() => import('./pages/QuoteComparison'));
 
 function App() {
   return (
@@ -74,6 +75,18 @@ function App() {
                         <ProtectedRoute requireAdmin={true}>
                           <ErrorBoundary>
                             <QuoteCalculator isPublic={false} />
+                          </ErrorBoundary>
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Quote Comparison - Protected for Authenticated Users */}
+                    <Route
+                      path='/compare'
+                      element={
+                        <ProtectedRoute>
+                          <ErrorBoundary>
+                            <QuoteComparison />
                           </ErrorBoundary>
                         </ProtectedRoute>
                       }

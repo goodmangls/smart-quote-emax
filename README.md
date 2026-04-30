@@ -22,6 +22,7 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 - **EAS/RAS Auto-Detection**: Postal code-based Extended/Remote Area Surcharge lookup (86 countries, 39,876 zip ranges, binary search O(log n), lazy-loaded)
 - **Surcharges**: FSC% fuel surcharge, DB-driven surcharges, manual surge fees, carrier-specific add-ons (UPS: 6 types, DHL: 19 types)
 - **Carrier comparison**: Side-by-side cost comparison across all carriers
+- **Quote Comparison Page**: Dedicated comparison interface to test 3 different carrier/discount combinations simultaneously with detailed breakdown tables
 - **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments use DAP exclusively
 - **E-MAX Vietnam Pricing**: Unified Hanoi-based pricing for all Vietnam routes (KRW 11,000/kg for >20kg)
 - **Fair Weight Rounding**: 0.5kg step rounding policy for E-MAX to prevent overcharging
