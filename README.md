@@ -23,6 +23,9 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 - **Surcharges**: FSC% fuel surcharge, DB-driven surcharges, manual surge fees, carrier-specific add-ons (UPS: 6 types, DHL: 19 types)
 - **Carrier comparison**: Side-by-side cost comparison across all carriers
 - **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments use DAP exclusively
+- **E-MAX Vietnam Pricing**: Unified Hanoi-based pricing for all Vietnam routes (KRW 11,000/kg for >20kg)
+- **Fair Weight Rounding**: 0.5kg step rounding policy for E-MAX to prevent overcharging
+
 
 ### Calculation Pipeline
 
@@ -110,9 +113,11 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 - **Validity tracking**: Color-coded expiry indicators (green: >3 days, yellow: 1-3 days, red: expired)
 - **Configurable**: `validityDays` field for default quote validity period
 
-### Error Tracking
+### Performance Optimization
 
-- **Sentry** integration across all error boundaries and catch blocks for production monitoring
+- **Code Splitting**: Heavy features like `AdminWidgets` and `QuoteHistoryPage` are split into lazy-loaded chunks using `React.lazy`.
+- **On-Demand Loading**: Large libraries (e.g., `jspdf`, `html2canvas`) are loaded via dynamic `import()` only when needed (e.g., clicking "Download PDF").
+- **Asset Optimization**: Efficient manual chunking strategy in Vite to balance cache-ability and initial load time.
 
 ## Tech Stack
 

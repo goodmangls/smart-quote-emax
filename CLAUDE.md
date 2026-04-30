@@ -59,7 +59,8 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       ups_tariff.ts            # UPS Z1-Z10 rate tables (synced with backend, Eff. 01-Feb-26)
       dhl_tariff.ts            # DHL Z1-Z8 rate tables (synced with backend, 2026 정가)
       fedex_tariff.ts          # FedEx IP ZA-ZY rate tables (synced with backend, Eff. 2026.01.05)
-      emax_tariff.ts           # EMAX per-country rate tables (CN, VN only)
+      emax_tariff.ts           # EMAX per-country rate tables (CN, VN Hanoi-only)
+
       ocs_tariff.ts            # OCS rate tables and handling charges (TW/HK/SG/CN/JP)
       fsc-history.ts           # FSC historical rates with localStorage persistence (UPS/DHL/FedEx/OCS)
       rates.ts                 # KRW cost constants, DEFAULT_EXCHANGE_RATE=1450, DEFAULT_FSC_PERCENT=47.5 (UPS), 47.75 (DHL), 45.5 (FedEx)
@@ -193,10 +194,11 @@ Frontend (`src/features/quote/services/calculationService.ts`) and backend (`sma
 
 ### Calculation Pipeline
 
-1. **Item Costs** - Packing dimensions (+10/+10/+15cm), volumetric weight (L*W*H / 5000 for UPS, DHL, FedEx, OCS, /6000 for EMAX), packing material/labor, manual surge charges (all carriers)
-2. **Carrier Costs** - Zone lookup (country -> zone code), shared `lookupCarrierRate()` engine (exact table 0.5-20kg -> range table >20kg -> fallback), FSC% surcharge
+1. **Item Costs** - Packing dimensions (+10/+10/+15cm), volumetric weight (`L*W*H / 5000` for UPS/DHL/FedEx/OCS, `/6000` for EMAX), packing material/labor, manual surge charges (all carriers).
+2. **Carrier Costs** - Zone lookup (country -> zone code), shared `lookupCarrierRate()` engine (exact table 0.5-20kg -> range table >20kg -> fallback), FSC% surcharge.
 3. **Margin** - Dynamic margin via `MarginRuleResolver` (priority-based: P100 per-user flat > P90 per-user weight > P50 nationality > P0 default), `revenue = cost / (1 - margin%)`, rounded up to nearest KRW 100. Admin can manually override at any time.
-4. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support
+4. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support.
+
 
 ### UPS Zone Mapping (Z1-Z10) — per UPS 2026 Service Guide
 
@@ -218,9 +220,6 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 - Detects EAS (Extended), RAS (Remote), DAS (Delivery) surcharges by postal code
 - Shows auto-detect banner in UpsAddOnPanel with one-click apply
 
-### Incoterm Policy
-
-UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
 
 ## Dashboard Widgets
 
@@ -265,6 +264,21 @@ UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions). AI ch
 - **AuditLogViewer**: All admin actions audit trail with search/filter
 
 ## External APIs
+
+### Performance Guidelines
+
+- **Lazy Loading**: Use `React.lazy()` for route-level components and heavy admin features (`AdminWidgets`, `QuoteHistoryPage`).
+- **Dynamic Imports**: Use `await import()` for heavy libraries like `jspdf` inside event handlers to keep the initial JS chunk small.
+- **Manual Chunking**: Maintain `vite.config.ts` manualChunks to isolate React core and larger dependencies.
+
+## Business Logic Rules
+
+- **EMAX Vietnam**: All Vietnam quotes must use the **Hanoi-based** rate table and range rate (KRW 11,000/kg >20kg).
+- **EMAX Weight Policy**: Apply **0.5kg step rounding** (round up to nearest 0.5kg) for all EMAX calculations to ensure consistency with carrier tariffs.
+- **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
+- **Volumetric Weight**: Use `L*W*H/5000` for all carriers except EMAX (`/6000`).
+- **Rounding Policy**: Margin-adjusted revenue is always rounded up to the nearest KRW 100.
+
 
 | API             | Endpoint                                | Purpose                   |
 | --------------- | --------------------------------------- | ------------------------- |

@@ -215,3 +215,11 @@ Default radius is `0.5rem` (Tailwind `rounded`). Containers holding dense data (
 - Tailwind config consumer: `tailwind.config.cjs`
 - PDCA plan: `docs/01-plan/features/emax-design-system.plan.md`
 - PDCA design: `docs/02-design/features/emax-design-system.design.md`
+
+## Performance & Loading Experience
+
+To maintain the **operational, precise, and fast** brand voice, the application implements:
+- **Code Splitting**: Heavy components like `AdminWidgets` and `QuoteHistoryPage` are lazily loaded.
+- **On-Demand PDF**: The PDF generation engine (`jspdf`) is only loaded when the "Download PDF" button is clicked, reducing the initial bundle size.
+- **Optimized Bundle**: Global utilities and translations are centralized in the main chunk for consistent performance across views.
+

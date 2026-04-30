@@ -22,6 +22,7 @@ This document outlines the core branding, SEO, and copy elements for the E-MAX S
 ### Features
 - **즉시 운임 견적**: Door-to-Door, Door-to-Airport 요금을 실시간 환율과 FSC를 반영하여 즉시 계산합니다.
 - **투명한 비용 구조**: 국제 운임, 유류할증료(FSC), 포장비, 부가서비스까지 항목별로 투명하게 세분화합니다.
+- **합리적인 중량 산정**: 0.5kg 단위 반올림 정책(0.5kg Step Rounding)을 적용하여 과다 청구를 방지하고 합리적인 운임을 제공합니다.
 - **전국 네트워크**: 36개 국내 지사망을 보유한 이맥스만의 강력한 물류 인프라를 통해 안전한 배송을 보장합니다.
 
 ### Footer
