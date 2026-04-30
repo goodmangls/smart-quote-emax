@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Smart Quote System for **E-MAX Worldwide Express** - an internal logistics quoting tool that calculates international shipping costs across carriers (UPS, DHL, FedEx, EMAX). React frontend with a Rails API backend, sharing mirrored calculation logic. Includes customer dashboard with live exchange rates, weather, jet fuel prices, notices, and account manager widgets. Role-based access (Admin/Member) with Slack notifications and Sentry error tracking.
+Smart Quote System for **E-MAX Worldwide Express** - an internal logistics quoting tool that calculates international shipping costs across carriers (UPS, DHL, FedEx, EMAX, OCS). React frontend with a Rails API backend, sharing mirrored calculation logic. Includes customer dashboard with live exchange rates, weather, jet fuel prices, notices, and account manager widgets. Role-based access (Admin/Member) with Slack notifications and Sentry error tracking.
 
 ## Development Commands
 
@@ -60,12 +60,13 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       dhl_tariff.ts            # DHL Z1-Z8 rate tables (synced with backend, 2026 정가)
       fedex_tariff.ts          # FedEx IP ZA-ZY rate tables (synced with backend, Eff. 2026.01.05)
       emax_tariff.ts           # EMAX per-country rate tables (CN, VN only)
-      fsc-history.ts           # FSC historical rates with localStorage persistence (UPS/DHL/FedEx)
+      ocs_tariff.ts            # OCS rate tables and handling charges (TW/HK/SG/CN/JP)
+      fsc-history.ts           # FSC historical rates with localStorage persistence (UPS/DHL/FedEx/OCS)
       rates.ts                 # KRW cost constants, DEFAULT_EXCHANGE_RATE=1450, DEFAULT_FSC_PERCENT=47.5 (UPS), 47.75 (DHL), 45.5 (FedEx)
       business-rules.ts        # Surge thresholds, packing weight buffer/addition
       options.ts               # Country options, carrier options, incoterm options
       addon-utils.ts           # Shared AddonRateLike/NormalizedRate types, calcAddonFee(), findRate()
-      ups_zones.ts / dhl_zones.ts / fedex_zones.ts  # Config-driven zone mappings (Record<string, ZoneInfo>)
+      ups_zones.ts / dhl_zones.ts / fedex_zones.ts / ocs_zones.ts  # Config-driven zone mappings (Record<string, ZoneInfo>)
       ups_addons.ts            # UPS add-on rates (6) + Surge Fee config (Israel/ME)
       dhl_addons.ts            # DHL add-on rates (19) with auto-detect (OSP, OWT)
       ups_eas_lookup.ts        # EAS/RAS postal code lookup (binary search, lazy-load from public/data/)
@@ -128,6 +129,7 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
       dhl_cost.rb / dhl_zone.rb
       fedex_cost.rb / fedex_zone.rb
       emax_cost.rb
+      ocs_cost.rb / ocs_zone.rb
   app/controllers/api/v1/
     quotes_controller.rb       # Quote CRUD (uses QuoteSearcher, QuoteExporter, QuoteSerializer)
     margin_rules_controller.rb # CRUD + resolve endpoint (admin guard, audit log)
@@ -141,7 +143,7 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
     chat_controller.rb         # AI chatbot (Claude API, role-aware, language auto-detect, markdown, preset questions)
     notifications_controller.rb # Slack webhook proxy
   db/seeds/addon_rates.rb      # DHL 19 + UPS 6 add-on rate seed data
-  lib/constants/               # Tariff tables (ups_tariff.rb, dhl_tariff.rb, emax_tariff.rb)
+  lib/constants/               # Tariff tables (ups_tariff.rb, dhl_tariff.rb, emax_tariff.rb, ocs_tariff.rb)
 ```
 
 ### Routing (src/App.tsx)
@@ -191,10 +193,10 @@ Frontend (`src/features/quote/services/calculationService.ts`) and backend (`sma
 
 ### Calculation Pipeline
 
-1. **Item Costs** - Packing dimensions (+10/+10/+15cm), volumetric weight (L*W*H / 5000 for UPS & DHL, /6000 for EMAX), packing material/labor, manual surge charges (all carriers)
+1. **Item Costs** - Packing dimensions (+10/+10/+15cm), volumetric weight (L*W*H / 5000 for UPS, DHL, FedEx, OCS, /6000 for EMAX), packing material/labor, manual surge charges (all carriers)
 2. **Carrier Costs** - Zone lookup (country -> zone code), shared `lookupCarrierRate()` engine (exact table 0.5-20kg -> range table >20kg -> fallback), FSC% surcharge
 3. **Margin** - Dynamic margin via `MarginRuleResolver` (priority-based: P100 per-user flat > P90 per-user weight > P50 nationality > P0 default), `revenue = cost / (1 - margin%)`, rounded up to nearest KRW 100. Admin can manually override at any time.
-4. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX country support
+4. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support
 
 ### UPS Zone Mapping (Z1-Z10) — per UPS 2026 Service Guide
 
@@ -218,7 +220,7 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 
 ### Incoterm Policy
 
-UPS/DHL/FedEx/EMAX express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
+UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
 
 ## Dashboard Widgets
 
@@ -254,7 +256,7 @@ UPS/DHL/FedEx/EMAX express shipments → **DAP only** (no exceptions). AI chatbo
 
 ### Admin Widgets (visible at /admin only)
 
-- **FscRateWidget**: Tracks live DHL/UPS/FedEx fuel surcharges with external verification links and manual override
+- **FscRateWidget**: Tracks live DHL/UPS/FedEx/OCS fuel surcharges with external verification links and manual override
 - **DiscountRulesWidget**: DB-driven discount rule CRUD, priority-based grouping (P100/P90/P50/P0), inline add/edit, soft delete
 - **SurchargeManagementWidget**: Carrier-specific surcharge CRUD (split into SurchargeForm, SurchargeTable, SurchargeCarrierLinks, SurchargeNotice sub-components)
 - **CustomerManagement**: Customer CRUD with quote count badges
@@ -297,7 +299,7 @@ POST   /api/v1/auth/register     # Account creation
 PUT    /api/v1/auth/password     # Change Password
 
 # Admin Configuration
-GET    /api/v1/fsc/rates         # View Fuel Surcharges (DHL/UPS/FedEx)
+GET    /api/v1/fsc/rates         # View Fuel Surcharges (DHL/UPS/FedEx/OCS)
 POST   /api/v1/fsc/update        # Update global FSC% rates
 GET    /api/v1/margin_rules          # List all rules
 POST   /api/v1/margin_rules          # Create rule
@@ -321,9 +323,9 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 - **Tailwind**: Custom `emax-*` (brand red) and `accent-*` (informational sky) palettes, class-based dark mode. See `DESIGN.md` for rationale and do/don't.
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SENTRY_DSN`, `VITE_CHANNEL_TALK_PLUGIN_KEY`, `VITE_ENABLE_SENTRY`
 - **ENV policy**: `VITE_*` keys are inlined into the client bundle at build time — use only for keys that are safe to expose to browsers (Supabase anon, public DSNs, public SDK keys with referrer/origin restrictions). Server-side secrets (Slack webhooks, EIA API key, admin tokens) MUST live only in the Rails API or Vercel serverless environment variables without the `VITE_` prefix. Slack alerts and EIA jet-fuel requests are already proxied through the Rails backend (`/api/v1/notifications/slack`, `/api/v1/jet_fuel`) — do not re-introduce `VITE_SLACK_WEBHOOK_URL` or `VITE_EIA_API_KEY`.
-- **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.
-- **Market defaults** (as of 2026-04-20): `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=47.5` (UPS), `DEFAULT_FSC_PERCENT_DHL=47.75`, `DEFAULT_FSC_PERCENT_FEDEX=45.5` in `src/config/rates.ts`
-- **FSC history**: `src/config/fsc-history.ts` tracks weekly UPS and monthly DHL/FedEx FSC rates. Update when rates change.
+- **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`, `ocs_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.
+- **Market defaults** (as of 2026-04-20): `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=47.5` (UPS), `DEFAULT_FSC_PERCENT_DHL=47.75`, `DEFAULT_FSC_PERCENT_FEDEX=45.5`, `DEFAULT_FSC_PERCENT_OCS=10.0` in `src/config/rates.ts`
+- **FSC history**: `src/config/fsc-history.ts` tracks weekly UPS and monthly DHL/FedEx/OCS FSC rates. Update when rates change.
 - **Exchange rate policy**: Live API 자동세팅 비활성화, 매주 월요일 수동 업데이트 (하나은행 기준)
 - **Error tracking**: Sentry (`@sentry/browser`) integrated across all catch blocks
 - **Node version**: v22.0.0+ required for Vercel production builds

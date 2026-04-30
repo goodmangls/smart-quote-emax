@@ -6,7 +6,7 @@
 
 <br />
 
-The **E-MAX Smart Quote** system is a full-stack logistics quoting application for **E-MAX Worldwide Express**. It calculates international shipping costs across multiple carriers (UPS, DHL, FedEx), including export packing, surcharges, and discount analysis. React frontend with a Rails API backend and mirrored calculation logic.
+The **E-MAX Smart Quote** system is a full-stack logistics quoting application for **E-MAX Worldwide Express**. It calculates international shipping costs across multiple carriers (UPS, DHL, FedEx, EMAX, OCS), including export packing, surcharges, and discount analysis. React frontend with a Rails API backend and mirrored calculation logic.
 
 **Live URL**: [https://smart-quote-emax.vercel.app](https://smart-quote-emax.vercel.app)
 
@@ -14,7 +14,7 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 
 ## Key Features
 
-### Multi-Carrier Quoting (UPS, DHL, FedEx, EMAX)
+### Multi-Carrier Quoting (UPS, DHL, FedEx, EMAX, OCS)
 
 - **Zone-based pricing**: Config-driven country-to-zone mapping (Z1-Z10 for UPS, Z1-Z8 for DHL, ZA-ZY for FedEx) with exact rate tables (0.5-20.5kg) and range rates (per-kg)
 - **Shared rate lookup**: Common `lookupCarrierRate()` engine for all carriers (exact table → range table → fallback)
@@ -22,15 +22,15 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 - **EAS/RAS Auto-Detection**: Postal code-based Extended/Remote Area Surcharge lookup (86 countries, 39,876 zip ranges, binary search O(log n), lazy-loaded)
 - **Surcharges**: FSC% fuel surcharge, DB-driven surcharges, manual surge fees, carrier-specific add-ons (UPS: 6 types, DHL: 19 types)
 - **Carrier comparison**: Side-by-side cost comparison across all carriers
-- **Incoterm Policy**: UPS/DHL/FedEx/EMAX express shipments use DAP exclusively
+- **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments use DAP exclusively
 
 ### Calculation Pipeline
 
-1. **Item Costs** - Packing dimensions via `applyPackingDimensions()` utility (+10/+10/+15cm), volumetric weight (L x W x H / 5000 for UPS & DHL, /6000 for EMAX), packing material/labor, Special Packing info panel (WOODEN_BOX/SKID/VACUUM with live cost preview)
+1. **Item Costs** - Packing dimensions via `applyPackingDimensions()` utility (+10/+10/+15cm), volumetric weight (L x W x H / 5000 for UPS, DHL, FedEx, OCS, /6000 for EMAX), packing material/labor, Special Packing info panel (WOODEN_BOX/SKID/VACUUM with live cost preview)
 2. **Carrier Costs** - Config-driven zone lookup -> `lookupCarrierRate()` -> FSC -> UPS Surge Fee (auto) -> EAS/RAS (auto)
 3. **Add-on Services** - Auto-detected (AHS, OSP, OWT, DDP, Surge Fee, EAS/RAS) + user-selectable (19 DHL / 6 UPS add-ons)
 4. **Margin** - Dynamic margin resolution via `MarginRuleResolver` (priority-based first-match-wins algorithm with 5min cache), admin CRUD management, hardcoded fallback if API unavailable. Revenue = cost / (1 - margin%), rounded up to nearest KRW 100
-5. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX country support
+5. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support
 6. **PDF Output** - Branded PDF with packing type/cost breakdown, carrier add-on details, surcharge info, and E-MAX Worldwide Express disclaimers
 
 ### Role-Based Access
@@ -69,7 +69,7 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 | Widget | Purpose |
 |--------|---------|
 | **Discount Rules** | DB-driven discount rule CRUD with priority tiers (P100/P90/P50/P0) |
-| **FSC Rate Management** | Track/update DHL, UPS & FedEx fuel surcharge percentages |
+| **FSC Rate Management** | Track/update DHL, UPS, FedEx & OCS fuel surcharge percentages |
 | **Surcharge Management** | Carrier-specific surcharge CRUD |
 | **Customer Management** | Customer records with quote count badges |
 | **User Management** | Role assignment and account management |
@@ -100,7 +100,7 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 
 - **Smart Quote Assistant**: In-app chatbot powered by Claude API for system usage help and logistics Q&A
 - **Logistics knowledge**: Incoterms, customs, HS codes, ULD, common industry terms
-- **DAP policy enforcement**: Automatically informs users that UPS/DHL/FedEx/EMAX shipments require DAP incoterm
+- **DAP policy enforcement**: Automatically informs users that UPS/DHL/FedEx/EMAX/OCS shipments require DAP incoterm
 - **Rich Interactions**: Markdown rendering support and randomly suggested quick-questions per session
 - **Smart Localization**: Auto-detects optimal language (Nationality → System → Timezone → Browser)
 - **Role-aware**: Different guides for Admin vs Member users
@@ -134,9 +134,9 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
     types.ts                   # Core TypeScript types & enums
     i18n/translations.ts       # 4-language translation dictionary (en/ko/cn/ja)
     config/                    # Rate tables, business rules, shared utilities
-      ups_tariff.ts / dhl_tariff.ts / fedex_tariff.ts  # Carrier rate tables (synced with backend & PDF originals)
+      ups_tariff.ts / dhl_tariff.ts / fedex_tariff.ts / emax_tariff.ts / ocs_tariff.ts  # Carrier rate tables (synced with backend & PDF originals)
       fsc-history.ts             # FSC historical rates with localStorage persistence
-      ups_zones.ts / dhl_zones.ts / fedex_zones.ts  # Config-driven zone mappings
+      ups_zones.ts / dhl_zones.ts / fedex_zones.ts / ocs_zones.ts  # Config-driven zone mappings
       addon-utils.ts             # Shared add-on types, normalizers, fee calculators
       ups_addons.ts / dhl_addons.ts  # Carrier add-on rates + surge fee config
       ups_eas_lookup.ts          # EAS/RAS postal code lookup (binary search, lazy-load)
@@ -163,7 +163,7 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 smart-quote-api/               # Backend (Rails 8 API)
   app/models/                  # MarginRule, AuditLog, Quote, User, Customer, Surcharge, AddonRate
   app/services/                # QuoteCalculator, QuoteSearcher, QuoteExporter, QuoteSerializer, MarginRuleResolver
-    calculators/               # ItemCost, SurgeCost, UpsCost, DhlCost, EmaxCost, DomesticCost, UpsSurgeFee
+    calculators/               # ItemCost, SurgeCost, UpsCost, DhlCost, EmaxCost, DomesticCost, UpsSurgeFee, OcsCost
   app/controllers/api/v1/      # Quotes, MarginRules, Surcharges, AddonRates, Customers, Users, Auth, Fsc, AuditLogs, Notifications, Chat
   lib/constants/               # Tariff tables (synced with frontend src/config/)
                                # Source of truth: storage/tariffs/*.pdf
