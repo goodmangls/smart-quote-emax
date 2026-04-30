@@ -3,7 +3,7 @@ export type Language = 'en' | 'ko';
 export const translations: Record<Language, Record<string, string>> = {
   ko: {
     // Navigation / General
-    'nav.smartQuote': 'E-MAX Smart Quote',
+    'nav.smartQuote': '스마트 견적',
     'nav.login': '로그인',
     'nav.signup': '회원가입',
     'nav.logout': '로그아웃',
@@ -341,7 +341,7 @@ export const translations: Record<Language, Record<string, string>> = {
   },
   en: {
     // Navigation / General
-    'nav.smartQuote': 'E-MAX Smart Quote',
+    'nav.smartQuote': 'Smart Quote',
     'nav.login': 'Login',
     'nav.signup': 'Sign Up',
     'nav.logout': 'Logout',
