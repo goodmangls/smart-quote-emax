@@ -1,9 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { QuoteInput, QuoteResult, QuoteDetail, Incoterm, PackingType } from '../types';
-import { generatePDF } from '@/lib/pdfService';
 import { calculateQuote } from '@/features/quote/services/calculationService';
 import { MobileLayout } from '@/components/layout/MobileLayout';
-import { QuoteHistoryPage } from '@/features/history/components/QuoteHistoryPage';
 import { AppView } from '@/components/layout/NavigationTabs';
 import { InputSection } from '@/features/quote/components/InputSection';
 import { ResultSection } from '@/features/quote/components/ResultSection';
@@ -15,9 +13,11 @@ import { DEFAULT_EXCHANGE_RATE, DEFAULT_FSC_PERCENT, DEFAULT_FSC_PERCENT_DHL, DE
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useResolvedDiscount } from '@/features/dashboard/hooks/useResolvedDiscount';
 import { CalculatorActionBar } from './components/CalculatorActionBar';
-import { AdminWidgets } from './components/AdminWidgets';
 import { Footer } from '@/components/layout/Footer';
 import { MobileStickyBottomBar } from './components/MobileStickyBottomBar';
+
+const AdminWidgets = lazy(() => import('./components/AdminWidgets').then(m => ({ default: m.AdminWidgets })));
+const QuoteHistoryPage = lazy(() => import('@/features/history/components/QuoteHistoryPage').then(m => ({ default: m.QuoteHistoryPage })));
 
 const INITIAL_INPUT: QuoteInput = {
   originCountry: 'KR',
@@ -157,7 +157,11 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
   };
 
   const handleReset = () => setShowResetConfirm(true);
-  const handleDownloadPdf = async () => result && await generatePDF(input, result, undefined, { isAdmin, isKorean, showUSD });
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+    const { generatePDF } = await import('@/lib/pdfService');
+    await generatePDF(input, result, undefined, { isAdmin, isKorean, showUSD });
+  };
   const handleQuoteSaved = () => setCurrentView('history');
   const scrollToResults = () => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -222,7 +226,11 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
                     billableWeight={result?.billableWeight}
                     resolvedDiscount={resolvedDiscount}
                   />
-                  {isAdmin && <AdminWidgets />}
+                  {isAdmin && (
+                    <Suspense fallback={null}>
+                      <AdminWidgets />
+                    </Suspense>
+                  )}
                 </div>
                 <div className="lg:col-span-5 lg:sticky top-24" id="result-section">
                   {result && (
@@ -255,7 +263,9 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
           )}
         </>
       ) : (
-        <QuoteHistoryPage onDuplicate={handleDuplicate} />
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <QuoteHistoryPage onDuplicate={handleDuplicate} />
+        </Suspense>
       )}
 
       <div className="hidden lg:block">
