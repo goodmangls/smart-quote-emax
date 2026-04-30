@@ -6,12 +6,15 @@ import {
   calculateDhlCosts,
   calculateFedexCosts,
   calculateEmaxCosts,
+  calculateOcsCosts,
   calculateUpsCosts,
   calculateQuote,
 } from './calculationService';
 import { PackingType, Incoterm, QuoteInput } from '@/types';
 import { DHL_EXACT_RATES } from '@/config/dhl_tariff';
 import { FEDEX_EXACT_RATES } from '@/config/fedex_tariff';
+import { OCS_EXACT_RATES } from '@/config/ocs_tariff';
+import { determineOcsZone } from '@/config/ocs_zones';
 
 describe('calculationService', () => {
   // --- Zone Mapping Tests ---
@@ -224,6 +227,72 @@ describe('calculationService', () => {
     });
   });
 
+  // --- OCS Zone Tests ---
+
+  describe('determineOcsZone', () => {
+    it('maps TW/HK/SG to Z1', () => {
+      expect(determineOcsZone('TW')).toEqual({ rateKey: 'Z1', label: 'Z1/TW-HK-SG' });
+      expect(determineOcsZone('HK')).toEqual({ rateKey: 'Z1', label: 'Z1/TW-HK-SG' });
+      expect(determineOcsZone('SG')).toEqual({ rateKey: 'Z1', label: 'Z1/TW-HK-SG' });
+    });
+
+    it('maps CN to Z2', () => {
+      expect(determineOcsZone('CN')).toEqual({ rateKey: 'Z2', label: 'Z2/CN' });
+    });
+
+    it('maps JP to Z3', () => {
+      expect(determineOcsZone('JP')).toEqual({ rateKey: 'Z3', label: 'Z3/JP' });
+    });
+
+    it('falls back to Z1 (with unsupported label) for unsupported country', () => {
+      expect(determineOcsZone('US')).toEqual({
+        rateKey: 'Z1',
+        label: 'OCS (unsupported, Z1 fallback)',
+      });
+    });
+  });
+
+  // --- OCS Cost Tests ---
+
+  describe('calculateOcsCosts', () => {
+    it('returns correct exact rate for OCS Z1 (TW) at 1kg', () => {
+      const result = calculateOcsCosts(1, 'TW');
+      expect(result.intlBase).toBe(OCS_EXACT_RATES['Z1'][1]);
+      expect(result.intlFsc).toBe(0); // FSC computed in orchestrator
+      expect(result.intlWarRisk).toBe(0);
+    });
+
+    it('returns correct exact rate for OCS Z2 (CN) at 5kg', () => {
+      const result = calculateOcsCosts(5, 'CN');
+      expect(result.intlBase).toBe(OCS_EXACT_RATES['Z2'][5]);
+    });
+
+    it('returns correct exact rate for OCS Z3 (JP) at 20kg', () => {
+      const result = calculateOcsCosts(20, 'JP');
+      expect(result.intlBase).toBe(OCS_EXACT_RATES['Z3'][20]);
+    });
+
+    it('uses range rate for OCS Z1 (TW) at 30kg (base+overage formula)', () => {
+      // OCS Z1 exact max = 20kg (317,500). 30kg falls in 30~39.5 range (Z1 = 14710/kg).
+      // base + (ceil(30) - 20) × range_rate = 317500 + 10 × 14710 = 464,600
+      const result = calculateOcsCosts(30, 'TW');
+      expect(result.intlBase).toBe(317500 + 10 * 14710);
+    });
+
+    it('uses range rate for OCS Z2 (CN) at 100kg (From-100 tier)', () => {
+      // OCS Z2[20] = 349,930. From-100 Z2 = 18,320/kg.
+      // 349930 + (100 - 20) × 18320 = 1,815,530
+      const result = calculateOcsCosts(100, 'CN');
+      expect(result.intlBase).toBe(349930 + 80 * 18320);
+    });
+
+    it('falls back to Z1 rate for unsupported country', () => {
+      const result = calculateOcsCosts(1, 'US');
+      expect(result.intlBase).toBe(OCS_EXACT_RATES['Z1'][1]);
+      expect(result.appliedZone).toContain('unsupported');
+    });
+  });
+
   // --- calculateQuote() Integration Tests ---
 
   describe('calculateQuote', () => {
@@ -272,6 +341,32 @@ describe('calculationService', () => {
       expect(result.breakdown.intlBase).toBeGreaterThan(0);
     });
 
+    it('OCS quote: routes to OCS calculator and applies 10% FSC default', () => {
+      const result = calculateQuote({
+        ...baseInput,
+        overseasCarrier: 'OCS',
+        destinationCountry: 'TW',
+        fscPercent: 10,
+      });
+      expect(result.carrier).toBe('OCS');
+      expect(result.appliedZone).toContain('Z1');
+      expect(result.breakdown.intlBase).toBe(OCS_EXACT_RATES['Z1'][10]);
+      // FSC = baseWithDiscount × 10%, base discounted by 15%.
+      const baseWithDiscount = OCS_EXACT_RATES['Z1'][10] * (1 - 0.15);
+      expect(result.breakdown.intlFsc).toBe(Math.round(baseWithDiscount * 0.1));
+    });
+
+    it('OCS quote: surfaces coverage warning for unsupported destination', () => {
+      const result = calculateQuote({
+        ...baseInput,
+        overseasCarrier: 'OCS',
+        destinationCountry: 'US',
+      });
+      expect(result.warnings).toEqual(
+        expect.arrayContaining([expect.stringContaining('OCS only services')]),
+      );
+    });
+
     it('EMAX quote: uses 6000 volumetric divisor and EMAX rates', () => {
       const result = calculateQuote({
         ...baseInput,
@@ -280,7 +375,9 @@ describe('calculationService', () => {
       });
       expect(result.carrier).toBe('EMAX');
       expect(result.appliedZone).toContain('E-MAX');
-      expect(result.breakdown.intlFsc).toBe(0);
+      // EMAX FSC is per-kg (CN: 2000 KRW/kg). billable=10kg → 20000 KRW.
+      // (15-day variable per KG policy, valid until May 15)
+      expect(result.breakdown.intlFsc).toBe(20000);
       expect(result.breakdown.intlWarRisk).toBe(0);
     });
 

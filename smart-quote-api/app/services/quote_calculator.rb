@@ -53,6 +53,10 @@ class QuoteCalculator
     if @carrier == "EMAX" && ![ "CN", "VN" ].include?(@input[:destinationCountry])
       @user_warnings << "EMAX only services China (CN) and Vietnam (VN). Using VN fallback rate — verify with carrier."
     end
+
+    if @carrier == "OCS" && !Constants::OcsTariff::OCS_SUPPORTED_COUNTRIES.include?(@input[:destinationCountry])
+      @user_warnings << "OCS only services Taiwan (TW), Hong Kong (HK), Singapore (SG), China (CN), and Japan (JP). Using Z1 fallback rate — verify with carrier."
+    end
   end
 
   def calculate_overseas
@@ -64,6 +68,8 @@ class QuoteCalculator
       Calculators::EmaxCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry])
     when "FDX", "FEDEX"
       Calculators::FedexCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
+    when "OCS"
+      Calculators::OcsCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
     else
       Calculators::UpsCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
     end

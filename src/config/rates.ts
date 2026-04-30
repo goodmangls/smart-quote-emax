@@ -9,6 +9,7 @@ export const TRANSIT_TIMES = {
   DHL: '2-4 Business Days',
   FEDEX: 'FedEx Int. Priority 3-7 Days',
   EMAX: '5-10 Business Days (E-MAX)',
+  OCS: '3-5 Business Days (OCS)',
 } as const;
 
 // Market Defaults
