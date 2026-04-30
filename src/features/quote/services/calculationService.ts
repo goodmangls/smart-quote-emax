@@ -10,7 +10,7 @@ import {
 import { UPS_EXACT_RATES, UPS_RANGE_RATES } from '@/config/ups_tariff';
 import { DHL_EXACT_RATES, DHL_RANGE_RATES } from '@/config/dhl_tariff';
 import { FEDEX_EXACT_RATES, FEDEX_RANGE_RATES } from '@/config/fedex_tariff';
-import { EMAX_RATES, EMAX_HANDLING_CHARGE } from '@/config/emax_tariff';
+import { EMAX_RATES, EMAX_HANDLING_CHARGE, EMAX_FSC_PER_KG } from '@/config/emax_tariff';
 import {
   OCS_EXACT_RATES,
   OCS_RANGE_RATES,
@@ -409,8 +409,8 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   let intlFscNew = 0;
   let fscRate = 0;
   if (carrier === 'EMAX') {
-    // E-MAX FSC is 15-day variable per KG. Valid until May 15.
-    const emaxFscPerKg = input.destinationCountry === 'CN' ? 2000 : 2100;
+    // E-MAX FSC is 15-day variable per KG. Source: EMAX_FSC_PER_KG in emax_tariff.ts.
+    const emaxFscPerKg = EMAX_FSC_PER_KG[input.destinationCountry] ?? EMAX_FSC_PER_KG.VN;
     intlFscNew = Math.round(billableWeight * emaxFscPerKg);
   } else {
     fscRate = (input.fscPercent || 0) / 100;
