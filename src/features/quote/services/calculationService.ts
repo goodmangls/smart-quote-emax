@@ -326,9 +326,17 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   const baseWithDiscount = baseRate * (1 - safeDiscountPercent / 100);
   const discountAmount = baseRate - baseWithDiscount;
 
-  // Step 3: FSC on discounted base — EMAX has no FSC
-  const fscRate = carrier === 'EMAX' ? 0 : (input.fscPercent || 0) / 100;
-  const intlFscNew = Math.round(baseWithDiscount * fscRate);
+  // Step 3: FSC on discounted base — EMAX has no percentage FSC, it is per-kg
+  let intlFscNew = 0;
+  let fscRate = 0;
+  if (carrier === 'EMAX') {
+    // E-MAX FSC is 15-day variable per KG. Valid until May 15.
+    const emaxFscPerKg = input.destinationCountry === 'CN' ? 2000 : 2100;
+    intlFscNew = Math.round(billableWeight * emaxFscPerKg);
+  } else {
+    fscRate = (input.fscPercent || 0) / 100;
+    intlFscNew = Math.round(baseWithDiscount * fscRate);
+  }
 
   // Step 4: Add-ons (할인 미적용)
   const addOnTotal = packingTotal + pickupInSeoul + surgeCost + carrierAddOnTotal + destDuty + carrierResult.intlWarRisk;
@@ -339,7 +347,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   }
 
   // Final totals — costFsc is the FSC on 정가 base (할인 전), totalCostAmount is 정가 기준 총액
-  const costFsc = Math.round(baseRate * fscRate);
+  const costFsc = carrier === 'EMAX' ? intlFscNew : Math.round(baseRate * fscRate);
   const totalCostAmount = baseRate + costFsc + carrierResult.intlWarRisk + surgeCost + packingTotal + carrierAddOnTotal + destDuty + pickupInSeoul;
   const rawQuoteAmount = baseWithDiscount + intlFscNew + addOnTotal;
   const totalQuoteAmount = Math.ceil(rawQuoteAmount / 100) * 100; // Round up to nearest 100 KRW

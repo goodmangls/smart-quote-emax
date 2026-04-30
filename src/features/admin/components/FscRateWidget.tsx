@@ -4,6 +4,7 @@ import {
   DEFAULT_FSC_PERCENT,
   DEFAULT_FSC_PERCENT_DHL,
   DEFAULT_FSC_PERCENT_FEDEX,
+  DEFAULT_FSC_PERCENT_OCS,
   FEDEX_FSC_URL,
 } from '@/config/rates';
 import {
@@ -40,6 +41,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
         UPS: { international: DEFAULT_FSC_PERCENT, domestic: DEFAULT_FSC_PERCENT },
         DHL: { international: DEFAULT_FSC_PERCENT_DHL, domestic: DEFAULT_FSC_PERCENT_DHL },
         FEDEX: { international: DEFAULT_FSC_PERCENT_FEDEX, domestic: DEFAULT_FSC_PERCENT_FEDEX },
+        OCS: { international: DEFAULT_FSC_PERCENT_OCS, domestic: DEFAULT_FSC_PERCENT_OCS },
       },
       updatedAt: new Date().toISOString(),
     }),
@@ -58,10 +60,11 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
 
   const fetchRates = useCallback(() => {}, []);
 
-  const carrierLinks = {
+  const carrierLinks: Record<string, string> = {
     UPS: 'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page',
     DHL: 'https://mydhl.express.dhl/kr/ko/ship/surcharges.html',
     FEDEX: FEDEX_FSC_URL,
+    OCS: '#', // TODO: Add OCS FSC URL if available
   };
 
   // History handlers
@@ -126,7 +129,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
         </div>
       ) : data ? (
         <div className='divide-y divide-gray-100 dark:divide-gray-700'>
-          {(['UPS', 'DHL', 'FEDEX'] as const).map((carrier) => {
+          {(['UPS', 'DHL', 'FEDEX', 'OCS'] as const).map((carrier) => {
             const rates = data.rates[carrier];
             const link = carrierLinks[carrier];
 

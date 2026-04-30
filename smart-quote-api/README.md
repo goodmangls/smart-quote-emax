@@ -50,6 +50,8 @@ Published carrier rate tables are stored in `storage/tariffs/`:
 | `DHL 정가.pdf` / `.txt` | DHL Express Worldwide 2026 정가 |
 | `UPS 정가.pdf` / `.txt` | UPS Express Saver 2026 정가 (Eff. 01-Feb-26) |
 | `FDX 정가.pdf` / `.txt` | FedEx International Priority 2026 정가 (Eff. 2026.01.05) |
+| `OCS 정가.pdf` / `.txt` | OCS 정가 |
+| `이맥스특송.pdf` / `.txt` | E-MAX 정가 |
 
 These PDFs are the **source of truth**. Constants in `lib/constants/` must match. Frontend `src/config/` must stay in sync with `lib/constants/`.
 

@@ -106,10 +106,15 @@ class QuoteCalculator
     @base_with_discount = base_rate * (1 - @safe_discount_percent / 100.0)
     @discount_amount = base_rate - @base_with_discount
 
-    # FSC on (Discounted Base Rate) — EMAX has no FSC
-    fsc_val  = @input[:fscPercent] || default_fsc_for(@carrier)
-    fsc_rate = @carrier == "EMAX" ? 0 : (fsc_val.to_f / 100.0)
-    @intl_fsc_new = (@base_with_discount * fsc_rate).round
+    if @carrier == "EMAX"
+      # E-MAX FSC is 15-day variable per KG. Valid until May 15.
+      fsc_per_kg = @input[:destinationCountry] == "CN" ? 2000 : 2100
+      @intl_fsc_new = (@billable_weight * fsc_per_kg).round
+    else
+      fsc_val  = @input[:fscPercent] || default_fsc_for(@carrier)
+      fsc_rate = fsc_val.to_f / 100.0
+      @intl_fsc_new = (@base_with_discount * fsc_rate).round
+    end
 
     # Add-ons (no discount applied)
     # Note: carrierAddOnTotal (DHL 19 + UPS 6 add-ons) is frontend-only
@@ -119,7 +124,7 @@ class QuoteCalculator
       @user_warnings << "Collect Term: International Freight calculated for reference but may be billed to Consignee/Partner."
     end
 
-    cost_fsc = (base_rate * fsc_rate).round
+    cost_fsc = @carrier == "EMAX" ? @intl_fsc_new : (base_rate * fsc_rate).round
     @total_cost_amount = base_rate + cost_fsc + @overseas_result[:intl_war_risk] + @surge_cost + @packing_total + @dest_duty + @pickup_in_seoul
     raw_quote_amount = @base_with_discount + @intl_fsc_new + add_on_total
     @total_quote_amount = (raw_quote_amount / 100.0).ceil * 100
@@ -168,6 +173,7 @@ class QuoteCalculator
     case carrier
     when "DHL"         then DEFAULT_FSC_PERCENT_DHL
     when "FDX","FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
+    when "OCS"         then DEFAULT_FSC_PERCENT_OCS
     when "EMAX"        then 0
     else                    DEFAULT_FSC_PERCENT  # UPS and others
     end
