@@ -13,7 +13,7 @@ module Calculators
 
     def call
       country_key = @country == "CN" ? "CN" : "VN"
-      
+
       emax_base = calculate_base_rate(country_key)
 
       {

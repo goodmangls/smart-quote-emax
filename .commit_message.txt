@@ -1,1 +1,1 @@
-🔧 fix: 견적 비교 페이지 타입 정합화(QuoteInput/Breakdown/totalQuoteAmount, FEDEX 기본값, ESLint) + 멤버 가이드 `/compare` 안내
+🧹 chore: emax_cost.rb trailing whitespace 1건 정리 — line 16 1글자, 다른 세션 commit으로 유입된 rubocop offense. 검증: rubocop touched-file 0 offense.
