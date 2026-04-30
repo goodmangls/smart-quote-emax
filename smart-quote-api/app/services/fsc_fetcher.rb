@@ -1,8 +1,12 @@
 class FscFetcher
-  # Fallback rates if DB is unavailable (verified 2026-03-15)
+  # Fallback rates if DB is unavailable.
+  # Source: Constants::Rates::DEFAULT_FSC_PERCENT* (single source of truth — see rates.rb).
+  # international = domestic per FscRateWidget convention.
   DEFAULT_RATES = {
-    "UPS" => { "international" => 38.5, "domestic" => 36.5 },
-    "DHL" => { "international" => 30.5, "domestic" => 28.5 }
+    "UPS"   => { "international" => Constants::Rates::DEFAULT_FSC_PERCENT,       "domestic" => Constants::Rates::DEFAULT_FSC_PERCENT },
+    "DHL"   => { "international" => Constants::Rates::DEFAULT_FSC_PERCENT_DHL,   "domestic" => Constants::Rates::DEFAULT_FSC_PERCENT_DHL },
+    "FEDEX" => { "international" => Constants::Rates::DEFAULT_FSC_PERCENT_FEDEX, "domestic" => Constants::Rates::DEFAULT_FSC_PERCENT_FEDEX },
+    "OCS"   => { "international" => Constants::Rates::DEFAULT_FSC_PERCENT_OCS,   "domestic" => Constants::Rates::DEFAULT_FSC_PERCENT_OCS }
   }.freeze
 
   class << self

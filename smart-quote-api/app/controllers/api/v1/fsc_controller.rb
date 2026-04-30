@@ -22,8 +22,8 @@ module Api
         international = params[:international]&.to_f
         domestic = params[:domestic]&.to_f
 
-        unless %w[UPS DHL].include?(carrier)
-          return render json: { error: { code: "INVALID_CARRIER", message: "Carrier must be UPS or DHL" } }, status: :unprocessable_entity
+        unless FscRate::SUPPORTED_CARRIERS.include?(carrier)
+          return render json: { error: { code: "INVALID_CARRIER", message: "Carrier must be one of: #{FscRate::SUPPORTED_CARRIERS.join(', ')}" } }, status: :unprocessable_entity
         end
 
         FscFetcher.update!(
