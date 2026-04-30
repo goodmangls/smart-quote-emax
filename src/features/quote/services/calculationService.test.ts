@@ -210,8 +210,8 @@ describe('calculationService', () => {
 
     it('calculates EMAX VN at 5.3kg', () => {
       const result = calculateEmaxCosts(5.3, 'VN');
-      // 5.3 rounds to 5.5kg -> exact rate for VN 5.5kg = 102000
-      expect(result.intlBase).toBe(102000);
+      // 5.3 rounds to 5.5kg -> exact rate for VN (Hanoi) 5.5kg = 79500
+      expect(result.intlBase).toBe(79500);
     });
 
     it('defaults unknown country to VN rate', () => {
