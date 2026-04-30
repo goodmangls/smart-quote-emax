@@ -10,7 +10,7 @@ import {
 import { UPS_EXACT_RATES, UPS_RANGE_RATES } from '@/config/ups_tariff';
 import { DHL_EXACT_RATES, DHL_RANGE_RATES } from '@/config/dhl_tariff';
 import { FEDEX_EXACT_RATES, FEDEX_RANGE_RATES } from '@/config/fedex_tariff';
-import { EMAX_RATES, EMAX_HANDLING_CHARGE, EMAX_FSC_PER_KG } from '@/config/emax_tariff';
+import { EMAX_EXACT_RATES, EMAX_RANGE_RATES, EMAX_FSC_PER_KG } from '@/config/emax_tariff';
 import {
   OCS_EXACT_RATES,
   OCS_RANGE_RATES,
@@ -242,8 +242,12 @@ export const calculateOcsCosts = (billableWeight: number, country: string): Carr
 
 export const calculateEmaxCosts = (billableWeight: number, country: string): CarrierCostResult => {
   const countryKey = country === 'CN' ? 'CN' : 'VN';
-  const perKgRate = EMAX_RATES[countryKey] ?? EMAX_RATES['VN'];
-  const intlBase = Math.ceil(billableWeight) * perKgRate + EMAX_HANDLING_CHARGE;
+  const intlBase = lookupCarrierRate(
+    billableWeight,
+    countryKey,
+    EMAX_EXACT_RATES,
+    EMAX_RANGE_RATES as RangeRateEntry[],
+  );
 
   return {
     intlBase,
@@ -411,7 +415,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   if (carrier === 'EMAX') {
     // E-MAX FSC is 15-day variable per KG. Source: EMAX_FSC_PER_KG in emax_tariff.ts.
     const emaxFscPerKg = EMAX_FSC_PER_KG[input.destinationCountry] ?? EMAX_FSC_PER_KG.VN;
-    intlFscNew = Math.round(billableWeight * emaxFscPerKg);
+    intlFscNew = Math.round(roundToHalf(billableWeight) * emaxFscPerKg);
   } else {
     fscRate = (input.fscPercent || 0) / 100;
     intlFscNew = Math.round(baseWithDiscount * fscRate);

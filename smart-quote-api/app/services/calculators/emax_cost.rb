@@ -1,5 +1,7 @@
 module Calculators
   class EmaxCost
+    include BaseRateLookup
+
     def self.call(billable_weight:, country:, fsc_percent: 0)
       new(billable_weight, country).call
     end
@@ -11,17 +13,8 @@ module Calculators
 
     def call
       country_key = @country == "CN" ? "CN" : "VN"
-      per_kg_rate = Constants::EmaxTariff::EMAX_RATES[country_key] || 10000
-
-      multiplier_weight = @billable_weight.ceil
-      emax_base = multiplier_weight * per_kg_rate
-      handling_charge = Constants::EmaxTariff::EMAX_HANDLING_CHARGE
-
-      # EMAX doesn't seem to have FSC or War Risk based on the PDF.
-      # It's an all-in rate plus handling. We'll put handling in `intl_war_risk` or `intl_fsc` slot or just add it to base?
-      # Let's add it to base or return it separately.
-      # Better, just add it to base so the breakdown shows it cleanly.
-      emax_base += handling_charge
+      
+      emax_base = calculate_base_rate(country_key)
 
       {
         intl_base: emax_base,
@@ -31,5 +24,10 @@ module Calculators
         transit_time: "E-MAX Direct"
       }
     end
+
+    private
+
+    def exact_rates = Constants::EmaxTariff::EMAX_EXACT_RATES
+    def range_rates = Constants::EmaxTariff::EMAX_RANGE_RATES
   end
 end

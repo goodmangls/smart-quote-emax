@@ -202,22 +202,22 @@ describe('calculationService', () => {
   describe('calculateEmaxCosts', () => {
     it('calculates EMAX CN at 10kg', () => {
       const result = calculateEmaxCosts(10, 'CN');
-      // ceil(10) * 13500 + 15000 = 150000
-      expect(result.intlBase).toBe(150000);
+      // Exact rate for CN 10kg = 165000
+      expect(result.intlBase).toBe(165000);
       expect(result.intlFsc).toBe(0);
       expect(result.intlWarRisk).toBe(0);
     });
 
     it('calculates EMAX VN at 5.3kg', () => {
       const result = calculateEmaxCosts(5.3, 'VN');
-      // ceil(5.3) * 10000 + 15000 = 75000
-      expect(result.intlBase).toBe(75000);
+      // 5.3 rounds to 5.5kg -> exact rate for VN 5.5kg = 102000
+      expect(result.intlBase).toBe(102000);
     });
 
     it('defaults unknown country to VN rate', () => {
       const result = calculateEmaxCosts(1, 'TH');
-      // ceil(1) * 10000 + 15000 = 25000
-      expect(result.intlBase).toBe(25000);
+      // 1kg VN fallback = 30000
+      expect(result.intlBase).toBe(30000);
     });
 
     it('returns zero FSC and war risk', () => {

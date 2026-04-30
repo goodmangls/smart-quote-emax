@@ -116,7 +116,7 @@ class QuoteCalculator
       # E-MAX FSC is 15-day variable per KG. Source: Constants::EmaxTariff::EMAX_FSC_PER_KG.
       fsc_per_kg = Constants::EmaxTariff::EMAX_FSC_PER_KG[@input[:destinationCountry]] ||
                    Constants::EmaxTariff::EMAX_FSC_PER_KG["VN"]
-      @intl_fsc_new = (@billable_weight * fsc_per_kg).round
+      @intl_fsc_new = (round_to_half(@billable_weight) * fsc_per_kg).round
     else
       fsc_val  = @input[:fscPercent] || default_fsc_for(@carrier)
       fsc_rate = fsc_val.to_f / 100.0
@@ -184,5 +184,11 @@ class QuoteCalculator
     when "EMAX"        then 0
     else                    DEFAULT_FSC_PERCENT  # UPS and others
     end
+  end
+
+  private
+
+  def round_to_half(num)
+    (num * 2).ceil / 2.0
   end
 end
