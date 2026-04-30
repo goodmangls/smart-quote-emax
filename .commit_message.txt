@@ -1,1 +1,1 @@
-🎨 style: emax_tariff.ts quote-props 자동수정 — `'CN'`/`'VN'` → `CN`/`VN` (린터 규칙). 동작 동등.
+✅ chore: calculationParity snapshot 갱신 — d092735(EMAX exact tariff table 도입)으로 EMAX intlBase/intlFsc/totalCost 변경분 반영(emax_cn_full_loaded, emax_vn_pickup_and_surge fixture). 24 라인 +/- 12. 의도된 EMAX 가격 인상(~10-15%)이라 새 값 채택. 검증: 310/310 tests 통과.
