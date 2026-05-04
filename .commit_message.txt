@@ -1,1 +1,1 @@
-📱 견적 비교(/compare) 모바일: 슬롯 가로 스냅·테이블 스크롤·터치 타겟·Route/Cargo isMobileView·접근성 aria-label
+⛽ chore(fsc): 2026-05-04 FSC 업데이트 — UPS 45.50→47.25%, DHL 48.00→47.00%, FedEx 43.50→45.25% (OCS/EMAX 동일, frontend+backend+history 3종 동시)
