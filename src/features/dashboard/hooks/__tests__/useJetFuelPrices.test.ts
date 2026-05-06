@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { vi } from 'vitest';
 import type { JetFuelPrice } from '@/api/eiaApi';
 
@@ -83,7 +83,9 @@ describe('useJetFuelPrices', () => {
     expect(result.current.error).toBe('fail');
 
     // retry
-    result.current.retry();
+    await act(async () => {
+      result.current.retry();
+    });
 
     await waitFor(() => {
       expect(result.current.data).toHaveLength(1);

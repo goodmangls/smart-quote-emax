@@ -9,7 +9,7 @@ module Constants
     DEFAULT_FSC_PERCENT = 47.25 # UPS default, effective 2026-05-04
     DEFAULT_FSC_PERCENT_DHL = 47.00 # DHL default, effective 2026-05-04
     DEFAULT_FSC_PERCENT_FEDEX = 45.25 # FedEx default, effective 2026-05-04
-    DEFAULT_FSC_PERCENT_OCS = 10.00 # OCS default
+    DEFAULT_FSC_PERCENT_OCS = 25.00 # OCS default, effective 2026-05-06
     MAX_DISCOUNT_PERCENT = 100 # Maximum discount rate (%)
     UPS_FSC_URL = "https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page"
     UPS_RATES_HUB_URL = "https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates"
