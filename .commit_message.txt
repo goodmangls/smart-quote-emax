@@ -1,1 +1,1 @@
-⛽ chore(fsc): OCS FSC 10→25% (frontend+backend) + 🧹 test stderr 정리 (JetFuelWidget dedupe key, useJetFuelPrices retry act() wrap)
+⛽ chore(fsc): 2026-05-11 FSC 업데이트 — UPS 47.25→49.25%, DHL 47.00→46.75%, FedEx 45.25→47.50% (frontend+backend+history 3종 동시)
