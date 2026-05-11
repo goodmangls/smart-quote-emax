@@ -1,8 +1,8 @@
 /**
  * FSC (Fuel Surcharge) historical rate data with localStorage persistence.
  *
- * UPS: weekly updates (every Monday)
- * DHL: monthly updates (1st of each month)
+ * UPS / DHL / FedEx: weekly updates (every Monday).
+ * OCS: ad-hoc updates (no fixed cadence — recorded on change).
  */
 
 export interface FscHistoryEntry {
@@ -14,7 +14,10 @@ export interface FscHistoryData {
   ups: FscHistoryEntry[];
   dhl: FscHistoryEntry[];
   fedex: FscHistoryEntry[];
+  ocs: FscHistoryEntry[];
 }
+
+export type FscCarrier = 'ups' | 'dhl' | 'fedex' | 'ocs';
 
 const STORAGE_KEY = 'fsc_history';
 
@@ -67,6 +70,10 @@ export const DEFAULT_FSC_HISTORY: FscHistoryData = {
     { date: '2026-05-04', rate: 45.25 },
     { date: '2026-05-11', rate: 47.5 },
   ],
+  ocs: [
+    { date: '2026-04-29', rate: 10.0 },
+    { date: '2026-05-06', rate: 25.0 },
+  ],
 };
 
 function isValidEntry(e: unknown): e is FscHistoryEntry {
@@ -92,6 +99,7 @@ export function loadFscHistory(): FscHistoryData {
           ups: parsed.ups.filter(isValidEntry),
           dhl: parsed.dhl.filter(isValidEntry),
           fedex: parsed.fedex.filter(isValidEntry),
+          ocs: Array.isArray(parsed.ocs) ? parsed.ocs.filter(isValidEntry) : [],
         };
       }
     }
@@ -109,7 +117,7 @@ export function saveFscHistory(data: FscHistoryData): void {
 /** Add a new entry to the given carrier's history (sorted by date). */
 export function addFscEntry(
   data: FscHistoryData,
-  carrier: 'ups' | 'dhl' | 'fedex',
+  carrier: FscCarrier,
   entry: FscHistoryEntry,
 ): FscHistoryData {
   const updated = structuredClone(data);
@@ -123,7 +131,7 @@ export function addFscEntry(
 /** Remove an entry by date from the given carrier's history. */
 export function removeFscEntry(
   data: FscHistoryData,
-  carrier: 'ups' | 'dhl' | 'fedex',
+  carrier: FscCarrier,
   date: string,
 ): FscHistoryData {
   const updated = structuredClone(data);

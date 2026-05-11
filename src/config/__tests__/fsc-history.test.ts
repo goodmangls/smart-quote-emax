@@ -15,7 +15,7 @@ describe('fsc-history', () => {
 
   describe('addFscEntry', () => {
     it('adds a new entry and sorts by date', () => {
-      const data: FscHistoryData = { ups: [], dhl: [], fedex: [] };
+      const data: FscHistoryData = { ups: [], dhl: [], fedex: [], ocs: [] };
       const r1 = addFscEntry(data, 'ups', { date: '2026-03-01', rate: 30 });
       const r2 = addFscEntry(r1, 'ups', { date: '2026-01-01', rate: 28 });
 
@@ -29,6 +29,7 @@ describe('fsc-history', () => {
         ups: [{ date: '2026-01-01', rate: 28 }],
         dhl: [],
         fedex: [],
+        ocs: [],
       };
       const result = addFscEntry(data, 'ups', { date: '2026-01-01', rate: 30 });
 
@@ -41,6 +42,7 @@ describe('fsc-history', () => {
         ups: [{ date: '2026-01-01', rate: 28 }],
         dhl: [],
         fedex: [],
+        ocs: [],
       };
       addFscEntry(data, 'ups', { date: '2026-02-01', rate: 30 });
 
@@ -48,11 +50,22 @@ describe('fsc-history', () => {
     });
 
     it('adds to the correct carrier', () => {
-      const data: FscHistoryData = { ups: [], dhl: [], fedex: [] };
+      const data: FscHistoryData = { ups: [], dhl: [], fedex: [], ocs: [] };
       const result = addFscEntry(data, 'dhl', { date: '2026-03', rate: 31 });
 
       expect(result.dhl).toHaveLength(1);
       expect(result.ups).toHaveLength(0);
+    });
+
+    it('adds an OCS entry without affecting other carriers', () => {
+      const data: FscHistoryData = { ups: [], dhl: [], fedex: [], ocs: [] };
+      const result = addFscEntry(data, 'ocs', { date: '2026-05-06', rate: 25 });
+
+      expect(result.ocs).toHaveLength(1);
+      expect(result.ocs[0].rate).toBe(25);
+      expect(result.ups).toHaveLength(0);
+      expect(result.dhl).toHaveLength(0);
+      expect(result.fedex).toHaveLength(0);
     });
   });
 
@@ -67,6 +80,7 @@ describe('fsc-history', () => {
         ],
         dhl: [],
         fedex: [],
+        ocs: [],
       };
       const result = removeFscEntry(data, 'ups', '2026-01-01');
 
@@ -79,6 +93,7 @@ describe('fsc-history', () => {
         ups: [{ date: '2026-01-01', rate: 28 }],
         dhl: [],
         fedex: [],
+        ocs: [],
       };
       const result = removeFscEntry(data, 'ups', '2099-12-31');
 
@@ -90,6 +105,7 @@ describe('fsc-history', () => {
         ups: [{ date: '2026-01-01', rate: 28 }],
         dhl: [],
         fedex: [],
+        ocs: [],
       };
       removeFscEntry(data, 'ups', '2026-01-01');
 
@@ -113,6 +129,7 @@ describe('fsc-history', () => {
         ups: [{ date: '2026-05-01', rate: 40 }],
         dhl: [{ date: '2026-05', rate: 35 }],
         fedex: [],
+        ocs: [{ date: '2026-05-06', rate: 25 }],
       };
       localStorage.setItem('fsc_history', JSON.stringify(custom));
 
@@ -133,6 +150,29 @@ describe('fsc-history', () => {
 
       const result = loadFscHistory();
       expect(result.ups).toEqual(DEFAULT_FSC_HISTORY.ups);
+    });
+
+    it('falls back to empty OCS array for legacy localStorage without ocs key', () => {
+      const legacy = {
+        ups: [{ date: '2026-05-01', rate: 40 }],
+        dhl: [],
+        fedex: [],
+        // no `ocs` key — simulates pre-OCS-history schema
+      };
+      localStorage.setItem('fsc_history', JSON.stringify(legacy));
+
+      const result = loadFscHistory();
+      expect(result.ocs).toEqual([]);
+      expect(result.ups).toEqual(legacy.ups);
+    });
+  });
+
+  /* ───────── DEFAULT_FSC_HISTORY seed ───────── */
+
+  describe('DEFAULT_FSC_HISTORY', () => {
+    it('includes OCS seed entries', () => {
+      expect(DEFAULT_FSC_HISTORY.ocs.length).toBeGreaterThan(0);
+      expect(DEFAULT_FSC_HISTORY.ocs.every((e) => typeof e.rate === 'number')).toBe(true);
     });
   });
 });

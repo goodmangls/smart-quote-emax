@@ -1,1 +1,1 @@
-⛽ chore(fsc): 2026-05-11 FSC 업데이트 — UPS 47.25→49.25%, DHL 47.00→46.75%, FedEx 45.25→47.50% (frontend+backend+history 3종 동시)
+📊 feat(fsc): FscHistory에 OCS 캐리어 추가 — 차트 4-line + Legend/Add 폼/Entry list 통합 + 시드(2026-04-29 10%, 2026-05-06 25%) + legacy localStorage backward-compat

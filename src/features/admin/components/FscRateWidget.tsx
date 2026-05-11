@@ -21,6 +21,7 @@ import {
 import {
   FscHistoryData,
   FscHistoryEntry,
+  FscCarrier,
   loadFscHistory,
   saveFscHistory,
   addFscEntry,
@@ -55,7 +56,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
   const [showHistory, setShowHistory] = useState(false);
 
   // Add-entry form state
-  const [addCarrier, setAddCarrier] = useState<'ups' | 'dhl' | 'fedex'>('ups');
+  const [addCarrier, setAddCarrier] = useState<FscCarrier>('ups');
   const [addDate, setAddDate] = useState('');
   const [addRate, setAddRate] = useState('');
 
@@ -86,7 +87,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
     setAddRate('');
   };
 
-  const handleRemoveEntry = (carrier: 'ups' | 'dhl' | 'fedex', date: string) => {
+  const handleRemoveEntry = (carrier: FscCarrier, date: string) => {
     const next = removeFscEntry(history, carrier, date);
     persistHistory(next);
   };
@@ -97,6 +98,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
       { entries: history.ups, color: '#3b82f6', label: 'UPS' },
       { entries: history.dhl, color: '#f59e0b', label: 'DHL' },
       { entries: history.fedex, color: '#f97316', label: 'FedEx' },
+      { entries: history.ocs, color: '#10b981', label: 'OCS' },
     ],
     [history],
   );
@@ -105,6 +107,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
   const latestDhl = history.dhl.length > 0 ? history.dhl[history.dhl.length - 1].rate : null;
   const latestFedex =
     history.fedex.length > 0 ? history.fedex[history.fedex.length - 1].rate : null;
+  const latestOcs = history.ocs.length > 0 ? history.ocs[history.ocs.length - 1].rate : null;
 
   return (
     <div className='bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm'>
@@ -211,6 +214,10 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                 <span className='inline-block w-2.5 h-2.5 rounded-full bg-orange-500' />
                 <span>FedEx {latestFedex !== null ? ` — ${latestFedex}%` : ''}</span>
               </div>
+              <div className='flex items-center gap-1.5'>
+                <span className='inline-block w-2.5 h-2.5 rounded-full bg-emerald-500' />
+                <span>OCS {latestOcs !== null ? ` — ${latestOcs}%` : ''}</span>
+              </div>
             </div>
 
             {/* Update frequency notes */}
@@ -218,6 +225,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
               <p>UPS: 매주 월요일 갱신 (Weekly, every Monday)</p>
               <p>DHL: 매주 월요일 갱신 (Weekly, every Monday — 2026-04경 Monthly→Weekly 전환)</p>
               <p>FedEx: 매주 월요일 갱신 (Weekly, every Monday)</p>
+              <p>OCS: 비정기 갱신 (Ad-hoc — 변경 시점에만 기록)</p>
             </div>
 
             {/* Add Entry Form */}
@@ -230,12 +238,13 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                   <label className='block text-[10px] text-gray-400 mb-0.5'>Carrier</label>
                   <select
                     value={addCarrier}
-                    onChange={(e) => setAddCarrier(e.target.value as 'ups' | 'dhl' | 'fedex')}
+                    onChange={(e) => setAddCarrier(e.target.value as FscCarrier)}
                     className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
                   >
                     <option value='ups'>UPS</option>
                     <option value='dhl'>DHL</option>
                     <option value='fedex'>FedEx</option>
+                    <option value='ocs'>OCS</option>
                   </select>
                 </div>
                 <div>
@@ -275,7 +284,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
 
             {/* Entry list with delete */}
             <div className='max-h-40 overflow-y-auto space-y-1'>
-              {(['ups', 'dhl', 'fedex'] as const).map((carrier) => (
+              {(['ups', 'dhl', 'fedex', 'ocs'] as const).map((carrier) => (
                 <div key={carrier}>
                   <p className='text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase mb-0.5'>
                     {carrier}
