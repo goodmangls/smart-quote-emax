@@ -1,1 +1,1 @@
-📊 feat(fsc): FscHistory에 OCS 캐리어 추가 — 차트 4-line + Legend/Add 폼/Entry list 통합 + 시드(2026-04-29 10%, 2026-05-06 25%) + legacy localStorage backward-compat
+🔄 FSC 요율 업데이트: UPS 49.5% / DHL 47.25% / FedEx 48.75% (2026-05-18 기준)
