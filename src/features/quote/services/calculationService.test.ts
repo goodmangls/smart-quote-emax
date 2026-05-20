@@ -375,9 +375,9 @@ describe('calculationService', () => {
       });
       expect(result.carrier).toBe('EMAX');
       expect(result.appliedZone).toContain('E-MAX');
-      // EMAX FSC is per-kg (CN: 2000 KRW/kg). billable=10kg → 20000 KRW.
-      // (15-day variable per KG policy, valid until May 15)
-      expect(result.breakdown.intlFsc).toBe(20000);
+      // EMAX FSC is per-kg (CN: 2060 KRW/kg). billable=10kg → 20600 KRW.
+      // (15-day variable per KG policy)
+      expect(result.breakdown.intlFsc).toBe(20600);
       expect(result.breakdown.intlWarRisk).toBe(0);
     });
 

@@ -41,8 +41,8 @@ module Constants
     # EMAX FSC is per-kg KRW (no percentage), 15-day variable.
     # Mirror of frontend src/config/emax_tariff.ts EMAX_FSC_PER_KG.
     EMAX_FSC_PER_KG = {
-      "CN" => 2000,
-      "VN" => 2100
+      "CN" => 2060,
+      "VN" => 2160
     }
   end
 end

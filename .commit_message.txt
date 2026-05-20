@@ -1,1 +1,1 @@
-🔄 FSC 요율 업데이트: UPS 49.5% / DHL 47.25% / FedEx 48.75% (2026-05-18 기준)
+⛽ chore(fsc): EMAX FSC 업데이트 — CN 2000→2060, VN 2100→2160 KRW/kg (frontend+backend mirror + parity snapshot + unit test)
