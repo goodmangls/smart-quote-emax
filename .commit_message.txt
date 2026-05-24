@@ -1,1 +1,1 @@
-⛽ chore(fsc): EMAX FSC 업데이트 — CN 2000→2060, VN 2100→2160 KRW/kg (frontend+backend mirror + parity snapshot + unit test)
+🔄 FSC 요율 업데이트: UPS 50.25% / DHL 47.75% / FedEx 49.50% (2026-05-25 기준)
