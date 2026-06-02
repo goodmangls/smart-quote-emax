@@ -1,1 +1,1 @@
-🔄 FSC 요율 업데이트: UPS 50.25% / DHL 48.75% / FedEx 49.25% (2026-06-01 기준)
+💯 fix(fsc): FSC 표시 소수점 2자리 통일 + 입력값 정확 반영 — FSC widget(UPS/DHL/FEDEX/OCS) toFixed(2), QuoteResult.fscPercent input echo로 견적 화면 derive 오차 제거(48.7→48.75), QuoteDetailModal 동기 (5 src + 3 test fixture)

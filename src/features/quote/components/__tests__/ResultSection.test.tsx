@@ -8,7 +8,14 @@ vi.mock('@/contexts/LanguageContext', () => ({
 }));
 
 vi.mock('@/features/dashboard/hooks/useExchangeRates', () => ({
-  useExchangeRates: () => ({ data: [], loading: false, error: null, lastUpdated: null, isStale: false, retry: vi.fn() }),
+  useExchangeRates: () => ({
+    data: [],
+    loading: false,
+    error: null,
+    lastUpdated: null,
+    isStale: false,
+    retry: vi.fn(),
+  }),
 }));
 
 vi.mock('@/features/dashboard/hooks/usePortWeather', () => ({
@@ -31,6 +38,7 @@ const mockResult: QuoteResult = {
   discountAmount: 300000,
   discountPercent: 20.0,
   currency: 'KRW',
+  fscPercent: 30,
   billableWeight: 15.5,
   totalActualWeight: 10.0,
   totalVolumetricWeight: 12.0,
@@ -137,13 +145,7 @@ describe('ResultSection', () => {
       totalQuoteAmountUSD: 1142.86,
     });
 
-    render(
-      <ResultSection
-        {...defaultProps}
-        input={mockInput}
-        onSwitchCarrier={vi.fn()}
-      />,
-    );
+    render(<ResultSection {...defaultProps} input={mockInput} onSwitchCarrier={vi.fn()} />);
 
     expect(screen.getByText('quote.carrierComparison')).toBeInTheDocument();
   });

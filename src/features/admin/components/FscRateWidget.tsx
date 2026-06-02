@@ -156,7 +156,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                   </div>
                 </div>
                 <p className='text-xl font-bold text-gray-900 dark:text-white'>
-                  {rates.international}%
+                  {rates.international.toFixed(2)}%
                 </p>
               </div>
             );
@@ -204,19 +204,19 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
             <div className='flex items-center gap-4 text-[10px] text-gray-500 dark:text-gray-400'>
               <div className='flex items-center gap-1.5'>
                 <span className='inline-block w-2.5 h-2.5 rounded-full bg-blue-500' />
-                <span>UPS (Weekly){latestUps !== null ? ` — ${latestUps}%` : ''}</span>
+                <span>UPS (Weekly){latestUps !== null ? ` — ${latestUps.toFixed(2)}%` : ''}</span>
               </div>
               <div className='flex items-center gap-1.5'>
                 <span className='inline-block w-2.5 h-2.5 rounded-full bg-amber-500' />
-                <span>DHL (Weekly){latestDhl !== null ? ` — ${latestDhl}%` : ''}</span>
+                <span>DHL (Weekly){latestDhl !== null ? ` — ${latestDhl.toFixed(2)}%` : ''}</span>
               </div>
               <div className='flex items-center gap-1.5'>
                 <span className='inline-block w-2.5 h-2.5 rounded-full bg-orange-500' />
-                <span>FedEx {latestFedex !== null ? ` — ${latestFedex}%` : ''}</span>
+                <span>FedEx {latestFedex !== null ? ` — ${latestFedex.toFixed(2)}%` : ''}</span>
               </div>
               <div className='flex items-center gap-1.5'>
                 <span className='inline-block w-2.5 h-2.5 rounded-full bg-emerald-500' />
-                <span>OCS {latestOcs !== null ? ` — ${latestOcs}%` : ''}</span>
+                <span>OCS {latestOcs !== null ? ` — ${latestOcs.toFixed(2)}%` : ''}</span>
               </div>
             </div>
 
@@ -295,7 +295,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                       className='flex items-center justify-between py-0.5 px-1 text-[10px] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/30 rounded'
                     >
                       <span>
-                        {entry.date} — {entry.rate}%
+                        {entry.date} — {entry.rate.toFixed(2)}%
                       </span>
                       <button
                         onClick={() => handleRemoveEntry(carrier, entry.date)}

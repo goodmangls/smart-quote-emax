@@ -9,7 +9,13 @@ vi.mock('@/api/quoteApi', () => ({
 
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
-    user: { id: 1, email: 'test@company.com', role: 'member', company: 'Test Corp', name: 'Test User' },
+    user: {
+      id: 1,
+      email: 'test@company.com',
+      role: 'member',
+      company: 'Test Corp',
+      name: 'Test User',
+    },
     isAuthenticated: true,
   }),
 }));
@@ -36,6 +42,7 @@ const mockResult: QuoteResult = {
   discountAmount: 50000,
   discountPercent: 27.0,
   currency: 'KRW',
+  fscPercent: 27.5,
   totalActualWeight: 1,
   totalVolumetricWeight: 0.2,
   billableWeight: 1,
@@ -95,14 +102,16 @@ describe('SaveQuoteButton', () => {
 
     await userEvent.click(screen.getByText('Save Quote'));
 
-    expect(
-      screen.getByPlaceholderText('Add notes (optional)'),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Add notes (optional)')).toBeInTheDocument();
   });
 
   it('calls saveQuote API on confirm', async () => {
     vi.useRealTimers();
-    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0001' } as ReturnType<typeof saveQuote> extends Promise<infer T> ? T : never);
+    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0001' } as ReturnType<
+      typeof saveQuote
+    > extends Promise<infer T>
+      ? T
+      : never);
 
     render(<SaveQuoteButton input={mockInput} result={mockResult} />);
 
@@ -114,7 +123,11 @@ describe('SaveQuoteButton', () => {
 
   it('shows Saved! with reference number after successful save', async () => {
     vi.useRealTimers();
-    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0042' } as ReturnType<typeof saveQuote> extends Promise<infer T> ? T : never);
+    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0042' } as ReturnType<
+      typeof saveQuote
+    > extends Promise<infer T>
+      ? T
+      : never);
 
     render(<SaveQuoteButton input={mockInput} result={mockResult} />);
 
@@ -130,7 +143,11 @@ describe('SaveQuoteButton', () => {
   it('shows View button after save when onSaved is provided', async () => {
     vi.useRealTimers();
     const onSaved = vi.fn();
-    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0042' } as ReturnType<typeof saveQuote> extends Promise<infer T> ? T : never);
+    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0042' } as ReturnType<
+      typeof saveQuote
+    > extends Promise<infer T>
+      ? T
+      : never);
 
     render(<SaveQuoteButton input={mockInput} result={mockResult} onSaved={onSaved} />);
 
@@ -166,21 +183,21 @@ describe('SaveQuoteButton', () => {
     render(<SaveQuoteButton input={mockInput} result={mockResult} />);
 
     await userEvent.click(screen.getByText('Save Quote'));
-    expect(
-      screen.getByPlaceholderText('Add notes (optional)'),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Add notes (optional)')).toBeInTheDocument();
 
     await userEvent.click(screen.getByText('Cancel'));
 
     expect(screen.getByText('Save Quote')).toBeInTheDocument();
-    expect(
-      screen.queryByPlaceholderText('Add notes (optional)'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('Add notes (optional)')).not.toBeInTheDocument();
   });
 
   it('pressing Enter in notes input triggers save', async () => {
     vi.useRealTimers();
-    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0099' } as ReturnType<typeof saveQuote> extends Promise<infer T> ? T : never);
+    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0099' } as ReturnType<
+      typeof saveQuote
+    > extends Promise<infer T>
+      ? T
+      : never);
 
     render(<SaveQuoteButton input={mockInput} result={mockResult} />);
 
@@ -204,14 +221,16 @@ describe('SaveQuoteButton', () => {
     await userEvent.keyboard('{Escape}');
 
     expect(screen.getByText('Save Quote')).toBeInTheDocument();
-    expect(
-      screen.queryByPlaceholderText('Add notes (optional)'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('Add notes (optional)')).not.toBeInTheDocument();
   });
 
   it('shows duplicate confirm dialog when saving same input twice', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0050' } as ReturnType<typeof saveQuote> extends Promise<infer T> ? T : never);
+    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0050' } as ReturnType<
+      typeof saveQuote
+    > extends Promise<infer T>
+      ? T
+      : never);
 
     render(<SaveQuoteButton input={mockInput} result={mockResult} />);
 
@@ -224,7 +243,9 @@ describe('SaveQuoteButton', () => {
     });
 
     // Advance past the 4s idle reset timer
-    await act(async () => { vi.advanceTimersByTime(5000); });
+    await act(async () => {
+      vi.advanceTimersByTime(5000);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Save Quote')).toBeInTheDocument();

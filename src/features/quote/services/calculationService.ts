@@ -463,6 +463,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     discountAmount,
     discountPercent: Math.round(safeDiscountPercent * 100) / 100,
     currency: 'KRW',
+    fscPercent: input.fscPercent ?? 0,
     totalActualWeight: itemResult.totalActualWeight,
     totalVolumetricWeight: itemResult.totalPackedVolumetricWeight,
     billableWeight,

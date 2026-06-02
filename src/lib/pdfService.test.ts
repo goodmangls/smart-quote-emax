@@ -79,6 +79,7 @@ const mockResult: QuoteResult = {
   discountAmount: 20000,
   discountPercent: 15,
   currency: 'KRW',
+  fscPercent: 15,
   totalActualWeight: 15,
   totalVolumetricWeight: 19.2,
   billableWeight: 19.2,
