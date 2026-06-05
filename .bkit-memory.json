@@ -1,9 +1,16 @@
 {
   "activeFeature": "smart-quote-emax-e2e-landing-debt",
-  "phase": "do",
-  "matchRate": 0,
+  "phase": "completed",
+  "matchRate": 100,
   "iteration": 0,
   "history": [
+    {
+      "feature": "smart-quote-emax-e2e-landing-debt",
+      "phase": "completed",
+      "timestamp": "2026-06-05",
+      "action": "Report 생성 — docs/04-report/features/smart-quote-emax-e2e-landing-debt.report.md. PR #2 admin squash merge c0a34d8. main CI run 27004256018 전 job green(check·e2e 1m25s·lighthouse) → 수 주째 만성 red 해소 확정. 로컬 e2e 23/23, 앱 코드 0 변경. Match 100% DoD 4/4.",
+      "matchRate": 100
+    },
     {
       "feature": "smart-quote-emax-e2e-landing-debt",
       "phase": "do",

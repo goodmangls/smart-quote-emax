@@ -1,1 +1,1 @@
-🧪 test(e2e): stale 랜딩/로그인 e2e 셀렉터 정상화 — CI e2e red 해소 — landing(nav→header·login/signup href·WCA hero 단언 제거→h1), login(getByLabel/role 영문→#email/#password·button[type=submit]·a[href=/signup]), accessibility(라벨 ko/en 동시 매칭). 기본언어 ko('로그인'/'가입하기')에서 영문 셀렉터 불일치가 원인, 앱 코드 0 변경. 로컬 23/23 green, tsc·ESLint clean
+📊 docs(pdca): smart-quote-emax-e2e-landing-debt 완료 보고서 — PR #2 merge c0a34d8, main CI 전 job green(e2e 1m25s) 만성 red 해소 확정, Match 100% DoD 4/4, .bkit-memory.json phase=completed
