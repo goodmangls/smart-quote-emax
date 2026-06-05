@@ -1,1 +1,1 @@
-📊 docs(pdca): smart-quote-emax-e2e-landing-debt 완료 보고서 — PR #2 merge c0a34d8, main CI 전 job green(e2e 1m25s) 만성 red 해소 확정, Match 100% DoD 4/4, .bkit-memory.json phase=completed
+📁 chore(pdca): smart-quote-emax-e2e-landing-debt archive — plan+report를 docs/archive/2026-06/ 이관, _INDEX.md 갱신, .bkit-memory.json phase=archived (100%, PR #2 c0a34d8, main CI red 해소)

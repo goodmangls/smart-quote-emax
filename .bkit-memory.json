@@ -1,9 +1,17 @@
 {
-  "activeFeature": "smart-quote-emax-e2e-landing-debt",
-  "phase": "completed",
+  "activeFeature": null,
+  "phase": "archived",
   "matchRate": 100,
   "iteration": 0,
   "history": [
+    {
+      "feature": "smart-quote-emax-e2e-landing-debt",
+      "phase": "archived",
+      "timestamp": "2026-06-05",
+      "action": "Archived to docs/archive/2026-06/smart-quote-emax-e2e-landing-debt/ (100%). plan+report 이관, _INDEX.md 갱신. PR #2 c0a34d8, main CI 만성 red 해소. e2e 셀렉터 href/id/type 정상화, 앱 코드 0 변경.",
+      "matchRate": 100,
+      "archivedTo": "docs/archive/2026-06/smart-quote-emax-e2e-landing-debt/"
+    },
     {
       "feature": "smart-quote-emax-e2e-landing-debt",
       "phase": "completed",
