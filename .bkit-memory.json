@@ -1,9 +1,17 @@
 {
-  "activeFeature": "box-level-rounding",
-  "phase": "completed",
+  "activeFeature": null,
+  "phase": "archived",
   "matchRate": 100,
   "iteration": 0,
   "history": [
+    {
+      "feature": "box-level-rounding",
+      "phase": "archived",
+      "timestamp": "2026-06-05",
+      "action": "Archived to docs/archive/2026-06/box-level-rounding/ (100%). PR #1 admin squash merge 0f69e08 → main. _INDEX.md 생성. e2e/landing.spec.ts는 pre-existing red(별도 사이클 smart-quote-emax-e2e-landing-debt 후보).",
+      "matchRate": 100,
+      "archivedTo": "docs/archive/2026-06/box-level-rounding/"
+    },
     {
       "feature": "box-level-rounding",
       "phase": "completed",
