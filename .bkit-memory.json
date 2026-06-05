@@ -1,9 +1,23 @@
 {
-  "activeFeature": null,
-  "phase": "archived",
-  "matchRate": 100,
+  "activeFeature": "smart-quote-emax-e2e-landing-debt",
+  "phase": "do",
+  "matchRate": 0,
   "iteration": 0,
   "history": [
+    {
+      "feature": "smart-quote-emax-e2e-landing-debt",
+      "phase": "do",
+      "timestamp": "2026-06-05",
+      "action": "구현 완료 — e2e 3파일(landing/login/accessibility) stale 셀렉터 href/id/type 기반으로 재작성. 스코프 확장(landing→login+accessibility, 동일 i18n 원인). 로컬 전체 e2e 23 passed 0 failed, ESLint·tsc exit 0. 앱 코드 0 변경. 커밋/PR 대기(명시 요청 시).",
+      "matchRate": 0
+    },
+    {
+      "feature": "smart-quote-emax-e2e-landing-debt",
+      "phase": "plan",
+      "timestamp": "2026-06-05",
+      "action": "Plan 생성 — docs/01-plan/features/smart-quote-emax-e2e-landing-debt.plan.md. 진단: 앱 정상(nav 통과), e2e landing.spec.ts가 stale — 기본언어 ko(로그인/무료로 시작하기)인데 영문 셀렉터(/login|signup/) + 제거된 WCA/MPL/EAN/JCtrans hero 단언. 수정=테스트 전용, href 기반 i18n-robust 셀렉터. 앱 코드 0 변경.",
+      "matchRate": 0
+    },
     {
       "feature": "box-level-rounding",
       "phase": "archived",

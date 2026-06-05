@@ -9,8 +9,10 @@ test.describe('Accessibility', () => {
 
   test('login page form has proper labels', async ({ page }) => {
     await page.goto('/login');
-    const emailLabel = page.getByLabel(/email/i);
-    const passwordLabel = page.getByLabel(/password/i);
+    // Verify inputs expose an accessible label via their associated <label>.
+    // Match ko (default) or en so the check survives the i18n language.
+    const emailLabel = page.getByLabel(/이메일|email/i);
+    const passwordLabel = page.getByLabel(/비밀번호|password/i);
     await expect(emailLabel).toBeVisible();
     await expect(passwordLabel).toBeVisible();
   });
@@ -19,7 +21,7 @@ test.describe('Accessibility', () => {
     await page.goto('/');
     // Tab to language button and verify it's focusable
     const langButton = page.locator('button[aria-haspopup="listbox"]');
-    if (await langButton.count() > 0) {
+    if ((await langButton.count()) > 0) {
       await langButton.focus();
       await expect(langButton).toBeFocused();
     }
