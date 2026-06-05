@@ -43,7 +43,16 @@ class QuoteCalculator
     end
 
     @packing_total = @item_result[:packing_material_cost] + @item_result[:packing_labor_cost] + @packing_fumigation_cost
-    @billable_weight = [ @item_result[:total_actual_weight], @item_result[:total_packed_volumetric_weight] ].max
+
+    # E-MAX policy: for multi-box shipments (2+ physical boxes) round each box's
+    # chargeable weight up to 0.5kg individually, then sum (total_billable_weight).
+    # A single box keeps the legacy max-of-totals behavior unchanged.
+    total_box_count = (@input[:items] || []).sum { |it| it[:quantity].to_i }
+    @billable_weight = if total_box_count >= 2
+      @item_result[:total_billable_weight]
+    else
+      [ @item_result[:total_actual_weight], @item_result[:total_packed_volumetric_weight] ].max
+    end
     @user_warnings = @item_result[:warnings].dup
 
     if @item_result[:total_packed_volumetric_weight] > @item_result[:total_actual_weight] * 1.2

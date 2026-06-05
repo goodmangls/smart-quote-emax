@@ -461,4 +461,78 @@ describe('calculationService', () => {
       expect(threeItems.breakdown.packingLabor).toBe(singleItem.breakdown.packingLabor * 3);
     });
   });
+
+  // --- Per-Box Billable Weight (multi-box, 2+ boxes) ---
+  // E-MAX confirmed rule: for shipments of 2+ boxes, round each box's chargeable
+  // weight up to 0.5kg individually, then sum.
+  // billableWeight = Σᵢ roundToHalf( max(actualᵢ, volumetricᵢ) )  [per physical box]
+  // Single box (Σquantity === 1) keeps the legacy max-of-totals behavior unchanged.
+  describe('per-box billable weight (multi-box)', () => {
+    const base: QuoteInput = {
+      originCountry: 'KR',
+      destinationCountry: 'US',
+      destinationZip: '10001',
+      incoterm: Incoterm.DAP,
+      packingType: PackingType.NONE,
+      items: [],
+      discountPercent: 0,
+      dutyTaxEstimate: 0,
+      exchangeRate: 1300,
+      fscPercent: 30,
+    };
+
+    it('multi-box mixed density: sums per-box chargeable (UPS /5000)', () => {
+      // Box A 50×40×30 wt5 → vol 12, max(5,12)=12 → 12.0
+      // Box B 10×10×10 wt20 → vol 0.2, max(20,0.2)=20 → 20.0
+      // Per-box: 12 + 20 = 32.  Legacy max-of-totals would be max(25, 12.2) = 25.
+      const result = calculateQuote({
+        ...base,
+        overseasCarrier: 'UPS',
+        items: [
+          { id: 'A', length: 50, width: 40, height: 30, weight: 5, quantity: 1 },
+          { id: 'B', length: 10, width: 10, height: 10, weight: 20, quantity: 1 },
+        ],
+      });
+      expect(result.billableWeight).toBe(32);
+    });
+
+    it('per-box 0.5kg rounding accumulates across quantity (UPS /5000)', () => {
+      // Box 30×20×15 wt1 → vol 1.8, max(1,1.8)=1.8 → roundToHalf 2.0; ×3 = 6.0
+      // Legacy would be max(actual 3, vol 5.4) = 5.4.
+      const result = calculateQuote({
+        ...base,
+        overseasCarrier: 'UPS',
+        items: [{ id: 'A', length: 30, width: 20, height: 15, weight: 1, quantity: 3 }],
+      });
+      expect(result.billableWeight).toBe(6);
+    });
+
+    it('single box (Σqty=1) keeps legacy raw max-of-totals (no rounding)', () => {
+      // Box 30×20×15 wt1 → vol 1.8, max(1,1.8)=1.8 → stays 1.8 (single box, unchanged)
+      const result = calculateQuote({
+        ...base,
+        overseasCarrier: 'UPS',
+        items: [{ id: 'A', length: 30, width: 20, height: 15, weight: 1, quantity: 1 }],
+      });
+      expect(result.billableWeight).toBeCloseTo(1.8, 5);
+    });
+
+    it('EMAX multi-box: per-box chargeable on /6000 divisor flows into per-kg FSC', () => {
+      // Box A 60×50×40 wt1 → vol 120000/6000=20, max(1,20)=20 → 20
+      // Box B 10×10×10 wt30 → vol 1000/6000≈0.167, max(30,0.167)=30 → 30
+      // Per-box billable = 50.  Legacy max-of-totals = max(31, 20.167) = 31.
+      // EMAX FSC (CN 2060 KRW/kg): roundToHalf(50) × 2060 = 103000.
+      const result = calculateQuote({
+        ...base,
+        overseasCarrier: 'EMAX',
+        destinationCountry: 'CN',
+        items: [
+          { id: 'A', length: 60, width: 50, height: 40, weight: 1, quantity: 1 },
+          { id: 'B', length: 10, width: 10, height: 10, weight: 30, quantity: 1 },
+        ],
+      });
+      expect(result.billableWeight).toBe(50);
+      expect(result.breakdown.intlFsc).toBe(103000);
+    });
+  });
 });

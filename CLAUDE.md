@@ -195,9 +195,10 @@ Frontend (`src/features/quote/services/calculationService.ts`) and backend (`sma
 ### Calculation Pipeline
 
 1. **Item Costs** - Packing dimensions (+10/+10/+15cm), volumetric weight (`L*W*H / 5000` for UPS/DHL/FedEx/OCS, `/6000` for EMAX), packing material/labor, manual surge charges (all carriers).
-2. **Carrier Costs** - Zone lookup (country -> zone code), shared `lookupCarrierRate()` engine (exact table 0.5-20kg -> range table >20kg -> fallback), FSC% surcharge.
-3. **Margin** - Dynamic margin via `MarginRuleResolver` (priority-based: P100 per-user flat > P90 per-user weight > P50 nationality > P0 default), `revenue = cost / (1 - margin%)`, rounded up to nearest KRW 100. Admin can manually override at any time.
-4. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support.
+2. **Billable Weight** - Single box (Σqty=1): `max(Σ actual, Σ volumetric)` (legacy total model). Multi-box (2+ physical boxes): per-box billing — `Σᵢ roundToHalf(max(actualᵢ, volumetricᵢ))`, i.e. round each box's chargeable weight up to 0.5kg, then sum (E-MAX confirmed). Mirrored in `calculateItemCosts.totalBillableWeight` (frontend) and `ItemCost#total_billable_weight` (backend).
+3. **Carrier Costs** - Zone lookup (country -> zone code), shared `lookupCarrierRate()` engine (exact table 0.5-20kg -> range table >20kg -> fallback), FSC% surcharge.
+4. **Margin** - Dynamic margin via `MarginRuleResolver` (priority-based: P100 per-user flat > P90 per-user weight > P50 nationality > P0 default), `revenue = cost / (1 - margin%)`, rounded up to nearest KRW 100. Admin can manually override at any time.
+5. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support.
 
 
 ### UPS Zone Mapping (Z1-Z10) — per UPS 2026 Service Guide
@@ -277,6 +278,7 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 - **EMAX Weight Policy**: Apply **0.5kg step rounding** (round up to nearest 0.5kg) for all EMAX calculations to ensure consistency with carrier tariffs.
 - **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
 - **Volumetric Weight**: Use `L*W*H/5000` for all carriers except EMAX (`/6000`).
+- **Billable Weight (per-box)**: For multi-box shipments (2+ physical boxes, counting quantity), round each box's chargeable weight `max(actual, volumetric)` up to 0.5kg **individually**, then sum: `Σᵢ roundToHalf(max(actualᵢ, volumetricᵢ))` (E-MAX confirmed). A single box (Σqty=1) keeps the legacy `max(Σ actual, Σ volumetric)` total model — unchanged. Identical logic mirrored in frontend (`calculationService.ts`) and backend (`item_cost.rb` / `quote_calculator.rb`).
 - **Rounding Policy**: Margin-adjusted revenue is always rounded up to the nearest KRW 100.
 
 

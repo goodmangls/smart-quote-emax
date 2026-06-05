@@ -18,6 +18,7 @@ module Calculators
     def call
       total_actual_weight = 0
       total_packed_volumetric_weight = 0
+      total_billable_weight = 0
       total_cbm = 0
       packing_material_cost = 0
       packing_labor_cost = 0
@@ -65,8 +66,12 @@ module Calculators
         #   end
         # end
 
+        vol_weight = calculate_volumetric_weight(l, w, h, @volumetric_divisor)
         total_actual_weight += weight * quantity
-        total_packed_volumetric_weight += calculate_volumetric_weight(l, w, h, @volumetric_divisor) * quantity
+        total_packed_volumetric_weight += vol_weight * quantity
+        # Per-box chargeable weight: max(actual, volumetric) rounded up to 0.5kg,
+        # accumulated per physical box (used for 2+ box billing).
+        total_billable_weight += round_to_half([ weight, vol_weight ].max) * quantity
         total_cbm += calculate_cbm(l, w, h) * quantity
       end
 
@@ -79,6 +84,7 @@ module Calculators
       {
         total_actual_weight: total_actual_weight,
         total_packed_volumetric_weight: total_packed_volumetric_weight,
+        total_billable_weight: total_billable_weight,
         total_cbm: total_cbm,
         packing_material_cost: packing_material_cost,
         packing_labor_cost: packing_labor_cost,
@@ -91,6 +97,12 @@ module Calculators
 
     def calculate_volumetric_weight(l, w, h, divisor)
       (l.ceil * w.ceil * h.ceil) / divisor.to_f
+    end
+
+    # Round up to nearest 0.5kg. Mirrors QuoteCalculator#round_to_half and the
+    # frontend roundToHalf helper in calculationService.ts.
+    def round_to_half(num)
+      (num * 2).ceil / 2.0
     end
 
     def calculate_cbm(l, w, h)

@@ -1,9 +1,16 @@
 {
-  "activeFeature": null,
-  "phase": "archived",
-  "matchRate": 98,
+  "activeFeature": "box-level-rounding",
+  "phase": "completed",
+  "matchRate": 100,
   "iteration": 0,
   "history": [
+    {
+      "feature": "box-level-rounding",
+      "phase": "completed",
+      "timestamp": "2026-06-05",
+      "action": "Report 생성 — docs/04-report/features/box-level-rounding.report.md. 멀티박스(2+) 박스별 청구중량 올림 A안 구현. FE TDD 4 test + BE rspec 5 test 통과(PG@16 기동, RAILS_ENV=test db:test:prepare), parity snapshot 2건(ups_vn_vacuum_fob 92.4→93, ups_us_ddp_full_options 64.1→65) 갱신, 단일박스 회귀 0. tsc/ESLint/rubocop clean. discount_rule_resolver 캐싱 fail은 pre-existing(NullStore) 무관. 커밋 대기",
+      "matchRate": 100
+    },
     {
       "feature": "emax-design-system",
       "phase": "archived",

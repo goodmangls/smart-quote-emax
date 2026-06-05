@@ -235,7 +235,7 @@ exports[`Calculation Parity Tests (Frontend) > snapshots all fixture outputs for
     "totalQuoteAmountUSD": 1092.64,
   },
   "ups_us_ddp_full_options": {
-    "billableWeight": 64.1,
+    "billableWeight": 65,
     "breakdown": {
       "appliedSurcharges": undefined,
       "carrierAddOnDetails": [
@@ -276,7 +276,7 @@ exports[`Calculation Parity Tests (Frontend) > snapshots all fixture outputs for
     "totalQuoteAmountUSD": 2114.64,
   },
   "ups_vn_vacuum_fob": {
-    "billableWeight": 92.4,
+    "billableWeight": 93,
     "breakdown": {
       "appliedSurcharges": undefined,
       "carrierAddOnDetails": [

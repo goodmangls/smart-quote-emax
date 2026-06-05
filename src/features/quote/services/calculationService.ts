@@ -27,6 +27,12 @@ import { calculateUpsAddOnCosts } from './upsAddonCalculator';
 interface ItemCalculationResult {
   totalActualWeight: number;
   totalPackedVolumetricWeight: number;
+  /**
+   * Sum of each physical box's chargeable weight, rounded up to 0.5kg per box:
+   * Σᵢ roundToHalf(max(actualᵢ, volumetricᵢ)) × quantity.
+   * Used for multi-box (2+ boxes) billing per E-MAX policy.
+   */
+  totalBillableWeight: number;
   packingMaterialCost: number;
   packingLaborCost: number;
   warnings: string[];
@@ -112,6 +118,7 @@ export const calculateItemCosts = (
 ): ItemCalculationResult => {
   let totalActualWeight = 0;
   let totalPackedVolumetricWeight = 0;
+  let totalBillableWeight = 0;
   let packingMaterialCost = 0;
   let packingLaborCost = 0;
   const warnings: string[] = [];
@@ -140,9 +147,12 @@ export const calculateItemCosts = (
     // Surge/AHS auto-calculation disabled — manual input via QuoteInput.manualSurgeCost.
     // Applies to all carriers (UPS, DHL, EMAX). See calculateQuote() for integration.
 
+    const volWeight = calculateVolumetricWeight(l, w, h, volumetricDivisor);
     totalActualWeight += weight * item.quantity;
-    totalPackedVolumetricWeight +=
-      calculateVolumetricWeight(l, w, h, volumetricDivisor) * item.quantity;
+    totalPackedVolumetricWeight += volWeight * item.quantity;
+    // Per-box chargeable weight: max(actual, volumetric) rounded up to 0.5kg,
+    // accumulated per physical box (used for 2+ box billing).
+    totalBillableWeight += roundToHalf(Math.max(weight, volWeight)) * item.quantity;
   });
 
   // Manual Override Logic
@@ -154,6 +164,7 @@ export const calculateItemCosts = (
   return {
     totalActualWeight,
     totalPackedVolumetricWeight,
+    totalBillableWeight,
     packingMaterialCost,
     packingLaborCost,
     warnings,
@@ -289,10 +300,14 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     itemResult.packingMaterialCost + itemResult.packingLaborCost + packingFumigationCost;
 
   // 2. Billable Weight
-  const billableWeight = Math.max(
-    itemResult.totalActualWeight,
-    itemResult.totalPackedVolumetricWeight,
-  );
+  // E-MAX policy: for multi-box shipments (2+ physical boxes) round each box's
+  // chargeable weight up to 0.5kg individually, then sum (totalBillableWeight).
+  // A single box keeps the legacy max-of-totals behavior unchanged.
+  const totalBoxCount = input.items.reduce((sum, it) => sum + it.quantity, 0);
+  const billableWeight =
+    totalBoxCount >= 2
+      ? itemResult.totalBillableWeight
+      : Math.max(itemResult.totalActualWeight, itemResult.totalPackedVolumetricWeight);
   const userWarnings = [...itemResult.warnings];
 
   if (itemResult.totalPackedVolumetricWeight > itemResult.totalActualWeight * 1.2) {
