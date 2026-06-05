@@ -20,7 +20,7 @@
   "dependencies": {
     "@sentry/browser": "^10.43.0",
     "@sentry/react": "^10.43.0",
-    "jspdf": "2.5.1",
+    "jspdf": "4.2.1",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.563.0",
     "react": "^19.2.4",
@@ -39,7 +39,6 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
-    "@vercel/node": "^5.5.30",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.1",
