@@ -1,5 +1,3 @@
-const REFRESH_KEY = 'smartQuoteRefresh';
-
 // Access Token: memory only (not accessible via XSS)
 let accessToken: string | null = null;
 
@@ -15,22 +13,24 @@ export function clearAccessToken(): void {
   accessToken = null;
 }
 
-// Refresh Token: localStorage (server-validated, longer-lived)
+// Refresh Token: HttpOnly Secure cookie managed by the Rails API.
+// It is intentionally unreadable from JavaScript to reduce XSS token theft risk.
 export function getRefreshToken(): string | null {
-  return localStorage.getItem(REFRESH_KEY);
+  return null;
 }
 
 export function setRefreshToken(token: string): void {
-  localStorage.setItem(REFRESH_KEY, token);
+  void token;
+  // No-op kept for temporary compatibility with older call sites/API payloads.
 }
 
 export function clearRefreshToken(): void {
-  localStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem('smartQuoteRefresh');
 }
 
 export function clearAllTokens(): void {
   accessToken = null;
-  localStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem('smartQuoteRefresh');
   // Migration: remove legacy localStorage token
   localStorage.removeItem('smartQuoteToken');
 }

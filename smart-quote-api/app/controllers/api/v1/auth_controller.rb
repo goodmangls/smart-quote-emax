@@ -2,14 +2,16 @@ module Api
   module V1
     class AuthController < ApplicationController
       include JwtAuthenticatable
+      include ActionController::Cookies
+
+      before_action :verify_trusted_origin!, only: [ :register, :login, :refresh, :logout, :verify_magic_link ]
 
       # POST /api/v1/auth/register
       def register
         user = User.new(register_params)
 
         if user.save
-          token = encode_token(user)
-          render json: { token: token, refresh_token: encode_refresh_token(user), user: user_json(user) }, status: :created
+          render_auth_response(user, status: :created)
         else
           render json: {
             error: { code: "VALIDATION_ERROR", message: user.errors.full_messages.join(", ") }
@@ -22,8 +24,7 @@ module Api
         user = User.find_by(email: params[:email]&.downcase&.strip)
 
         if user&.authenticate(params[:password])
-          token = encode_token(user)
-          render json: { token: token, refresh_token: encode_refresh_token(user), user: user_json(user) }
+          render_auth_response(user)
         else
           render json: {
             error: { code: "UNAUTHORIZED", message: "Invalid email or password" }
@@ -40,14 +41,20 @@ module Api
 
       # POST /api/v1/auth/refresh — issue new access + refresh token (rotation)
       def refresh
-        user = decode_refresh_token(params[:refresh_token])
+        user = decode_refresh_token(refresh_token_from_cookie)
 
         if user
-          new_refresh = encode_refresh_token(user)
-          render json: { token: encode_token(user), refresh_token: new_refresh, user: user_json(user) }
+          render_auth_response(user)
         else
+          clear_refresh_cookie
           render json: { error: { code: "INVALID_TOKEN", message: "Invalid or expired refresh token" } }, status: :unauthorized
         end
+      end
+
+      # POST /api/v1/auth/logout — expire the HttpOnly refresh cookie
+      def logout
+        clear_refresh_cookie
+        render json: { message: "Logged out" }, status: :ok
       end
 
       # PUT /api/v1/auth/password — change password (authenticated)
@@ -95,11 +102,7 @@ module Api
         token = MagicLinkToken.find_valid_token!(params[:token])
         user  = token.user
         token.consume!
-        render json: {
-          token:         encode_token(user),
-          refresh_token: encode_refresh_token(user),
-          user:          user_json(user)
-        }, status: :ok
+        render_auth_response(user)
       rescue ActiveRecord::RecordNotFound
         render json: { error: { code: "INVALID_TOKEN", message: "Invalid or expired magic link" } }, status: :unauthorized
       end
@@ -125,6 +128,53 @@ module Api
       def register_params
         params.permit(:email, :password, :password_confirmation,
                       :name, :company, :nationality, networks: [])
+      end
+
+      def render_auth_response(user, status: :ok)
+        set_refresh_cookie(encode_refresh_token(user))
+        render json: { token: encode_token(user), user: user_json(user) }, status: status
+      end
+
+      def refresh_token_from_cookie
+        cookies[:refresh_token]
+      end
+
+      def set_refresh_cookie(token)
+        cookies[:refresh_token] = refresh_cookie_options.merge(value: token)
+      end
+
+      def clear_refresh_cookie
+        cookies.delete(:refresh_token, refresh_cookie_options.except(:value, :expires))
+      end
+
+      def refresh_cookie_options
+        {
+          httponly: true,
+          secure: refresh_cookie_secure?,
+          same_site: refresh_cookie_same_site,
+          expires: 7.days.from_now,
+          path: "/api/v1/auth"
+        }
+      end
+
+      def refresh_cookie_secure?
+        ENV.fetch("REFRESH_COOKIE_SECURE", Rails.env.production? ? "true" : "false") == "true"
+      end
+
+      def refresh_cookie_same_site
+        ENV.fetch("REFRESH_COOKIE_SAME_SITE", Rails.env.production? ? "None" : "Lax").downcase.to_sym
+      end
+
+      def verify_trusted_origin!
+        return unless Rails.env.production? || ENV["AUTH_ORIGIN_CHECK"] == "true"
+
+        origin = request.headers["Origin"]
+        return if origin.blank?
+
+        allowed_origins = ENV.fetch("CORS_ORIGINS", "").split(",").map(&:strip)
+        return if allowed_origins.include?(origin)
+
+        render json: { error: { code: "FORBIDDEN_ORIGIN", message: "Forbidden origin" } }, status: :forbidden
       end
     end
   end

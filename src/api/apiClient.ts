@@ -1,4 +1,4 @@
-import { clearAllTokens, getAccessToken, getRefreshToken, setAccessToken } from '@/lib/authStorage';
+import { clearAllTokens, getAccessToken, setAccessToken } from '@/lib/authStorage';
 
 export const API_URL: string = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -43,14 +43,11 @@ async function getErrorMessage(response: Response): Promise<string> {
 let refreshPromise: Promise<boolean> | null = null;
 
 async function refreshAccessToken(): Promise<boolean> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) return false;
-
   try {
     const res = await fetch(`${API_URL}/api/v1/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      credentials: 'include',
     });
     if (!res.ok) return false;
     const data = await res.json();
@@ -69,12 +66,13 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
   }
 
   let response = await fetch(`${API_URL}${path}`, {
-    headers: { ...headers, ...(options?.headers || {}) },
     ...options,
+    credentials: 'include',
+    headers: { ...headers, ...(options?.headers || {}) },
   });
 
   // 401 → try refresh once, then retry the original request
-  if (response.status === 401 && getRefreshToken()) {
+  if (response.status === 401) {
     if (!refreshPromise) {
       refreshPromise = refreshAccessToken();
     }
@@ -88,7 +86,7 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
         ...(options?.headers || {}),
         'Authorization': `Bearer ${newToken}`,
       };
-      response = await fetch(`${API_URL}${path}`, { ...options, headers: retryHeaders });
+      response = await fetch(`${API_URL}${path}`, { ...options, credentials: 'include', headers: retryHeaders });
     }
   }
 
