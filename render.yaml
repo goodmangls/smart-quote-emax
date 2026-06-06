@@ -2,7 +2,7 @@ databases:
   - name: smart-quote-db-emax
     databaseName: smart_quote_api_emax
     user: smart_quote_api
-    plan: free
+    plan: basic-256mb
     region: singapore
 
 services:
