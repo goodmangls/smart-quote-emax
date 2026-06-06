@@ -42,5 +42,7 @@ module SmartQuoteApi
     config.api_only = true
 
     # Custom CORS Rack middleware - handles OPTIONS preflight at lowest level
+    # Enable cookies for HttpOnly refresh-token auth in API-only mode.
+    config.middleware.use ActionDispatch::Cookies
   end
 end

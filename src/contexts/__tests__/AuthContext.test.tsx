@@ -14,6 +14,12 @@ const mockUser = {
   name: 'Test User',
 };
 
+const refreshUnauthorizedResponse = () =>
+  new Response(JSON.stringify({ error: 'No refresh cookie' }), {
+    status: 401,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
 /** Renders a consumer component that exposes AuthContext values for assertions. */
 function AuthConsumer({ onRender }: { onRender: (ctx: ReturnType<typeof useAuth>) => void }) {
   const auth = useAuth();
@@ -35,6 +41,14 @@ function renderWithAuth(onRender: (ctx: ReturnType<typeof useAuth>) => void = ()
   );
 }
 
+async function renderWithAuthReady(onRender: (ctx: ReturnType<typeof useAuth>) => void = () => {}) {
+  const result = renderWithAuth(onRender);
+  await waitFor(() => {
+    expect(screen.queryByTestId('email')).not.toBeNull();
+  });
+  return result;
+}
+
 // ── Setup & teardown ──
 
 beforeEach(() => {
@@ -46,10 +60,12 @@ beforeEach(() => {
 
 describe('AuthContext', () => {
   describe('initial unauthenticated state', () => {
-    it('provides null user, isAuthenticated=false, isLoading=false when no refresh token exists', () => {
+    it('provides null user, isAuthenticated=false, isLoading=false when no refresh token exists', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse());
+
       let captured: ReturnType<typeof useAuth> | null = null;
 
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       expect(captured!.user).toBeNull();
       expect(captured!.isAuthenticated).toBe(false);
@@ -58,8 +74,8 @@ describe('AuthContext', () => {
   });
 
   describe('login()', () => {
-    it('stores refresh token in localStorage, sets user, and returns success', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+    it('uses HttpOnly cookie credentials, never stores refresh token in localStorage, sets user, and returns success', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-abc', refresh_token: 'refresh-abc', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -67,7 +83,7 @@ describe('AuthContext', () => {
       );
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       let result: { success: boolean; user?: unknown; error?: string };
       await act(async () => {
@@ -76,7 +92,7 @@ describe('AuthContext', () => {
 
       expect(result!.success).toBe(true);
       expect(result!.user).toEqual(mockUser);
-      expect(localStorage.getItem(REFRESH_KEY)).toBe('refresh-abc');
+      expect(localStorage.getItem(REFRESH_KEY)).toBeNull();
       expect(captured!.user).toEqual(mockUser);
       expect(captured!.isAuthenticated).toBe(true);
 
@@ -84,13 +100,14 @@ describe('AuthContext', () => {
         `${API_URL}/api/v1/auth/login`,
         expect.objectContaining({
           method: 'POST',
+          credentials: 'include',
           body: JSON.stringify({ email: 'test@example.com', password: 'password123' }),
         }),
       );
     });
 
     it('returns error message on failed login (401)', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
         new Response(JSON.stringify({ error: { message: 'Invalid credentials' } }), {
           status: 401,
           headers: { 'Content-Type': 'application/json' },
@@ -98,7 +115,7 @@ describe('AuthContext', () => {
       );
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       let result: { success: boolean; user?: unknown; error?: string };
       await act(async () => {
@@ -113,10 +130,10 @@ describe('AuthContext', () => {
     });
 
     it('returns network error when fetch throws', async () => {
-      vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Failed to fetch'));
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockRejectedValueOnce(new Error('Failed to fetch'));
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       let result: { success: boolean; user?: unknown; error?: string };
       await act(async () => {
@@ -130,7 +147,7 @@ describe('AuthContext', () => {
 
   describe('logout()', () => {
     it('clears all tokens and resets user to null', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-abc', refresh_token: 'refresh-abc', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -138,7 +155,7 @@ describe('AuthContext', () => {
       );
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       await act(async () => {
         await captured!.login('test@example.com', 'password123');
@@ -155,10 +172,8 @@ describe('AuthContext', () => {
     });
   });
 
-  describe('session restore on mount (refresh token)', () => {
-    it('restores session using refresh token on mount', async () => {
-      localStorage.setItem(REFRESH_KEY, 'existing-refresh');
-
+  describe('session restore on mount (refresh cookie)', () => {
+    it('restores session using the HttpOnly refresh cookie on mount', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'new-access', user: mockUser }), {
           status: 200,
@@ -179,16 +194,14 @@ describe('AuthContext', () => {
         `${API_URL}/api/v1/auth/refresh`,
         expect.objectContaining({
           method: 'POST',
-          body: JSON.stringify({ refresh_token: 'existing-refresh' }),
-        }),
+          credentials: 'include',
+          }),
       );
     });
   });
 
   describe('expired/invalid refresh token handling', () => {
-    it('clears tokens when refresh token is invalid', async () => {
-      localStorage.setItem(REFRESH_KEY, 'expired-refresh');
-
+    it('clears tokens when refresh cookie is invalid', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ error: 'Invalid refresh token' }), {
           status: 401,
@@ -209,8 +222,6 @@ describe('AuthContext', () => {
     });
 
     it('clears tokens when refresh fetch throws a network error', async () => {
-      localStorage.setItem(REFRESH_KEY, 'some-refresh');
-
       vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network failure'));
 
       await act(async () => {
@@ -226,8 +237,8 @@ describe('AuthContext', () => {
   });
 
   describe('signup() (register)', () => {
-    it('creates account, stores refresh token, and auto-logs in', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+    it('creates account, relies on HttpOnly refresh cookie, and auto-logs in', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-new', refresh_token: 'refresh-new', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -235,7 +246,7 @@ describe('AuthContext', () => {
       );
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       let result: { success: boolean; user?: unknown; error?: string };
       await act(async () => {
@@ -244,7 +255,7 @@ describe('AuthContext', () => {
 
       expect(result!.success).toBe(true);
       expect(result!.user).toEqual(mockUser);
-      expect(localStorage.getItem(REFRESH_KEY)).toBe('refresh-new');
+      expect(localStorage.getItem(REFRESH_KEY)).toBeNull();
       expect(captured!.user).toEqual(mockUser);
       expect(captured!.isAuthenticated).toBe(true);
 
@@ -252,6 +263,7 @@ describe('AuthContext', () => {
         `${API_URL}/api/v1/auth/register`,
         expect.objectContaining({
           method: 'POST',
+          credentials: 'include',
           body: JSON.stringify({
             email: 'test@example.com',
             password: 'password123',
@@ -265,7 +277,7 @@ describe('AuthContext', () => {
     });
 
     it('returns error on registration failure', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
         new Response(JSON.stringify({ error: { message: 'Email already taken' } }), {
           status: 422,
           headers: { 'Content-Type': 'application/json' },
@@ -273,7 +285,7 @@ describe('AuthContext', () => {
       );
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       let result: { success: boolean; user?: unknown; error?: string };
       await act(async () => {
@@ -288,7 +300,7 @@ describe('AuthContext', () => {
 
   describe('isAuthenticated reflects login state', () => {
     it('transitions from false -> true on login, then true -> false on logout', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-abc', refresh_token: 'refresh-abc', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -296,7 +308,7 @@ describe('AuthContext', () => {
       );
 
       let captured: ReturnType<typeof useAuth> | null = null;
-      renderWithAuth((ctx) => { captured = ctx; });
+      await renderWithAuthReady((ctx) => { captured = ctx; });
 
       expect(captured!.isAuthenticated).toBe(false);
 

@@ -35,6 +35,9 @@ RSpec.describe "Api::V1::Auth Magic Link", type: :request do
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body["token"]).to be_present
+      expect(body).not_to have_key("refresh_token")
+      expect(response.headers["Set-Cookie"]).to include("refresh_token=")
+      expect(response.headers["Set-Cookie"]).to include("HttpOnly")
     end
 
     it "returns user info alongside the JWT" do

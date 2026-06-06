@@ -3,9 +3,7 @@ import * as Sentry from '@sentry/browser';
 import { API_URL, AUTH_EXPIRED_EVENT } from '@/api/apiClient';
 import {
   clearAllTokens,
-  getRefreshToken,
   setAccessToken,
-  setRefreshToken,
 } from '@/lib/authStorage';
 
 export type UserRole = 'admin' | 'user' | 'member';
@@ -69,24 +67,18 @@ async function getAuthErrorMessage(response: Response, fallback: string): Promis
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(() => !!getRefreshToken());
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Restore session on mount using refresh token
+  // Restore session on mount using the HttpOnly refresh cookie.
   useEffect(() => {
-    const refreshToken = getRefreshToken();
-
-    // Migration: remove legacy localStorage token
+    // Migration: remove legacy localStorage tokens that were readable by JavaScript.
+    localStorage.removeItem('smartQuoteRefresh');
     localStorage.removeItem('smartQuoteToken');
-
-    if (!refreshToken) {
-      setIsLoading(false);
-      return;
-    }
 
     fetch(`${API_URL}/api/v1/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      credentials: 'include',
     })
       .then((res) => {
         if (res.ok) return res.json();
@@ -94,7 +86,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
       .then((data: { token: string; refresh_token?: string; user: User }) => {
         setAccessToken(data.token);
-        if (data.refresh_token) setRefreshToken(data.refresh_token);
         setUser(data.user);
       })
       .catch(() => {
@@ -109,12 +100,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     const interval = setInterval(
       () => {
-        const refreshToken = getRefreshToken();
-        if (!refreshToken) return;
         fetch(`${API_URL}/api/v1/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refresh_token: refreshToken }),
+          credentials: 'include',
         })
           .then((res) => {
             if (res.ok) return res.json();
@@ -122,7 +111,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           })
           .then((data: { token: string; refresh_token?: string }) => {
             setAccessToken(data.token);
-            if (data.refresh_token) setRefreshToken(data.refresh_token);
           })
           .catch(() => {
             /* next API call will trigger 401 → retry logic */
@@ -138,13 +126,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
         const data = await res.json();
         setAccessToken(data.token);
-        setRefreshToken(data.refresh_token);
         setUser(data.user);
         return { success: true, user: data.user };
       }
@@ -169,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const res = await fetch(`${API_URL}/api/v1/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             email,
             password,
@@ -183,7 +172,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok) {
           const data = await res.json();
           setAccessToken(data.token);
-          setRefreshToken(data.refresh_token);
           setUser(data.user);
           return { success: true, user: data.user };
         }
@@ -198,6 +186,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 
   const logout = useCallback(() => {
+    void fetch(`${API_URL}/api/v1/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch(() => {
+      // Local logout should still complete even if the network is unavailable.
+    });
     clearAllTokens();
     setUser(null);
   }, []);
@@ -236,13 +230,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch(`${API_URL}/api/v1/auth/magic_link/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ token }),
       });
 
       if (res.ok) {
         const data = await res.json();
         setAccessToken(data.token);
-        setRefreshToken(data.refresh_token);
         setUser(data.user);
         return { success: true, user: data.user };
       }

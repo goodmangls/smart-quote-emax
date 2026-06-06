@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       post "auth/login",    to: "auth#login"
       get  "auth/me",       to: "auth#me"
       post "auth/refresh",  to: "auth#refresh"
+      post "auth/logout",   to: "auth#logout"
       put  "auth/password", to: "auth#update_password"
       post "auth/promote",  to: "auth#promote"
       post "auth/magic_link",        to: "auth#request_magic_link"
