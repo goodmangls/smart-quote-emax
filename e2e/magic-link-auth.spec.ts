@@ -12,48 +12,36 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Magic Link Authentication', () => {
   test.describe('Login Page — Magic Link UI', () => {
-    test('shows magic link button on login page', async ({ page }) => {
+    test('shows magic link form on login page', async ({ page }) => {
       await page.goto('/login');
-      await expect(page.getByRole('button', { name: /Sign in with email link/i })).toBeVisible();
+      await expect(page.locator('#magic-email')).toBeVisible();
+      await expect(page.locator('#password')).toHaveCount(0);
+      await expect(page.getByText(/Password-free sign-in/i)).toBeVisible();
     });
 
-    test('switches to magic link mode when button is clicked', async ({ page }) => {
+    test('shows magic link email and send button by default', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
 
       await expect(page.locator('#magic-email')).toBeVisible();
-      await expect(page.getByRole('button', { name: /Send login link/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Email me a sign-in link/i })).toBeVisible();
     });
 
-    test('shows back-to-password button in magic link mode', async ({ page }) => {
+    test('does not show password fallback controls', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
 
-      await expect(page.getByRole('button', { name: /Sign in with password/i })).toBeVisible();
-    });
-
-    test('returns to password mode when back button is clicked', async ({ page }) => {
-      await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
-      await page.getByRole('button', { name: /Sign in with password/i }).click();
-
-      await expect(page.getByLabel(/password/i)).toBeVisible();
-      await expect(page.getByRole('button', { name: /Sign in with email link/i })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Sign in with password/i })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /Sign in with email link/i })).toHaveCount(0);
     });
 
     test('does not submit with empty email', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
 
-      // email field should be required — clicking send should not proceed
-      const emailInput = page.locator('#magic-email');
-      await expect(emailInput).toHaveAttribute('required', '');
+      await page.getByRole('button', { name: /Email me a sign-in link/i }).click();
+      await expect(page.getByText(/Email is required/i)).toBeVisible();
     });
 
     test('send button shows sending state while request is in flight', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
-
       // Intercept the API call to delay it
       await page.route('**/api/v1/auth/magic_link', async (route) => {
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -61,15 +49,13 @@ test.describe('Magic Link Authentication', () => {
       });
 
       await page.locator('#magic-email').fill('test@example.com');
-      await page.getByRole('button', { name: /Send login link/i }).click();
+      await page.getByRole('button', { name: /Email me a sign-in link/i }).click();
 
       await expect(page.getByRole('button', { name: /Sending/i })).toBeVisible();
     });
 
     test('shows success state after email is sent', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
-
       await page.route('**/api/v1/auth/magic_link', (route) =>
         route.fulfill({
           status: 200,
@@ -78,7 +64,7 @@ test.describe('Magic Link Authentication', () => {
       );
 
       await page.locator('#magic-email').fill('test@example.com');
-      await page.getByRole('button', { name: /Send login link/i }).click();
+      await page.getByRole('button', { name: /Email me a sign-in link/i }).click();
 
       await expect(page.getByText(/Check your email/i)).toBeVisible();
       await expect(page.getByText(/login link to your email/i)).toBeVisible();
@@ -86,14 +72,12 @@ test.describe('Magic Link Authentication', () => {
 
     test('shows resend button after email is sent', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
-
       await page.route('**/api/v1/auth/magic_link', (route) =>
         route.fulfill({ status: 200, body: JSON.stringify({ message: 'sent' }) }),
       );
 
       await page.locator('#magic-email').fill('user@example.com');
-      await page.getByRole('button', { name: /Send login link/i }).click();
+      await page.getByRole('button', { name: /Email me a sign-in link/i }).click();
 
       await expect(page.getByRole('button', { name: /Send again/i })).toBeVisible();
     });
@@ -167,8 +151,6 @@ test.describe('Magic Link Authentication', () => {
   test.describe('Email enumeration prevention', () => {
     test('shows same success message for unknown email', async ({ page }) => {
       await page.goto('/login');
-      await page.getByRole('button', { name: /Sign in with email link/i }).click();
-
       // Backend always returns 200 regardless of whether email exists
       await page.route('**/api/v1/auth/magic_link', (route) =>
         route.fulfill({
@@ -178,7 +160,7 @@ test.describe('Magic Link Authentication', () => {
       );
 
       await page.locator('#magic-email').fill('nonexistent@nowhere.com');
-      await page.getByRole('button', { name: /Send login link/i }).click();
+      await page.getByRole('button', { name: /Email me a sign-in link/i }).click();
 
       await expect(page.getByText(/Check your email/i)).toBeVisible();
     });
