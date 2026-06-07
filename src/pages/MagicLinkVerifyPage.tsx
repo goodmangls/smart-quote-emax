@@ -16,6 +16,7 @@ export const MagicLinkVerifyPage: React.FC = () => {
   useEffect(() => {
     if (attempted.current || !token) return;
     attempted.current = true;
+    window.history.replaceState({}, document.title, '/auth/verify');
 
     verifyMagicLink(token).then((result) => {
       if (result.success) {

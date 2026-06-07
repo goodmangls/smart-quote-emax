@@ -298,6 +298,64 @@ describe('AuthContext', () => {
     });
   });
 
+  describe('magic link auth', () => {
+    it('requests a magic link with credentialed CORS', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'Check your email' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+
+      let captured: ReturnType<typeof useAuth> | null = null;
+      await renderWithAuthReady((ctx) => { captured = ctx; });
+
+      let result: { success: boolean; error?: string };
+      await act(async () => {
+        result = await captured!.requestMagicLink('test@example.com');
+      });
+
+      expect(result!.success).toBe(true);
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_URL}/api/v1/auth/magic_link`,
+        expect.objectContaining({
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify({ email: 'test@example.com' }),
+        }),
+      );
+    });
+
+    it('verifies a magic link with credentialed CORS and stores only the access token', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+        new Response(JSON.stringify({ token: 'jwt-magic', user: mockUser }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+
+      let captured: ReturnType<typeof useAuth> | null = null;
+      await renderWithAuthReady((ctx) => { captured = ctx; });
+
+      let result: { success: boolean; user?: unknown; error?: string };
+      await act(async () => {
+        result = await captured!.verifyMagicLink('raw-token');
+      });
+
+      expect(result!.success).toBe(true);
+      expect(result!.user).toEqual(mockUser);
+      expect(localStorage.getItem(REFRESH_KEY)).toBeNull();
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_URL}/api/v1/auth/magic_link/verify`,
+        expect.objectContaining({
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify({ token: 'raw-token' }),
+        }),
+      );
+    });
+  });
+
   describe('isAuthenticated reflects login state', () => {
     it('transitions from false -> true on login, then true -> false on logout', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(

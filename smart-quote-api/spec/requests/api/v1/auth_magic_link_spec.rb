@@ -3,6 +3,15 @@ require "rails_helper"
 RSpec.describe "Api::V1::Auth Magic Link", type: :request do
   let!(:user) { create(:user, email: "user@example.com") }
 
+  around do |example|
+    original = ENV["FRONTEND_URL"]
+    ENV["FRONTEND_URL"] = "https://smart-quote-emax.test"
+    ActionMailer::Base.deliveries.clear
+    example.run
+    ActionMailer::Base.deliveries.clear
+    ENV["FRONTEND_URL"] = original
+  end
+
   describe "POST /api/v1/auth/magic_link" do
     it "returns 200 for a known email" do
       post "/api/v1/auth/magic_link", params: { email: "user@example.com" }, as: :json
@@ -14,16 +23,25 @@ RSpec.describe "Api::V1::Auth Magic Link", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it "creates a MagicLinkToken for the known user" do
+    it "creates a MagicLinkToken and sends a polished email for the known user" do
       expect {
         post "/api/v1/auth/magic_link", params: { email: "user@example.com" }, as: :json
       }.to change(MagicLinkToken, :count).by(1)
+        .and change(ActionMailer::Base.deliveries, :count).by(1)
+
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail.to).to eq([ "user@example.com" ])
+      expect(mail.subject).to eq("[E-MAX] Your sign-in link")
+      expect(mail.html_part.body.decoded).to include("Your secure sign-in link is ready")
+      expect(mail.html_part.body.decoded).to include("color:#ffffff; mso-line-height-rule:exactly;")
     end
 
-    it "does not create a token for an unknown email" do
+    it "does not create a token or deliver mail for an unknown email" do
       expect {
         post "/api/v1/auth/magic_link", params: { email: "unknown@example.com" }, as: :json
       }.not_to change(MagicLinkToken, :count)
+
+      expect(ActionMailer::Base.deliveries).to be_empty
     end
   end
 

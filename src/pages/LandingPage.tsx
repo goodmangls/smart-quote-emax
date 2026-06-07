@@ -24,53 +24,99 @@ export const LandingPage: React.FC = () => {
       <Header />
 
       <main>
-        {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-black">
+        {/* Glass UI Hero Section */}
+        <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(239,68,68,0.28),_transparent_34%),linear-gradient(135deg,#0a0a0a_0%,#171717_45%,#450a0a_100%)]">
           <div className="absolute inset-0 pointer-events-none" style={dotGridStyle} />
-          <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-emax-600/20 blur-[120px] pointer-events-none" />
-          <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] rounded-full bg-emax-500/15 blur-[100px] pointer-events-none" />
+          <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-emax-500/25 blur-[110px] pointer-events-none" />
+          <div className="absolute -bottom-32 right-10 h-96 w-96 rounded-full bg-amber-400/10 blur-[120px] pointer-events-none" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 sm:pt-32 sm:pb-40 lg:pt-40 lg:pb-48">
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emax-500/10 border border-emax-500/20 mb-8">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emax-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emax-500" />
-                </span>
-                <span className="text-xs sm:text-sm font-medium text-emax-300 tracking-wide">
-                  {t('landing.badge.networks')}
-                </span>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-28 sm:pt-32 sm:pb-36 lg:pt-36 lg:pb-44">
+            <div className="grid lg:grid-cols-[1.02fr_0.98fr] gap-12 lg:gap-16 items-center">
+              <div className="text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/15 shadow-lg shadow-black/20 backdrop-blur-xl mb-8">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emax-300 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emax-400" />
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-emax-100 tracking-wide">
+                    {t('landing.badge.networks')}
+                  </span>
+                </div>
+
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-white leading-tight">
+                  {t('landing.title.main')}
+                  <br />
+                  <span className="bg-gradient-to-r from-white via-emax-100 to-amber-200 bg-clip-text text-transparent drop-shadow-[0_0_28px_rgba(248,113,113,0.32)]">
+                    {t('landing.title.sub')}
+                  </span>
+                </h1>
+
+                <p className="mt-6 text-base sm:text-lg text-gray-200/85 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  {t('landing.subtitle')}
+                </p>
+
+                {!isAuthenticated && (
+                  <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <Link
+                      to="/signup"
+                      className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-white text-gray-950 hover:bg-emax-50 text-base font-bold rounded-2xl shadow-2xl shadow-emax-950/30 transition-all duration-200"
+                    >
+                      {t('landing.getStarted')}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="inline-flex items-center justify-center px-7 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 text-white text-base font-semibold rounded-2xl backdrop-blur-xl shadow-lg shadow-black/20 transition-all duration-200"
+                    >
+                      {t('nav.login')}
+                    </Link>
+                  </div>
+                )}
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-white leading-tight">
-                {t('landing.title.main')}
-                <br />
-                <span className="bg-gradient-to-r from-emax-400 to-amber-500 bg-clip-text text-transparent">
-                  {t('landing.title.sub')}
-                </span>
-              </h1>
+              <div className="relative" aria-label="Smart Quote glass dashboard preview">
+                <div className="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-white/20 via-emax-400/10 to-amber-300/10 blur-2xl" />
+                <div className="relative rounded-[2rem] border border-white/18 bg-white/[0.09] p-5 sm:p-6 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+                  <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-5">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emax-100">Live quote desk</p>
+                      <p className="mt-1 text-lg font-bold text-white">E-MAX Worldwide Express</p>
+                    </div>
+                    <div className="rounded-2xl border border-emerald-300/25 bg-emerald-400/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">
+                      Secure
+                    </div>
+                  </div>
 
-              <p className="mt-6 text-base sm:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                {t('landing.subtitle')}
-              </p>
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    {[
+                      { label: t('landing.stat.carriers'), value: '5', icon: Truck },
+                      { label: t('landing.stat.countries'), value: '190+', icon: Globe },
+                      { label: t('landing.stat.calculation'), value: '1s', icon: Zap },
+                      { label: t('landing.stat.available'), value: '24/7', icon: ShieldCheck },
+                    ].map((item) => (
+                      <div key={item.label} className="rounded-2xl border border-white/12 bg-white/[0.08] p-4 backdrop-blur-xl">
+                        <item.icon className="mb-3 h-5 w-5 text-emax-200" />
+                        <p className="text-2xl font-extrabold text-white">{item.value}</p>
+                        <p className="mt-1 text-xs text-gray-300">{item.label}</p>
+                      </div>
+                    ))}
+                  </div>
 
-              {!isAuthenticated && (
-                <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link
-                    to="/signup"
-                    className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-emax-600 hover:bg-emax-500 text-white text-base font-semibold rounded-xl shadow-lg shadow-emax-600/25 hover:shadow-emax-500/30 transition-all duration-200"
-                  >
-                    {t('landing.getStarted')}
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="inline-flex items-center justify-center px-7 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-gray-200 text-base font-semibold rounded-xl backdrop-blur-sm transition-all duration-200"
-                  >
-                    {t('nav.login')}
-                  </Link>
+                  <div className="mt-4 rounded-2xl border border-white/12 bg-gray-950/35 p-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-300">SEL → LAX · Express</span>
+                      <span className="font-semibold text-emerald-200">Optimized</span>
+                    </div>
+                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+                      <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-emax-400 to-amber-300" />
+                    </div>
+                    <div className="mt-4 flex items-center justify-between rounded-xl bg-white/10 px-4 py-3">
+                      <span className="text-xs text-gray-300">Estimated margin visibility</span>
+                      <span className="text-sm font-bold text-white">Admin-ready</span>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </section>
@@ -80,10 +126,10 @@ export const LandingPage: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { value: '3', label: t('landing.stat.carriers'), icon: Truck },
+                { value: '5', label: t('landing.stat.carriers'), icon: Truck },
                 { value: '190+', label: t('landing.stat.countries'), icon: Globe },
                 { value: '1s', label: t('landing.stat.calculation'), icon: Zap },
-                { value: '36', label: t('landing.stat.available'), icon: ShieldCheck },
+                { value: '24/7', label: t('landing.stat.available'), icon: ShieldCheck },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <stat.icon className="w-8 h-8 text-emax-500 mx-auto mb-3" />

@@ -4,7 +4,7 @@ module Api
       include JwtAuthenticatable
       include ActionController::Cookies
 
-      before_action :verify_trusted_origin!, only: [ :register, :login, :refresh, :logout, :verify_magic_link ]
+      before_action :verify_trusted_origin!, only: [ :register, :login, :refresh, :logout, :request_magic_link, :verify_magic_link ]
 
       # POST /api/v1/auth/register
       def register
