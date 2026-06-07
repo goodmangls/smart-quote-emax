@@ -90,6 +90,17 @@ describe('MagicLinkVerifyPage', () => {
     expect(mockVerifyMagicLink).not.toHaveBeenCalled();
   });
 
+  it('strips the token from browser history before verifying', async () => {
+    const replaceSpy = vi.spyOn(window.history, 'replaceState');
+    mockVerifyMagicLink.mockResolvedValue({ success: false });
+
+    await act(async () => {
+      renderWithToken('sensitive-token');
+    });
+
+    expect(replaceSpy).toHaveBeenCalledWith({}, document.title, '/auth/verify');
+  });
+
   it('calls verifyMagicLink only once even in StrictMode (useRef guard)', async () => {
     mockVerifyMagicLink.mockResolvedValue({ success: true });
 
