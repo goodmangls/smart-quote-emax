@@ -82,12 +82,14 @@ module Api
         user = User.find_by(email: params[:email]&.downcase&.strip)
         if user
           raw_token = MagicLinkToken.generate!(user)
-          AuthMailer.magic_link_email(user, raw_token).deliver_now
+          mail = AuthMailer.magic_link_email(user, raw_token)
+          deliver_magic_link_email!(mail)
         end
         render json: { message: "Check your email" }, status: :ok
-      rescue Net::SMTPAuthenticationError, Net::SMTPServerBusy, Net::SMTPSyntaxError,
+      rescue ResendEmailDelivery::Error,
+             Net::SMTPAuthenticationError, Net::SMTPServerBusy, Net::SMTPSyntaxError,
              Net::SMTPFatalError, Net::SMTPUnknownError, Errno::ECONNREFUSED, Timeout::Error => e
-        Rails.logger.error "[MagicLink] SMTP delivery failed: #{e.class} - #{e.message}"
+        Rails.logger.error "[MagicLink] email delivery failed: #{e.class} - #{e.message}"
         render json: { error: { code: "EMAIL_DELIVERY_FAILED", message: "Failed to send email. Please try again." } }, status: :service_unavailable
       rescue ActiveRecord::StatementInvalid, ActiveRecord::ConnectionNotEstablished => e
         Rails.logger.error "[MagicLink] DB error (migration may not have run): #{e.class} - #{e.message}"
@@ -124,6 +126,14 @@ module Api
       end
 
       private
+
+      def deliver_magic_link_email!(mail)
+        if Rails.env.production? && ENV["RESEND_API_KEY"].present?
+          ResendEmailDelivery.deliver!(mail)
+        else
+          mail.deliver_now
+        end
+      end
 
       def register_params
         params.permit(:email, :password, :password_confirmation,

@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from '../AuthContext';
 import { API_URL } from '@/api/apiClient';
 
 const REFRESH_KEY = 'smartQuoteRefresh';
+const SESSION_MARKER_KEY = 'smartQuoteSession';
 
 // ── Test helpers ──
 
@@ -75,7 +76,7 @@ describe('AuthContext', () => {
 
   describe('login()', () => {
     it('uses HttpOnly cookie credentials, never stores refresh token in localStorage, sets user, and returns success', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-abc', refresh_token: 'refresh-abc', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -107,7 +108,7 @@ describe('AuthContext', () => {
     });
 
     it('returns error message on failed login (401)', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ error: { message: 'Invalid credentials' } }), {
           status: 401,
           headers: { 'Content-Type': 'application/json' },
@@ -130,7 +131,7 @@ describe('AuthContext', () => {
     });
 
     it('returns network error when fetch throws', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockRejectedValueOnce(new Error('Failed to fetch'));
+      vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Failed to fetch'));
 
       let captured: ReturnType<typeof useAuth> | null = null;
       await renderWithAuthReady((ctx) => { captured = ctx; });
@@ -147,7 +148,7 @@ describe('AuthContext', () => {
 
   describe('logout()', () => {
     it('clears all tokens and resets user to null', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-abc', refresh_token: 'refresh-abc', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -174,6 +175,7 @@ describe('AuthContext', () => {
 
   describe('session restore on mount (refresh cookie)', () => {
     it('restores session using the HttpOnly refresh cookie on mount', async () => {
+      localStorage.setItem(SESSION_MARKER_KEY, '1');
       vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'new-access', user: mockUser }), {
           status: 200,
@@ -202,6 +204,7 @@ describe('AuthContext', () => {
 
   describe('expired/invalid refresh token handling', () => {
     it('clears tokens when refresh cookie is invalid', async () => {
+      localStorage.setItem(SESSION_MARKER_KEY, '1');
       vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ error: 'Invalid refresh token' }), {
           status: 401,
@@ -222,6 +225,7 @@ describe('AuthContext', () => {
     });
 
     it('clears tokens when refresh fetch throws a network error', async () => {
+      localStorage.setItem(SESSION_MARKER_KEY, '1');
       vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network failure'));
 
       await act(async () => {
@@ -238,7 +242,7 @@ describe('AuthContext', () => {
 
   describe('signup() (register)', () => {
     it('creates account, relies on HttpOnly refresh cookie, and auto-logs in', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-new', refresh_token: 'refresh-new', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -277,7 +281,7 @@ describe('AuthContext', () => {
     });
 
     it('returns error on registration failure', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ error: { message: 'Email already taken' } }), {
           status: 422,
           headers: { 'Content-Type': 'application/json' },
@@ -300,7 +304,7 @@ describe('AuthContext', () => {
 
   describe('magic link auth', () => {
     it('requests a magic link with credentialed CORS', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ message: 'Check your email' }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -327,7 +331,7 @@ describe('AuthContext', () => {
     });
 
     it('verifies a magic link with credentialed CORS and stores only the access token', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-magic', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
@@ -358,7 +362,7 @@ describe('AuthContext', () => {
 
   describe('isAuthenticated reflects login state', () => {
     it('transitions from false -> true on login, then true -> false on logout', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(refreshUnauthorizedResponse()).mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ token: 'jwt-abc', refresh_token: 'refresh-abc', user: mockUser }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },

@@ -46,6 +46,15 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const SESSION_MARKER_KEY = 'smartQuoteSession';
+
+function setSessionMarker() {
+  localStorage.setItem(SESSION_MARKER_KEY, '1');
+}
+
+function clearSessionMarker() {
+  localStorage.removeItem(SESSION_MARKER_KEY);
+}
 
 async function getAuthErrorMessage(response: Response, fallback: string): Promise<string> {
   const status = response.status;
@@ -75,6 +84,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('smartQuoteRefresh');
     localStorage.removeItem('smartQuoteToken');
 
+    if (localStorage.getItem(SESSION_MARKER_KEY) !== '1') {
+      setIsLoading(false);
+      return;
+    }
+
     fetch(`${API_URL}/api/v1/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -86,10 +100,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
       .then((data: { token: string; refresh_token?: string; user: User }) => {
         setAccessToken(data.token);
+        setSessionMarker();
         setUser(data.user);
       })
       .catch(() => {
         clearAllTokens();
+        clearSessionMarker();
         setUser(null);
       })
       .finally(() => setIsLoading(false));
@@ -133,6 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.ok) {
         const data = await res.json();
         setAccessToken(data.token);
+        setSessionMarker();
         setUser(data.user);
         return { success: true, user: data.user };
       }
@@ -172,6 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok) {
           const data = await res.json();
           setAccessToken(data.token);
+          setSessionMarker();
           setUser(data.user);
           return { success: true, user: data.user };
         }
@@ -193,6 +211,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Local logout should still complete even if the network is unavailable.
     });
     clearAllTokens();
+    clearSessionMarker();
     setUser(null);
   }, []);
 
@@ -200,6 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const handleAuthExpired = () => {
       clearAllTokens();
+      clearSessionMarker();
       setUser(null);
     };
     window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
@@ -238,6 +258,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.ok) {
         const data = await res.json();
         setAccessToken(data.token);
+        setSessionMarker();
         setUser(data.user);
         return { success: true, user: data.user };
       }

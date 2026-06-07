@@ -7,8 +7,10 @@ module Api
       def index
         api_key = ENV["EIA_API_KEY"]
         unless api_key
-          return render json: { error: { code: "EIA_NOT_CONFIGURED", message: "EIA API key not configured" } },
-                        status: :service_unavailable
+          return render json: {
+            data: [],
+            warning: { code: "EIA_NOT_CONFIGURED", message: "Jet fuel data is not configured" }
+          }, status: :ok
         end
 
         weeks = (params[:weeks] || 12).to_i.clamp(1, 52)
