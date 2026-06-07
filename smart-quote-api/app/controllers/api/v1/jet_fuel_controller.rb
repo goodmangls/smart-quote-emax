@@ -5,13 +5,8 @@ module Api
 
       # GET /api/v1/jet_fuel?weeks=12
       def index
-        api_key = ENV["EIA_API_KEY"]
-        unless api_key
-          return render json: {
-            data: [],
-            warning: { code: "EIA_NOT_CONFIGURED", message: "Jet fuel data is not configured" }
-          }, status: :ok
-        end
+        api_key = ENV["EIA_API_KEY"].presence || "DEMO_KEY"
+        using_demo_key = api_key == "DEMO_KEY"
 
         weeks = (params[:weeks] || 12).to_i.clamp(1, 52)
 
@@ -43,7 +38,15 @@ module Api
           { date: d["period"], price: price }
         }.reverse
 
-        render json: { data: prices }
+        payload = { data: prices }
+        if using_demo_key
+          payload[:warning] = {
+            code: "EIA_DEMO_KEY",
+            message: "Using EIA demo key; configure EIA_API_KEY for production quota"
+          }
+        end
+
+        render json: payload
       rescue StandardError => e
         render json: { error: { code: "JET_FUEL_ERROR", message: e.message } },
                status: :internal_server_error
