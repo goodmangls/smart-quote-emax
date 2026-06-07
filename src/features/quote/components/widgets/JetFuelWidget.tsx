@@ -131,7 +131,7 @@ export const JetFuelWidget: React.FC = () => {
         : 'text-gray-500 bg-gray-50 dark:text-gray-400 dark:bg-gray-800';
 
   return (
-    <div className='bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200'>
+    <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-200'>
       {/* Header */}
       <div className='px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center'>
         <div>

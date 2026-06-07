@@ -40,7 +40,7 @@ export const NoticeWidget: React.FC = () => {
   }, [totalPages]);
 
   return (
-    <div className="bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-200">
         <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center">
             <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
                 <Bell className="w-4 h-4 mr-2 text-emax-500" />
@@ -89,7 +89,7 @@ export const NoticeWidget: React.FC = () => {
                     )}
                 </ul>
                 {needsPagination && (
-                  <div className="flex items-center justify-center gap-2 py-3 border-t border-gray-100 dark:border-emax-700 bg-gray-50 dark:bg-gray-700/30">
+                  <div className="flex items-center justify-center gap-2 py-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-700/30">
                     <button
                       type="button"
                       onClick={prevPage}

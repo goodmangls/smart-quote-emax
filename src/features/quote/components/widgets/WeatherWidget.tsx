@@ -71,7 +71,7 @@ export const WeatherWidget: React.FC = () => {
   }, [totalPages]);
 
   return (
-    <div className="bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-200">
         <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center">
             <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
                 <Sun className="w-4 h-4 mr-2 text-emax-500" />
@@ -90,7 +90,7 @@ export const WeatherWidget: React.FC = () => {
               <>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                     {pageData.map((weather) => (
-                        <div key={weather.code} className="flex flex-col bg-gray-50 dark:bg-emax-900/40 p-3 rounded-xl border border-gray-100 dark:border-emax-700/50">
+                        <div key={weather.code} className="flex flex-col bg-gray-50 dark:bg-gray-950/45 p-3 rounded-xl border border-gray-100 dark:border-gray-800/50">
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
                                   {weather.type === 'airport'
@@ -110,7 +110,7 @@ export const WeatherWidget: React.FC = () => {
                     ))}
                 </div>
                 {needsPagination && (
-                  <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-emax-700">
+                  <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
                     <button
                       type="button"
                       onClick={prevPage}

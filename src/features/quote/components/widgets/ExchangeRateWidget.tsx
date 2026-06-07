@@ -47,7 +47,7 @@ export const ExchangeRateWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-emax-800 rounded-2xl shadow-sm border border-gray-100 dark:border-emax-700 overflow-hidden transition-colors duration-200 h-full flex flex-col">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-200 h-full flex flex-col">
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 flex justify-between items-center">
         <h3 className="font-bold text-gray-700 dark:text-gray-200 flex items-center text-sm">
@@ -99,7 +99,7 @@ export const ExchangeRateWidget: React.FC = () => {
                 {exchangeData.map((rate) => (
                   <div
                     key={rate.currency}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-emax-900/30 transition-colors group"
+                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <span className="text-lg leading-none" role="img" aria-label={rate.currency}>
@@ -164,7 +164,7 @@ export const ExchangeRateWidget: React.FC = () => {
                   return (
                     <div
                       key={carrier.name}
-                      className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-emax-900/30 transition-colors group"
+                      className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
                     >
                       <div className="flex items-center gap-2">
                         <a 
