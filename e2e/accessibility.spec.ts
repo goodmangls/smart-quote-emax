@@ -9,12 +9,9 @@ test.describe('Accessibility', () => {
 
   test('login page form has proper labels', async ({ page }) => {
     await page.goto('/login');
-    // Verify inputs expose an accessible label via their associated <label>.
-    // Match ko (default) or en so the check survives the i18n language.
-    const emailLabel = page.getByLabel(/이메일|email/i);
-    const passwordLabel = page.getByLabel(/비밀번호|password/i);
-    await expect(emailLabel).toBeVisible();
-    await expect(passwordLabel).toBeVisible();
+    // Password login has been removed; Magic Link is the primary accessible form.
+    await expect(page.locator('#magic-email')).toBeVisible();
+    await expect(page.locator('#password')).toHaveCount(0);
   });
 
   test('language selector is keyboard accessible', async ({ page }) => {
