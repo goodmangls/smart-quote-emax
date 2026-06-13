@@ -1,1 +1,1 @@
-📁 chore(pdca): smart-quote-emax-e2e-landing-debt archive — plan+report를 docs/archive/2026-06/ 이관, _INDEX.md 갱신, .bkit-memory.json phase=archived (100%, PR #2 c0a34d8, main CI red 해소)
+📝 docs: README·CLAUDE.md 최신화 — 테스트 수 32 files/1,193(stale, brand 커밋서 main 숫자 오기) → 실제 34 files/322(vitest 실측, disk 34파일·exclude는 node_modules/dist/e2e만), 배포 섹션 보강(Vercel goodman-jways 팀·origin/main push 자동배포 2026-06-13 검증 정상·수동 `vercel --prod --scope goodman-jways`·MCP 접근불가 CLI only). auth는 emax Supabase 가능성으로 미변경. 코드 무변경

@@ -126,8 +126,8 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 | ------------ | ---------------------------------------------------------------------------- |
 | **Frontend** | React 19, TypeScript 5.8, Vite 6, Tailwind CSS (E-MAX Theme)        |
 | **Backend**  | Rails 8 API-only, Ruby 3.4, PostgreSQL                                       |
-| **Testing**  | Vitest + Testing Library (32 files, 1,193 tests), RSpec + FactoryBot (backend) |
-| **Deploy**   | Vercel (frontend), Render.com (backend, Docker, Singapore)                   |
+| **Testing**  | Vitest + Testing Library (34 files, 322 tests), RSpec + FactoryBot (backend) |
+| **Deploy**   | Vercel (frontend, auto-deploy on push to `main`), Render.com (backend, Docker, Singapore) |
 | **APIs**     | open.er-api.com (exchange rates), Open-Meteo (weather), Supabase (auth)      |
 | **Other**    | jsPDF, Sentry, Lucide React, React Router v7, ChannelTalk                    |
 
@@ -189,7 +189,7 @@ npm install
 npm run dev          # Dev server on http://localhost:5173
 npm run build        # Production build (tsc + vite)
 npm run lint         # ESLint (--max-warnings 0)
-npx vitest run       # Run tests once (32 files, 1,193 tests)
+npx vitest run       # Run tests once (34 files, 322 tests)
 ```
 
 ### Backend (from `smart-quote-api/`)

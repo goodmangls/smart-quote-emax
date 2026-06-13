@@ -15,7 +15,7 @@ npm run dev          # Dev server on http://localhost:5173
 npm run build        # tsc + vite build
 npm run lint         # ESLint (--max-warnings 0)
 npm run test         # Vitest in watch mode
-npx vitest run       # Run tests once (32 files, 1193 tests)
+npx vitest run       # Run tests once (34 files, 322 tests)
 npx tsc --noEmit     # Type check only
 ```
 
@@ -350,12 +350,13 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 
 - **Frontend**: Vitest + @testing-library/react, jsdom environment, setup in `src/test/setup.ts`
   - Tests use `vitest/globals` (no imports needed for `describe`, `it`, `expect`)
-  - 32 test files, 1193 tests
+  - 34 test files, 322 tests
 - **Backend**: RSpec + FactoryBot + Shoulda Matchers, factories in `spec/factories/`
 
 ## Deployment
 
-- **Frontend**: Vercel (production: `smart-quote-emax.vercel.app`) — auto-deploy on push to `origin/main`
+- **Frontend**: Vercel **goodman-jways** 팀 (production: `smart-quote-emax.vercel.app`) — `origin/main` push 시 **자동배포** (2026-06-13 검증: 정상 작동; sibling smart-quote-main과 달리 Git 재연결 불필요)
+  - 수동 fallback: `vercel --prod --scope goodman-jways --yes`. ⚠️ Vercel **MCP(jlinsights 토큰)는 이 프로젝트 접근 불가** — `vercel` CLI(goodman-jways 스코프)로만. 배포 상태: `vercel ls smart-quote-emax --scope goodman-jways --prod`
 - **Backend**: Render.com (Singapore region, PostgreSQL) — auto-redeploys from `origin/main` when `smart-quote-api/` changes (monorepo mode via `render.yaml` `rootDir: smart-quote-api`)
 - **Config**: `render.yaml` (repo root) for backend infrastructure
 - **Seed**: After backend deploy, run `rails runner db/seeds/addon_rates.rb` in Render Shell for new add-on rates
