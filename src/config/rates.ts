@@ -14,9 +14,9 @@ export const TRANSIT_TIMES = {
 
 // Market Defaults
 export const DEFAULT_EXCHANGE_RATE = 1450; // Manual: 하나은행 월요일 09시 송금환율 (2026-03-24)
-export const DEFAULT_FSC_PERCENT = 43.25; // UPS default, effective 2026-06-08
-export const DEFAULT_FSC_PERCENT_DHL = 48.75; // DHL default, effective 2026-06-08
-export const DEFAULT_FSC_PERCENT_FEDEX = 42.50; // FedEx default, effective 2026-06-08
+export const DEFAULT_FSC_PERCENT = 43.75; // UPS default, effective 2026-06-15
+export const DEFAULT_FSC_PERCENT_DHL = 47.00; // DHL default, effective 2026-06-15
+export const DEFAULT_FSC_PERCENT_FEDEX = 43.00; // FedEx default, effective 2026-06-15
 export const DEFAULT_FSC_PERCENT_OCS = 25.0; // OCS default, effective 2026-05-06
 export const UPS_FSC_URL =
   'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page';
