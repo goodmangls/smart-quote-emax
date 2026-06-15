@@ -35,4 +35,22 @@ RSpec.describe QuoteCalculator do
     ]))
     expect(result[:billableWeight]).to be_within(1e-9).of(1.8)
   end
+
+  it "applies EMAX CN FSC at 1,360 KRW/kg for 2026-06-16 through 2026-07-15" do
+    result = described_class.call(base([
+      { length: 30, width: 20, height: 15, weight: 10, quantity: 1 }
+    ]).merge(overseasCarrier: "EMAX", destinationCountry: "CN"))
+
+    expect(result[:billableWeight]).to eq(10.0)
+    expect(result[:breakdown][:intlFsc]).to eq(13_600)
+  end
+
+  it "applies EMAX VN FSC at 1,420 KRW/kg for 2026-06-16 through 2026-07-15" do
+    result = described_class.call(base([
+      { length: 30, width: 20, height: 15, weight: 10, quantity: 1 }
+    ]).merge(overseasCarrier: "EMAX", destinationCountry: "VN"))
+
+    expect(result[:billableWeight]).to eq(10.0)
+    expect(result[:breakdown][:intlFsc]).to eq(14_200)
+  end
 end
