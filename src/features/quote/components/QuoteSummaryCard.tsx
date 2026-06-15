@@ -60,7 +60,7 @@ export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKor
                 type="button"
                 onClick={() => { if (showUSD) setShowKRW(prev => !prev); }}
                 className={`flex flex-col mb-5 text-left group w-full ${showUSD ? 'cursor-pointer' : 'cursor-default'}`}
-                aria-label={showUSD ? "Toggle currency display" : undefined}
+                aria-label={showUSD ? t('quote.toggleCurrency') : undefined}
               >
                   <div className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight flex items-center gap-2">
                       <span>{primaryAmount}</span>
@@ -76,11 +76,11 @@ export const QuoteSummaryCard: React.FC<Props> = ({ result, onDownloadPdf, isKor
 
             <div className="grid grid-cols-2 gap-3 text-sm bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/10">
                 <div>
-                    <span className="block text-emax-200 text-xs mb-0.5">Transit Time</span>
+                    <span className="block text-emax-200 text-xs mb-0.5">{t('quote.transit')}</span>
                     <span className="font-semibold text-white">{result.transitTime}</span>
                 </div>
                 <div>
-                    <span className="block text-emax-200 text-xs mb-0.5">Zone</span>
+                    <span className="block text-emax-200 text-xs mb-0.5">{t('quote.zone')}</span>
                     <span className="font-semibold text-white">{result.appliedZone}</span>
                 </div>
             </div>

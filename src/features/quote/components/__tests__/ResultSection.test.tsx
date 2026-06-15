@@ -4,7 +4,24 @@ import { ResultSection } from '../ResultSection';
 import { QuoteInput, QuoteResult, Incoterm, PackingType } from '@/types';
 
 vi.mock('@/contexts/LanguageContext', () => ({
-  useLanguage: () => ({ language: 'en', setLanguage: vi.fn(), t: (key: string) => key }),
+  useLanguage: () => ({
+    language: 'ko',
+    setLanguage: vi.fn(),
+    t: (key: string) =>
+      ({
+        'quote.carrierComparison': '운송사 견적 비교',
+        'quote.lowest': '최저가',
+        'quote.selected': '선택됨',
+        'quote.switch': '변경',
+        'quote.totalQuote': '총 견적',
+        'quote.zone': '배송 구역',
+        'quote.transit': '배송 소요',
+        'quote.actualWeight': '실중량',
+        'quote.billableWeight': '과금 중량',
+        'quote.discount': '할인',
+        'quote.toggleCurrency': '통화 전환',
+      })[key] ?? key,
+  }),
 }));
 
 vi.mock('@/features/dashboard/hooks/useExchangeRates', () => ({
@@ -93,21 +110,21 @@ describe('ResultSection', () => {
     expect(screen.getByText('PDF')).toBeInTheDocument();
   });
 
-  it('renders key metrics (Act. Weight, Bill. Weight, Discount)', () => {
+  it('renders key metrics (실중량, 과금 중량, 할인)', () => {
     render(<ResultSection {...defaultProps} />);
 
-    expect(screen.getByText('Act. Weight')).toBeInTheDocument();
-    expect(screen.getByText('Bill. Weight')).toBeInTheDocument();
-    expect(screen.getByText('Discount')).toBeInTheDocument();
+    expect(screen.getByText('실중량')).toBeInTheDocument();
+    expect(screen.getByText('과금 중량')).toBeInTheDocument();
+    expect(screen.getAllByText('할인').length).toBeGreaterThan(0);
     expect(screen.getByText('20%')).toBeInTheDocument();
   });
 
   it('hides margin metric when hideMargin=true', () => {
     render(<ResultSection {...defaultProps} hideMargin={true} />);
 
-    expect(screen.getByText('Act. Weight')).toBeInTheDocument();
-    expect(screen.getByText('Bill. Weight')).toBeInTheDocument();
-    expect(screen.queryByText('Discount')).not.toBeInTheDocument();
+    expect(screen.getByText('실중량')).toBeInTheDocument();
+    expect(screen.getByText('과금 중량')).toBeInTheDocument();
+    expect(screen.queryByText('할인')).not.toBeInTheDocument();
   });
 
   it('renders warning alerts when warnings present', () => {
@@ -147,7 +164,7 @@ describe('ResultSection', () => {
 
     render(<ResultSection {...defaultProps} input={mockInput} onSwitchCarrier={vi.fn()} />);
 
-    expect(screen.getByText('quote.carrierComparison')).toBeInTheDocument();
+    expect(screen.getByText('운송사 견적 비교')).toBeInTheDocument();
   });
 
   it('renders carrier comparison even when hideMargin is true', () => {
@@ -167,6 +184,6 @@ describe('ResultSection', () => {
       />,
     );
 
-    expect(screen.getByText('quote.carrierComparison')).toBeInTheDocument();
+    expect(screen.getByText('운송사 견적 비교')).toBeInTheDocument();
   });
 });
