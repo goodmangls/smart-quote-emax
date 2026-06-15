@@ -62,7 +62,7 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
             <button
               onClick={() => setShowKRW(prev => !prev)}
               className="flex items-center gap-1 text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-300 transition-colors"
-              title="Toggle currency"
+              title={t('quote.toggleCurrency')}
             >
               <ArrowUpDown className="w-3 h-3" />
               {showKRW ? 'KRW' : 'USD'}
@@ -80,6 +80,7 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
           isLowest={currentIsLowest}
           colorClass={carrierColors[currentCarrier] || ''}
           onSelect={() => {}}
+          t={t}
         />
         <CarrierColumn
           carrier={altCarrier}
@@ -92,6 +93,7 @@ export const CarrierComparisonCard: React.FC<Props> = ({ input, currentResult, i
           diffPercent={diffPercent}
           exchangeRate={input.exchangeRate}
           onSelect={() => onSwitchCarrier(altCarrier as 'UPS' | 'DHL')}
+          t={t}
         />
       </div>
     </div>
@@ -109,9 +111,10 @@ interface CarrierColumnProps {
   diffPercent?: number;
   exchangeRate?: number;
   onSelect: () => void;
+  t: ReturnType<typeof useLanguage>['t'];
 }
 
-const CarrierColumn: React.FC<CarrierColumnProps> = ({ carrier, result, showKRW, isCurrent, isLowest, diff, diffPercent, exchangeRate = 1400, onSelect }) => {
+const CarrierColumn: React.FC<CarrierColumnProps> = ({ carrier, result, showKRW, isCurrent, isLowest, diff, diffPercent, exchangeRate = 1400, onSelect, t }) => {
   return (
     <div className={`p-4 ${isCurrent ? 'bg-emax-50/50 dark:bg-emax-900/10' : ''}`}>
       <div className="flex items-center justify-between mb-3">
@@ -119,37 +122,37 @@ const CarrierColumn: React.FC<CarrierColumnProps> = ({ carrier, result, showKRW,
         <div className="flex items-center gap-1">
           {isLowest && (
             <span className="text-[10px] font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
-              Lowest
+              {t('quote.lowest')}
             </span>
           )}
           {isCurrent ? (
             <span className="flex items-center gap-1 text-[10px] font-semibold text-emax-600 dark:text-emax-400 bg-emax-100 dark:bg-emax-900/30 px-2 py-0.5 rounded-full">
-              <Check className="w-3 h-3" /> Selected
+              <Check className="w-3 h-3" /> {t('quote.selected')}
             </span>
           ) : (
             <button
               onClick={onSelect}
               className="text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 dark:hover:text-emax-400 bg-gray-100 hover:bg-emax-50 dark:bg-gray-700 dark:hover:bg-emax-900/30 px-2 py-0.5 rounded-full transition-colors"
             >
-              Switch
+              {t('quote.switch')}
             </button>
           )}
         </div>
       </div>
       <div className="space-y-2">
         <div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">Total Quote</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('quote.totalQuote')}</p>
           <p className="text-lg font-bold text-gray-900 dark:text-white">
             {showKRW ? formatKRW(result.totalQuoteAmount) : formatUSDInt(result.totalQuoteAmountUSD)}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <span className="text-gray-500 dark:text-gray-400">Zone</span>
+            <span className="text-gray-500 dark:text-gray-400">{t('quote.zone')}</span>
             <p className="font-semibold text-gray-800 dark:text-gray-200">{result.appliedZone}</p>
           </div>
           <div>
-            <span className="text-gray-500 dark:text-gray-400">Transit</span>
+            <span className="text-gray-500 dark:text-gray-400">{t('quote.transit')}</span>
             <p className="font-semibold text-gray-800 dark:text-gray-200">{result.transitTime}</p>
           </div>
         </div>
