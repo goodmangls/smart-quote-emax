@@ -375,9 +375,10 @@ describe('calculationService', () => {
       });
       expect(result.carrier).toBe('EMAX');
       expect(result.appliedZone).toContain('E-MAX');
-      // EMAX FSC is per-kg (CN: 2060 KRW/kg). billable=10kg → 20600 KRW.
+      // EMAX FSC is per-kg (CN: 1360 KRW/kg, effective 2026-06-16~2026-07-15).
+      // billable=10kg → 13600 KRW.
       // (15-day variable per KG policy)
-      expect(result.breakdown.intlFsc).toBe(20600);
+      expect(result.breakdown.intlFsc).toBe(13600);
       expect(result.breakdown.intlWarRisk).toBe(0);
     });
 
@@ -521,7 +522,8 @@ describe('calculationService', () => {
       // Box A 60×50×40 wt1 → vol 120000/6000=20, max(1,20)=20 → 20
       // Box B 10×10×10 wt30 → vol 1000/6000≈0.167, max(30,0.167)=30 → 30
       // Per-box billable = 50.  Legacy max-of-totals = max(31, 20.167) = 31.
-      // EMAX FSC (CN 2060 KRW/kg): roundToHalf(50) × 2060 = 103000.
+      // EMAX FSC (CN 1360 KRW/kg, effective 2026-06-16~2026-07-15):
+      // roundToHalf(50) × 1360 = 68000.
       const result = calculateQuote({
         ...base,
         overseasCarrier: 'EMAX',
@@ -532,7 +534,7 @@ describe('calculationService', () => {
         ],
       });
       expect(result.billableWeight).toBe(50);
-      expect(result.breakdown.intlFsc).toBe(103000);
+      expect(result.breakdown.intlFsc).toBe(68000);
     });
   });
 });
