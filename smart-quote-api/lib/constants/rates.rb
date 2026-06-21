@@ -6,7 +6,7 @@ module Constants
     PACKING_MATERIAL_BASE_COST = 15000
     PACKING_LABOR_UNIT_COST = 50000
     DEFAULT_EXCHANGE_RATE = 1450 # 하나은행 월요일 09시 송금환율 (2026-03-24)
-    DEFAULT_FSC_PERCENT = 43.75 # UPS default, effective 2026-06-22
+    DEFAULT_FSC_PERCENT = 42.25 # UPS default, effective 2026-06-22
     DEFAULT_FSC_PERCENT_DHL = 45.25 # DHL default, effective 2026-06-22
     DEFAULT_FSC_PERCENT_FEDEX = 41.50 # FedEx default, effective 2026-06-22
     DEFAULT_FSC_PERCENT_OCS = 25.00 # OCS default, effective 2026-05-06
