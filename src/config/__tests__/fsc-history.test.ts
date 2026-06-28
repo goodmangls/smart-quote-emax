@@ -174,5 +174,11 @@ describe('fsc-history', () => {
       expect(DEFAULT_FSC_HISTORY.ocs.length).toBeGreaterThan(0);
       expect(DEFAULT_FSC_HISTORY.ocs.every((e) => typeof e.rate === 'number')).toBe(true);
     });
+
+    it('includes the 2026-06-29 FSC update for UPS, DHL, and FedEx', () => {
+      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-06-29', rate: 39.25 });
+      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-06-29', rate: 42.75 });
+      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-06-29', rate: 38.5 });
+    });
   });
 });
