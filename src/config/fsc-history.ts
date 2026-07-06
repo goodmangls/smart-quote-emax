@@ -112,6 +112,17 @@ function isValidEntry(e: unknown): e is FscHistoryEntry {
   );
 }
 
+function mergeWithDefaultHistory(carrier: FscCarrier, entries: unknown[]): FscHistoryEntry[] {
+  const byDate = new Map<string, FscHistoryEntry>();
+  for (const entry of DEFAULT_FSC_HISTORY[carrier]) {
+    byDate.set(entry.date, structuredClone(entry));
+  }
+  for (const entry of entries.filter(isValidEntry)) {
+    byDate.set(entry.date, entry);
+  }
+  return Array.from(byDate.values()).sort((a, b) => a.date.localeCompare(b.date));
+}
+
 /** Load FSC history from localStorage, falling back to default seed data. */
 export function loadFscHistory(): FscHistoryData {
   try {
@@ -120,10 +131,10 @@ export function loadFscHistory(): FscHistoryData {
       const parsed = JSON.parse(raw) as FscHistoryData;
       if (Array.isArray(parsed.ups) && Array.isArray(parsed.dhl) && Array.isArray(parsed.fedex)) {
         return {
-          ups: parsed.ups.filter(isValidEntry),
-          dhl: parsed.dhl.filter(isValidEntry),
-          fedex: parsed.fedex.filter(isValidEntry),
-          ocs: Array.isArray(parsed.ocs) ? parsed.ocs.filter(isValidEntry) : [],
+          ups: mergeWithDefaultHistory('ups', parsed.ups),
+          dhl: mergeWithDefaultHistory('dhl', parsed.dhl),
+          fedex: mergeWithDefaultHistory('fedex', parsed.fedex),
+          ocs: mergeWithDefaultHistory('ocs', Array.isArray(parsed.ocs) ? parsed.ocs : []),
         };
       }
     }
