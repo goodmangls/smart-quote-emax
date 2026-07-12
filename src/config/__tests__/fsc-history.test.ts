@@ -134,7 +134,12 @@ describe('fsc-history', () => {
       localStorage.setItem('fsc_history', JSON.stringify(custom));
 
       const result = loadFscHistory();
-      expect(result).toEqual(custom);
+      expect(result.ups).toEqual(expect.arrayContaining(custom.ups));
+      expect(result.dhl).toEqual(expect.arrayContaining(custom.dhl));
+      expect(result.ocs).toEqual(expect.arrayContaining(custom.ocs));
+      expect(result.ups.at(-1)).toEqual({ date: '2026-07-06', rate: 39.0 });
+      expect(result.dhl.at(-1)).toEqual({ date: '2026-07-06', rate: 40.75 });
+      expect(result.fedex.at(-1)).toEqual({ date: '2026-07-06', rate: 38.25 });
     });
 
     it('returns default data when localStorage contains corrupted JSON', () => {
@@ -162,8 +167,32 @@ describe('fsc-history', () => {
       localStorage.setItem('fsc_history', JSON.stringify(legacy));
 
       const result = loadFscHistory();
-      expect(result.ocs).toEqual([]);
-      expect(result.ups).toEqual(legacy.ups);
+      expect(result.ocs).toEqual(DEFAULT_FSC_HISTORY.ocs);
+      expect(result.ups).toEqual(
+        expect.arrayContaining([
+          legacy.ups[0],
+          { date: '2026-07-06', rate: 39.0 },
+        ]),
+      );
+    });
+
+    it('merges newly shipped default FSC entries into existing browser history', () => {
+      localStorage.setItem(
+        'fsc_history',
+        JSON.stringify({
+          ups: [{ date: '2026-06-29', rate: 39.25 }],
+          dhl: [{ date: '2026-06-29', rate: 42.75 }],
+          fedex: [{ date: '2026-06-29', rate: 38.5 }],
+          ocs: [],
+        }),
+      );
+
+      const result = loadFscHistory();
+
+      expect(result.ups.at(-1)).toEqual({ date: '2026-07-13', rate: 39.25 });
+      expect(result.dhl.at(-1)).toEqual({ date: '2026-07-13', rate: 39.75 });
+      expect(result.fedex.at(-1)).toEqual({ date: '2026-07-13', rate: 38.50 });
+      expect(result.ocs).toEqual(DEFAULT_FSC_HISTORY.ocs);
     });
   });
 
