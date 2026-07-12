@@ -137,9 +137,9 @@ describe('fsc-history', () => {
       expect(result.ups).toEqual(expect.arrayContaining(custom.ups));
       expect(result.dhl).toEqual(expect.arrayContaining(custom.dhl));
       expect(result.ocs).toEqual(expect.arrayContaining(custom.ocs));
-      expect(result.ups.at(-1)).toEqual({ date: '2026-07-06', rate: 39.0 });
-      expect(result.dhl.at(-1)).toEqual({ date: '2026-07-06', rate: 40.75 });
-      expect(result.fedex.at(-1)).toEqual({ date: '2026-07-06', rate: 38.25 });
+      expect(result.ups.at(-1)).toEqual({ date: '2026-07-13', rate: 39.25 });
+      expect(result.dhl.at(-1)).toEqual({ date: '2026-07-13', rate: 39.75 });
+      expect(result.fedex.at(-1)).toEqual({ date: '2026-07-13', rate: 38.50 });
     });
 
     it('returns default data when localStorage contains corrupted JSON', () => {
