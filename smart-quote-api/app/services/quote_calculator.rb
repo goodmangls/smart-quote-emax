@@ -17,6 +17,7 @@ class QuoteCalculator
     calculate_items
     calculate_overseas
     calculate_surcharges
+    calculate_carrier_addons
     calculate_totals
 
     build_result
@@ -112,15 +113,34 @@ class QuoteCalculator
     @pickup_in_seoul = @input[:pickupInSeoulCost] || 0
   end
 
+  def calculate_carrier_addons
+    # UPS SGF is applied in calculate_surcharges via UpsSurgeFee — excluded here.
+    result = Calculators::CarrierAddonCost.call(
+      carrier: @carrier,
+      items: @input[:items],
+      packing_type: @input[:packingType] || "NONE",
+      billable_weight: @billable_weight,
+      fsc_percent: @input[:fscPercent] || default_fsc_for(@carrier),
+      dhl_add_ons: @input[:dhlAddOns],
+      ups_add_ons: @input[:upsAddOns],
+      dhl_declared_value: @input[:dhlDeclaredValue] || 0,
+      incoterm: @input[:incoterm],
+      resolved_addon_rates: @input[:resolvedAddonRates]
+    )
+    @carrier_addon_total = result[:total]
+    @carrier_addon_details = result[:details]
+  end
+
   def calculate_totals
     exchange_rate = @input[:exchangeRate] || DEFAULT_EXCHANGE_RATE
-    @safe_discount_percent = [ (@input[:discountPercent] || 0).to_f, 0 ].max.clamp(0, 100)
+    @safe_discount_percent = [ (@input[:discountPercent] || 0).to_f, 0 ].max.clamp(0, MAX_DISCOUNT_PERCENT)
     base_rate = @overseas_result[:intl_base]
 
     # Apply Discount on Published Base Rate
     @base_with_discount = base_rate * (1 - @safe_discount_percent / 100.0)
     @discount_amount = base_rate - @base_with_discount
 
+    fsc_rate = 0
     if @carrier == "EMAX"
       # E-MAX FSC is 15-day variable per KG. Source: Constants::EmaxTariff::EMAX_FSC_PER_KG.
       fsc_per_kg = Constants::EmaxTariff::EMAX_FSC_PER_KG[@input[:destinationCountry]] ||
@@ -132,16 +152,17 @@ class QuoteCalculator
       @intl_fsc_new = (@base_with_discount * fsc_rate).round
     end
 
-    # Add-ons (no discount applied)
-    # Note: carrierAddOnTotal (DHL 19 + UPS 6 add-ons) is frontend-only
-    add_on_total = @packing_total + @pickup_in_seoul + @surge_cost + @dest_duty + @overseas_result[:intl_war_risk]
+    # Add-ons (no discount applied) — includes carrier add-ons (DHL/UPS)
+    add_on_total = @packing_total + @pickup_in_seoul + @surge_cost + @carrier_addon_total +
+                   @dest_duty + @overseas_result[:intl_war_risk]
 
     if [ "EXW", "FOB" ].include?(@input[:incoterm])
       @user_warnings << "Collect Term: International Freight calculated for reference but may be billed to Consignee/Partner."
     end
 
     cost_fsc = @carrier == "EMAX" ? @intl_fsc_new : (base_rate * fsc_rate).round
-    @total_cost_amount = base_rate + cost_fsc + @overseas_result[:intl_war_risk] + @surge_cost + @packing_total + @dest_duty + @pickup_in_seoul
+    @total_cost_amount = base_rate + cost_fsc + @overseas_result[:intl_war_risk] + @surge_cost +
+                         @packing_total + @carrier_addon_total + @dest_duty + @pickup_in_seoul
     raw_quote_amount = @base_with_discount + @intl_fsc_new + add_on_total
     @total_quote_amount = (raw_quote_amount / 100.0).ceil * 100
     @total_quote_amount_usd = @total_quote_amount / exchange_rate.to_f
@@ -178,6 +199,8 @@ class QuoteCalculator
         },
         pickupInSeoul: @pickup_in_seoul,
         destDuty: @dest_duty,
+        carrierAddOnTotal: @carrier_addon_total.positive? ? @carrier_addon_total : nil,
+        carrierAddOnDetails: @carrier_addon_details.presence,
         totalCost: @total_cost_amount
       }
     }

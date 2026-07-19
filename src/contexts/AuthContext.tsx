@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import * as Sentry from '@sentry/browser';
 import { API_URL, AUTH_EXPIRED_EVENT } from '@/api/apiClient';
-import {
-  clearAllTokens,
-  setAccessToken,
-} from '@/lib/authStorage';
+import { clearAllTokens, setAccessToken } from '@/lib/authStorage';
+import { translations, type Language } from '@/i18n/translations';
 
 export type UserRole = 'admin' | 'user' | 'member';
 
@@ -56,14 +54,23 @@ function clearSessionMarker() {
   localStorage.removeItem(SESSION_MARKER_KEY);
 }
 
-async function getAuthErrorMessage(response: Response, fallback: string): Promise<string> {
+function authT(key: string, fallback: string): string {
+  const saved = localStorage.getItem('smartQuoteLanguage');
+  const lang: Language = saved === 'ko' || saved === 'en' ? saved : 'en';
+  return translations[lang][key] || translations.en[key] || fallback;
+}
+
+async function getAuthErrorMessage(response: Response, fallbackKey: string): Promise<string> {
   const status = response.status;
-  if (status === 401) return 'Invalid credentials';
-  if (status === 403) return 'Access denied';
-  if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
-  if (status >= 500) return 'Server error';
+  if (status === 401) return authT('auth.invalidCredentials', 'Invalid credentials');
+  if (status === 403) return authT('auth.error403', 'Access denied');
+  if (status === 429)
+    return authT('auth.error429', 'Too many attempts. Please wait a moment and try again.');
+  if (status >= 500) return authT('auth.error500', 'Server error');
   const contentType = response.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) return fallback;
+  if (!contentType.includes('application/json')) {
+    return authT(fallbackKey, fallbackKey);
+  }
 
   const body = await response.json().catch(() => ({}));
   const message = body?.error?.message || body?.error || body?.errors?.[0];
@@ -72,7 +79,7 @@ async function getAuthErrorMessage(response: Response, fallback: string): Promis
     return message;
   }
 
-  return fallback;
+  return authT(fallbackKey, fallbackKey);
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -155,10 +162,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true, user: data.user };
       }
 
-      return { success: false, error: await getAuthErrorMessage(res, 'Login failed') };
+      return { success: false, error: await getAuthErrorMessage(res, 'auth.loginFailed') };
     } catch (e) {
       Sentry.captureException(e);
-      return { success: false, error: 'Network error' };
+      return { success: false, error: authT('auth.networkError', 'Network error') };
     }
   }, []);
 
@@ -195,10 +202,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return { success: true, user: data.user };
         }
 
-        return { success: false, error: await getAuthErrorMessage(res, 'Registration failed') };
+        return { success: false, error: await getAuthErrorMessage(res, 'auth.registerFailed') };
       } catch (e) {
         Sentry.captureException(e);
-        return { success: false, error: 'Network error' };
+        return { success: false, error: authT('auth.networkError', 'Network error') };
       }
     },
     [],
@@ -240,10 +247,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true };
       }
 
-      return { success: false, error: await getAuthErrorMessage(res, 'Failed to send magic link') };
+      return { success: false, error: await getAuthErrorMessage(res, 'auth.magicLink.sendError') };
     } catch (e) {
       Sentry.captureException(e);
-      return { success: false, error: 'Network error' };
+      return { success: false, error: authT('auth.networkError', 'Network error') };
     }
   }, []);
 
@@ -266,11 +273,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return {
         success: false,
-        error: await getAuthErrorMessage(res, 'Invalid or expired magic link'),
+        error: await getAuthErrorMessage(res, 'auth.magicLink.invalidToken'),
       };
     } catch (e) {
       Sentry.captureException(e);
-      return { success: false, error: 'Network error' };
+      return { success: false, error: authT('auth.networkError', 'Network error') };
     }
   }, []);
 
@@ -298,10 +305,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return { success: true };
         }
 
-        return { success: false, error: await getAuthErrorMessage(res, 'Password update failed') };
+        return {
+          success: false,
+          error: await getAuthErrorMessage(res, 'auth.passwordUpdateFailed'),
+        };
       } catch (e) {
         Sentry.captureException(e);
-        return { success: false, error: 'Network error' };
+        return { success: false, error: authT('auth.networkError', 'Network error') };
       }
     },
     [],

@@ -1,1 +1,1 @@
-🎨 FSC Rates 위젯 — UPS/DHL/FEDEX/OCS를 2단 그리드로 배치, EMAX는 전체 너비 유지
+🔧 P0~P2 리뷰 개선 — 할인상한 FE/BE 통일, carrier add-on 백엔드 반영, 로그인 redirect 검증, auth i18n, refresh race, FSC dead UI 정리

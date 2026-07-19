@@ -22,6 +22,26 @@ const dotGridStyle: React.CSSProperties = {
 
 type LoginMode = 'password' | 'magic';
 
+/** Allow only same-origin app paths to prevent open redirects via location.state. */
+const SAFE_REDIRECT_PATHS = [
+  '/dashboard',
+  '/quote',
+  '/admin',
+  '/compare',
+  '/guide',
+  '/schedule',
+] as const;
+
+function resolvePostLoginPath(fromPathname: string | undefined): string {
+  if (!fromPathname || !fromPathname.startsWith('/') || fromPathname.startsWith('//')) {
+    return '/dashboard';
+  }
+  if (SAFE_REDIRECT_PATHS.some((p) => fromPathname === p || fromPathname.startsWith(`${p}/`))) {
+    return fromPathname;
+  }
+  return '/dashboard';
+}
+
 export const LoginPage: React.FC = () => {
   const [mode, setMode] = useState<LoginMode>('password');
 
@@ -56,9 +76,8 @@ export const LoginPage: React.FC = () => {
     try {
       const result = await login(email.trim(), password);
       if (result.success) {
-        const from =
-          (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
-        navigate(from, { replace: true });
+        const from = (location.state as { from?: { pathname?: string } })?.from?.pathname;
+        navigate(resolvePostLoginPath(from), { replace: true });
       } else {
         setLoginError(result.error ?? t('auth.invalidCredentials'));
       }
@@ -97,6 +116,7 @@ export const LoginPage: React.FC = () => {
 
   const switchToPassword = () => {
     setMode('password');
+    if (magicEmail.trim()) setEmail(magicEmail);
     setMagicError('');
     setMagicSent(false);
   };
@@ -192,7 +212,7 @@ export const LoginPage: React.FC = () => {
                         type='button'
                         onClick={() => setShowPassword((v) => !v)}
                         className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors'
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                       >
                         {showPassword ? (
                           <EyeOff className='w-4 h-4' />
@@ -265,6 +285,7 @@ export const LoginPage: React.FC = () => {
                   <form className='space-y-3' onSubmit={handleMagicLinkSubmit}>
                     {magicError && (
                       <div
+                        id='magic-error'
                         role='alert'
                         aria-live='assertive'
                         className='p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl'
@@ -284,6 +305,8 @@ export const LoginPage: React.FC = () => {
                         name='magic-email'
                         type='email'
                         autoComplete='email'
+                        autoFocus
+                        aria-describedby={magicError ? 'magic-error' : undefined}
                         value={magicEmail}
                         onChange={(e) => setMagicEmail(e.target.value)}
                         className='w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emax-500/50 focus:border-emax-500/50 text-sm transition-colors'

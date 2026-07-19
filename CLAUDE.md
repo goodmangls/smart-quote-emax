@@ -54,7 +54,7 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       noticeApi.ts             # Company announcements
     types.ts                   # Core TypeScript types & enums (QuoteInput, QuoteResult, Incoterm, etc.)
     types/dashboard.ts         # Dashboard types (ExchangeRate, PortWeather, LogisticsNews, AccountManager)
-    i18n/translations.ts       # 4-language dictionary (en/ko/cn/ja, 390+ keys)
+    i18n/translations.ts       # 2-language dictionary (en/ko, ~800 keys)
     config/                    # Rate tables, business rules, UI constants
       ups_tariff.ts            # UPS Z1-Z10 rate tables (synced with backend, Eff. 01-Feb-26)
       dhl_tariff.ts            # DHL Z1-Z8 rate tables (synced with backend, 2026 정가)
@@ -293,7 +293,7 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 
 ## i18n System
 
-- **Languages**: `en | ko | cn | ja` (defined in `src/i18n/translations.ts`)
+- **Languages**: `en | ko` (defined in `src/i18n/translations.ts`)
 - **Hook**: `useLanguage()` from `LanguageContext` returns `{ language, setLanguage, t }`
 - **Persistence**: localStorage key `'language'`
 - **Usage**: `t('key.name')` in all components

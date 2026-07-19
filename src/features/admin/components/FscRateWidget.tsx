@@ -8,16 +8,7 @@ import {
   FEDEX_FSC_URL,
 } from '@/config/rates';
 import { EMAX_FSC_PER_KG } from '@/config/emax_tariff';
-import {
-  Fuel,
-  RefreshCw,
-  Loader2,
-  ExternalLink,
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  Trash2,
-} from 'lucide-react';
+import { Fuel, ExternalLink, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
 import {
   FscHistoryData,
   FscHistoryEntry,
@@ -32,10 +23,11 @@ import { FscChart } from './FscChart';
 /* ──────────────────────────────── main widget ───────────────────────────── */
 
 interface FscRateWidgetProps {
+  /** When true, history add/delete controls are hidden. */
   readOnly?: boolean;
 }
 
-export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
+export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }) => {
   // rates.ts is the single source of truth for FSC (DB auto-apply disabled)
   const data: FscRates = useMemo(
     () => ({
@@ -49,7 +41,6 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
     }),
     [],
   );
-  const loading = false;
 
   // History state
   const [history, setHistory] = useState<FscHistoryData>(() => loadFscHistory());
@@ -60,13 +51,11 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
   const [addDate, setAddDate] = useState('');
   const [addRate, setAddRate] = useState('');
 
-  const fetchRates = useCallback(() => {}, []);
-
-  const carrierLinks: Record<string, string> = {
+  const carrierLinks: Record<string, string | null> = {
     UPS: 'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page',
     DHL: 'https://mydhl.express.dhl/kr/ko/ship/surcharges.html',
     FEDEX: FEDEX_FSC_URL,
-    OCS: '#', // TODO: Add OCS FSC URL if available
+    OCS: null, // Official OCS FSC URL not published
   };
 
   // History handlers
@@ -118,20 +107,9 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
             FSC Rates (International)
           </h4>
         </div>
-        <button
-          onClick={fetchRates}
-          disabled={loading}
-          className='text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors'
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-        </button>
       </div>
 
-      {loading && !data ? (
-        <div className='p-6 text-center text-xs text-gray-400'>
-          <Loader2 className='w-4 h-4 animate-spin mx-auto' />
-        </div>
-      ) : data ? (
+      {data ? (
         <div>
           {/* Percentage carriers — 2×2 grid to fill horizontal space */}
           <div className='grid grid-cols-2'>
@@ -156,15 +134,17 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                     <span className='text-xs font-bold text-gray-900 dark:text-white'>
                       {carrier}
                     </span>
-                    <a
-                      href={link}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-gray-400 hover:text-emax-500 transition-colors'
-                      title={`${carrier} 공식 연료 할증료 페이지 열기`}
-                    >
-                      <ExternalLink className='w-3.5 h-3.5' />
-                    </a>
+                    {link ? (
+                      <a
+                        href={link}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-gray-400 hover:text-emax-500 transition-colors'
+                        title={`${carrier} 공식 연료 할증료 페이지 열기`}
+                      >
+                        <ExternalLink className='w-3.5 h-3.5' />
+                      </a>
+                    ) : null}
                   </div>
                   <p className='text-xl font-bold text-gray-900 dark:text-white'>
                     {rates.international.toFixed(2)}%
@@ -240,61 +220,77 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
               <p>OCS: 비정기 갱신 (Ad-hoc — 변경 시점에만 기록)</p>
             </div>
 
-            {/* Add Entry Form */}
-            <div className='rounded-lg border border-gray-200 dark:border-gray-600 p-3 space-y-2'>
-              <p className='text-[10px] font-semibold text-gray-600 dark:text-gray-300'>
-                Add History Entry
-              </p>
-              <div className='flex flex-wrap items-end gap-2'>
-                <div>
-                  <label className='block text-[10px] text-gray-400 mb-0.5'>Carrier</label>
-                  <select
-                    value={addCarrier}
-                    onChange={(e) => setAddCarrier(e.target.value as FscCarrier)}
-                    className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+            {!readOnly && (
+              <div className='rounded-lg border border-gray-200 dark:border-gray-600 p-3 space-y-2'>
+                <p className='text-[10px] font-semibold text-gray-600 dark:text-gray-300'>
+                  Add History Entry
+                </p>
+                <div className='flex flex-wrap items-end gap-2'>
+                  <div>
+                    <label
+                      htmlFor='fsc-history-carrier'
+                      className='block text-[10px] text-gray-400 mb-0.5'
+                    >
+                      Carrier
+                    </label>
+                    <select
+                      id='fsc-history-carrier'
+                      value={addCarrier}
+                      onChange={(e) => setAddCarrier(e.target.value as FscCarrier)}
+                      className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                    >
+                      <option value='ups'>UPS</option>
+                      <option value='dhl'>DHL</option>
+                      <option value='fedex'>FedEx</option>
+                      <option value='ocs'>OCS</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor='fsc-history-date'
+                      className='block text-[10px] text-gray-400 mb-0.5'
+                    >
+                      Date (YYYY-MM-DD)
+                    </label>
+                    <input
+                      id='fsc-history-date'
+                      type='date'
+                      value={addDate}
+                      onChange={(e) => setAddDate(e.target.value)}
+                      className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor='fsc-history-rate'
+                      className='block text-[10px] text-gray-400 mb-0.5'
+                    >
+                      Rate (%)
+                    </label>
+                    <input
+                      id='fsc-history-rate'
+                      type='number'
+                      step='0.25'
+                      min={0}
+                      max={100}
+                      value={addRate}
+                      onChange={(e) => setAddRate(e.target.value)}
+                      placeholder='38.50'
+                      className='w-20 px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                    />
+                  </div>
+                  <button
+                    onClick={handleAddEntry}
+                    disabled={!addDate || !addRate}
+                    className='flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white bg-emax-600 hover:bg-emax-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors'
                   >
-                    <option value='ups'>UPS</option>
-                    <option value='dhl'>DHL</option>
-                    <option value='fedex'>FedEx</option>
-                    <option value='ocs'>OCS</option>
-                  </select>
+                    <Plus className='w-3 h-3' />
+                    Add
+                  </button>
                 </div>
-                <div>
-                  <label className='block text-[10px] text-gray-400 mb-0.5'>
-                    Date (YYYY-MM-DD)
-                  </label>
-                  <input
-                    type='date'
-                    value={addDate}
-                    onChange={(e) => setAddDate(e.target.value)}
-                    className='px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
-                  />
-                </div>
-                <div>
-                  <label className='block text-[10px] text-gray-400 mb-0.5'>Rate (%)</label>
-                  <input
-                    type='number'
-                    step='0.25'
-                    min={0}
-                    max={100}
-                    value={addRate}
-                    onChange={(e) => setAddRate(e.target.value)}
-                    placeholder='38.50'
-                    className='w-20 px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
-                  />
-                </div>
-                <button
-                  onClick={handleAddEntry}
-                  disabled={!addDate || !addRate}
-                  className='flex items-center gap-1 px-2 py-1 text-xs font-semibold text-white bg-emax-600 hover:bg-emax-700 disabled:opacity-40 disabled:cursor-not-allowed rounded transition-colors'
-                >
-                  <Plus className='w-3 h-3' />
-                  Add
-                </button>
               </div>
-            </div>
+            )}
 
-            {/* Entry list with delete */}
             <div className='max-h-40 overflow-y-auto space-y-1'>
               {(['ups', 'dhl', 'fedex', 'ocs'] as const).map((carrier) => (
                 <div key={carrier}>
@@ -309,13 +305,16 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                       <span>
                         {entry.date} — {entry.rate.toFixed(2)}%
                       </span>
-                      <button
-                        onClick={() => handleRemoveEntry(carrier, entry.date)}
-                        className='text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition-colors'
-                        title='Delete entry'
-                      >
-                        <Trash2 className='w-3 h-3' />
-                      </button>
+                      {!readOnly && (
+                        <button
+                          onClick={() => handleRemoveEntry(carrier, entry.date)}
+                          className='text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition-colors'
+                          title='Delete entry'
+                          aria-label={`Delete ${carrier} entry ${entry.date}`}
+                        >
+                          <Trash2 className='w-3 h-3' />
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>

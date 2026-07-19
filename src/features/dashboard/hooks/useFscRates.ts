@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import * as Sentry from '@sentry/browser';
 import { getFscRates, FscRates } from '@/api/fscApi';
 
-const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
-
+/** One-shot fetch + manual retry. FSC is manually updated (rates.ts / admin); no polling. */
 export function useFscRates() {
   const [data, setData] = useState<FscRates | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,8 +24,6 @@ export function useFscRates() {
 
   useEffect(() => {
     load();
-    const interval = setInterval(load, REFRESH_INTERVAL);
-    return () => clearInterval(interval);
   }, [load]);
 
   return { data, loading, error, retry: load };

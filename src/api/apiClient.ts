@@ -6,7 +6,10 @@ export const API_URL: string = import.meta.env.VITE_API_URL || 'http://localhost
 export const AUTH_EXPIRED_EVENT = 'auth:expired';
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(
+    public status: number,
+    message: string,
+  ) {
     super(message);
     this.name = 'ApiError';
   }
@@ -27,10 +30,7 @@ async function getErrorMessage(response: Response): Promise<string> {
   }
 
   const body = await response.json().catch(() => ({}));
-  const message =
-    body?.error?.message ||
-    body?.error ||
-    body?.message;
+  const message = body?.error?.message || body?.error || body?.message;
 
   if (typeof message === 'string' && message.trim() && response.status < 500) {
     return message;
@@ -71,22 +71,27 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
     headers: { ...headers, ...(options?.headers || {}) },
   });
 
-  // 401 → try refresh once, then retry the original request
+  // 401 → try refresh once (deduped), then retry the original request
   if (response.status === 401) {
     if (!refreshPromise) {
-      refreshPromise = refreshAccessToken();
+      refreshPromise = refreshAccessToken().finally(() => {
+        refreshPromise = null;
+      });
     }
     const refreshed = await refreshPromise;
-    refreshPromise = null;
 
     if (refreshed) {
       const newToken = getAccessToken();
       const retryHeaders: HeadersInit = {
         ...headers,
         ...(options?.headers || {}),
-        'Authorization': `Bearer ${newToken}`,
+        Authorization: `Bearer ${newToken}`,
       };
-      response = await fetch(`${API_URL}${path}`, { ...options, credentials: 'include', headers: retryHeaders });
+      response = await fetch(`${API_URL}${path}`, {
+        ...options,
+        credentials: 'include',
+        headers: retryHeaders,
+      });
     }
   }
 
