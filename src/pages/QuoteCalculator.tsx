@@ -9,15 +9,27 @@ import { Header } from '@/components/layout/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { DEFAULT_EXCHANGE_RATE, DEFAULT_FSC_PERCENT, DEFAULT_FSC_PERCENT_DHL, DEFAULT_FSC_PERCENT_FEDEX, DEFAULT_FSC_PERCENT_OCS } from '@/config/rates';
+import {
+  DEFAULT_EXCHANGE_RATE,
+  DEFAULT_FSC_PERCENT,
+  DEFAULT_FSC_PERCENT_DHL,
+  DEFAULT_FSC_PERCENT_FEDEX,
+  DEFAULT_FSC_PERCENT_OCS,
+} from '@/config/rates';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useResolvedDiscount } from '@/features/dashboard/hooks/useResolvedDiscount';
 import { CalculatorActionBar } from './components/CalculatorActionBar';
 import { Footer } from '@/components/layout/Footer';
 import { MobileStickyBottomBar } from './components/MobileStickyBottomBar';
 
-const AdminWidgets = lazy(() => import('./components/AdminWidgets').then(m => ({ default: m.AdminWidgets })));
-const QuoteHistoryPage = lazy(() => import('@/features/history/components/QuoteHistoryPage').then(m => ({ default: m.QuoteHistoryPage })));
+const AdminWidgets = lazy(() =>
+  import('./components/AdminWidgets').then((m) => ({ default: m.AdminWidgets })),
+);
+const QuoteHistoryPage = lazy(() =>
+  import('@/features/history/components/QuoteHistoryPage').then((m) => ({
+    default: m.QuoteHistoryPage,
+  })),
+);
 
 const INITIAL_INPUT: QuoteInput = {
   originCountry: 'KR',
@@ -26,15 +38,13 @@ const INITIAL_INPUT: QuoteInput = {
   shippingMode: 'Door-to-Door',
   incoterm: Incoterm.DAP,
   packingType: PackingType.NONE,
-  items: [
-    { id: '1', width: 10, length: 10, height: 10, weight: 1, quantity: 1 }
-  ],
+  items: [{ id: '1', width: 10, length: 10, height: 10, weight: 1, quantity: 1 }],
   discountPercent: 0,
   dutyTaxEstimate: 0,
   exchangeRate: DEFAULT_EXCHANGE_RATE,
   fscPercent: DEFAULT_FSC_PERCENT,
   overseasCarrier: 'UPS',
-  manualPackingCost: undefined
+  manualPackingCost: undefined,
 };
 
 const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false }) => {
@@ -62,8 +72,8 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       else if (carrier === 'FEDEX') carrierDefault = DEFAULT_FSC_PERCENT_FEDEX;
       else if (carrier === 'OCS') carrierDefault = DEFAULT_FSC_PERCENT_OCS;
       else if (carrier === 'EMAX') carrierDefault = 0;
-      
-      setInput(prev => ({ ...prev, fscPercent: carrierDefault }));
+
+      setInput((prev) => ({ ...prev, fscPercent: carrierDefault }));
       setLastFscCarrier(carrier);
     }
   }, [input.overseasCarrier, lastFscCarrier]);
@@ -87,22 +97,45 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
     lastAutoSelectCountry.current = input.destinationCountry;
 
     try {
-      const altCarrier = input.overseasCarrier === 'DHL' ? 'UPS' : 'DHL';
-      const altFsc = altCarrier === 'DHL' ? DEFAULT_FSC_PERCENT_DHL : DEFAULT_FSC_PERCENT;
-      const altResult = calculateQuote({ ...input, overseasCarrier: altCarrier, fscPercent: altFsc });
-
-      if (altResult.totalQuoteAmount < result.totalQuoteAmount) {
-        setInput(prev => ({ ...prev, overseasCarrier: altCarrier, fscPercent: altFsc }));
-        setLastFscCarrier(altCarrier);
+      // Auto-pick cheapest among UPS / DHL / FedEx for the new destination
+      const candidates: Array<{ carrier: 'UPS' | 'DHL' | 'FEDEX'; fsc: number }> = [
+        { carrier: 'UPS', fsc: DEFAULT_FSC_PERCENT },
+        { carrier: 'DHL', fsc: DEFAULT_FSC_PERCENT_DHL },
+        { carrier: 'FEDEX', fsc: DEFAULT_FSC_PERCENT_FEDEX },
+      ];
+      let best = candidates[0];
+      let bestAmount = Number.POSITIVE_INFINITY;
+      for (const c of candidates) {
+        const quote = calculateQuote({
+          ...input,
+          overseasCarrier: c.carrier,
+          fscPercent: c.fsc,
+        });
+        if (quote.totalQuoteAmount < bestAmount) {
+          bestAmount = quote.totalQuoteAmount;
+          best = c;
+        }
       }
-    } catch { /* keep current carrier */ }
+      if (best.carrier !== (input.overseasCarrier || 'UPS')) {
+        setInput((prev) => ({
+          ...prev,
+          overseasCarrier: best.carrier,
+          fscPercent: best.fsc,
+        }));
+        setLastFscCarrier(best.carrier);
+      }
+    } catch {
+      /* keep current carrier */
+    }
   }, [input.destinationCountry, result, input.overseasCarrier, input]);
 
   const hasManuallyChangedDiscount = React.useRef(false);
   const discountResolutionTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
   const { data: resolvedDiscount } = useResolvedDiscount(
-    user?.email, user?.nationality, result?.billableWeight
+    user?.email,
+    user?.nationality,
+    result?.billableWeight,
   );
 
   React.useEffect(() => {
@@ -120,7 +153,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       }
 
       if (input.discountPercent !== defaultDiscount) {
-        setInput(prev => ({ ...prev, discountPercent: defaultDiscount }));
+        setInput((prev) => ({ ...prev, discountPercent: defaultDiscount }));
       }
     }, 300);
 
@@ -128,7 +161,14 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       if (discountResolutionTimeout.current) clearTimeout(discountResolutionTimeout.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally track only billableWeight, not entire result
-  }, [result?.billableWeight, resolvedDiscount, user?.nationality, user?.email, isKorean, input.discountPercent]);
+  }, [
+    result?.billableWeight,
+    resolvedDiscount,
+    user?.nationality,
+    user?.email,
+    isKorean,
+    input.discountPercent,
+  ]);
 
   const handleDiscountChange = (newDiscount: number) => {
     hasManuallyChangedDiscount.current = true;
@@ -163,11 +203,16 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
     await generatePDF(input, result, undefined, { isAdmin, isKorean, showUSD });
   };
   const handleQuoteSaved = () => setCurrentView('history');
-  const scrollToResults = () => document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const scrollToResults = () =>
+    document
+      .getElementById('result-section')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   const layoutProps = {
     isDarkMode,
-    setIsDarkMode: (v: boolean) => { if (v !== isDarkMode) toggleDarkMode(); },
+    setIsDarkMode: (v: boolean) => {
+      if (v !== isDarkMode) toggleDarkMode();
+    },
     isMobileView,
     setIsMobileView,
     input,
@@ -185,7 +230,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-950 min-h-screen font-sans transition-colors duration-200">
+    <div className='bg-gray-50 dark:bg-gray-950 min-h-screen font-sans transition-colors duration-200'>
       <Header />
       <CalculatorActionBar
         currentView={currentView}
@@ -202,18 +247,30 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
       {currentView === 'calculator' ? (
         <>
           {isMobileView ? (
-            <MobileLayout 
-              {...layoutProps} 
+            <MobileLayout
+              {...layoutProps}
               discountPercent={result?.discountPercent ?? 0}
-              onSwitchCarrier={(carrier) => setInput(prev => ({ ...prev, overseasCarrier: carrier }))}
+              onSwitchCarrier={(carrier, discountPercent) => {
+                hasManuallySelectedCarrier.current = true;
+                hasManuallyChangedDiscount.current = true;
+                setInput((prev) => ({
+                  ...prev,
+                  overseasCarrier: carrier,
+                  discountPercent,
+                }));
+              }}
             />
           ) : (
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 lg:pb-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                <div className="lg:col-span-7 space-y-8">
+            <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 lg:pb-8'>
+              <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 items-start'>
+                <div className='lg:col-span-7 space-y-8'>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('calc.shipmentConfig')}</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('calc.shipmentConfigDesc')}</p>
+                    <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
+                      {t('calc.shipmentConfig')}
+                    </h2>
+                    <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+                      {t('calc.shipmentConfigDesc')}
+                    </p>
                   </div>
                   <InputSection
                     input={input}
@@ -232,7 +289,7 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
                     </Suspense>
                   )}
                 </div>
-                <div className="lg:col-span-5 lg:sticky top-24" id="result-section">
+                <div className='lg:col-span-5 lg:sticky top-24' id='result-section'>
                   {result && (
                     <ResultSection
                       result={result}
@@ -240,9 +297,14 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
                       hideMargin={hideMargin}
                       onDiscountChange={handleDiscountChange}
                       onDownloadPdf={handleDownloadPdf}
-                      onSwitchCarrier={(carrier) => {
+                      onSwitchCarrier={(carrier, discountPercent) => {
                         hasManuallySelectedCarrier.current = true;
-                        setInput(prev => ({ ...prev, overseasCarrier: carrier }));
+                        hasManuallyChangedDiscount.current = true;
+                        setInput((prev) => ({
+                          ...prev,
+                          overseasCarrier: carrier,
+                          discountPercent,
+                        }));
                       }}
                       discountPercent={input.discountPercent}
                       isKorean={isKorean}
@@ -263,12 +325,12 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
           )}
         </>
       ) : (
-        <Suspense fallback={<div className="min-h-screen" />}>
+        <Suspense fallback={<div className='min-h-screen' />}>
           <QuoteHistoryPage onDuplicate={handleDuplicate} />
         </Suspense>
       )}
 
-      <div className="hidden lg:block">
+      <div className='hidden lg:block'>
         <Footer />
       </div>
 
@@ -277,8 +339,13 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
         title={t('calc.resetTitle')}
         message={t('calc.resetMessage')}
         confirmLabel={t('calc.resetQuote')}
-        variant="warning"
-        onConfirm={() => { setShowResetConfirm(false); setInput(INITIAL_INPUT); hasManuallySelectedCarrier.current = false; lastAutoSelectCountry.current = ''; }}
+        variant='warning'
+        onConfirm={() => {
+          setShowResetConfirm(false);
+          setInput(INITIAL_INPUT);
+          hasManuallySelectedCarrier.current = false;
+          lastAutoSelectCountry.current = '';
+        }}
         onCancel={() => setShowResetConfirm(false)}
       />
     </div>

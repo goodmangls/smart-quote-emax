@@ -202,6 +202,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'quote.destination': '도착지 (Destination)',
     'quote.logisticsCost': '물류 비용 세부내역',
     'quote.carrierComparison': '운송사 견적 비교',
+    'quote.topTwoOfThree': 'UPS·DHL·FedEx 중 최저 2곳',
+    'quote.alsoCompared': '비교 대상',
+    'quote.discountRerankHint':
+      '운송사별 Discount %를 바꾸면 견적이 다시 계산되어 상위 2곳이 자동으로 바뀝니다.',
     'quote.lowest': '최저가',
     'quote.selected': '선택됨',
     'quote.switch': '변경',
@@ -606,6 +610,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'quote.destination': 'Destination',
     'quote.logisticsCost': 'Logistics Cost Breakdown',
     'quote.carrierComparison': 'Carrier Comparison',
+    'quote.topTwoOfThree': 'Top 2 of UPS · DHL · FedEx',
+    'quote.alsoCompared': 'Also compared',
+    'quote.discountRerankHint':
+      'Change each carrier’s Discount % to recalculate — the top 2 update automatically.',
     'quote.lowest': 'Lowest',
     'quote.selected': 'Selected',
     'quote.switch': 'Switch',

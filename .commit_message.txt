@@ -1,1 +1,1 @@
-🔧 P0~P2 리뷰 개선 — 할인상한 FE/BE 통일, carrier add-on 백엔드 반영, 로그인 redirect 검증, auth i18n, refresh race, FSC dead UI 정리
+✨ 비교 카드 — 운송사별 Discount % 조정 시 상위 2곳 자동 재정렬

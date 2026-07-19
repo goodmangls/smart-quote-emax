@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** International Logistics Quoting System
 >
-> Version 3.3 | Last Updated: 2026-07-19
+> Version 3.4 | Last Updated: 2026-07-19
 
 ---
 
@@ -139,7 +139,7 @@ When entering a destination ZIP code, the system automatically checks against 86
 
 ### Carrier Comparison
 
-A comparison card shows estimated costs across all carriers side-by-side for quick decision-making.
+The result panel compares **UPS, DHL, and FedEx** (each with its own **Discount %** and default FSC), then automatically shows the **two cheapest** side-by-side. Adjusting any carrier’s discount recalculates and may change which two appear on top; the third stays visible below so you can still tweak it. Use **Switch** to apply that carrier + discount to your quote. OCS/EMAX remain available in the carrier dropdown but are outside this card.
 
 ### Dedicated Quote Comparison (`/compare`)
 

@@ -10,6 +10,10 @@ vi.mock('@/contexts/LanguageContext', () => ({
     t: (key: string) =>
       ({
         'quote.carrierComparison': '운송사 견적 비교',
+        'quote.topTwoOfThree': 'UPS·DHL·FedEx 중 최저 2곳',
+        'quote.alsoCompared': '비교 대상',
+        'quote.discountRerankHint':
+          '운송사별 Discount %를 바꾸면 견적이 다시 계산되어 상위 2곳이 자동으로 바뀝니다.',
         'quote.lowest': '최저가',
         'quote.selected': '선택됨',
         'quote.switch': '변경',
