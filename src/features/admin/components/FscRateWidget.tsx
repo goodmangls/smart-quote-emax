@@ -132,15 +132,27 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
           <Loader2 className='w-4 h-4 animate-spin mx-auto' />
         </div>
       ) : data ? (
-        <div className='divide-y divide-gray-100 dark:divide-gray-700'>
-          {(['UPS', 'DHL', 'FEDEX', 'OCS'] as const).map((carrier) => {
-            const rates = data.rates[carrier];
-            const link = carrierLinks[carrier];
+        <div>
+          {/* Percentage carriers — 2×2 grid to fill horizontal space */}
+          <div className='grid grid-cols-2'>
+            {(['UPS', 'DHL', 'FEDEX', 'OCS'] as const).map((carrier, index) => {
+              const rates = data.rates[carrier];
+              const link = carrierLinks[carrier];
+              const isLeftCol = index % 2 === 0;
+              const isTopRow = index < 2;
 
-            return (
-              <div key={carrier} className='px-4 py-3'>
-                <div className='flex items-center justify-between mb-2'>
-                  <div className='flex items-center gap-2'>
+              return (
+                <div
+                  key={carrier}
+                  className={[
+                    'px-4 py-3',
+                    isLeftCol ? 'border-r border-gray-100 dark:border-gray-700' : '',
+                    isTopRow ? 'border-b border-gray-100 dark:border-gray-700' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  <div className='flex items-center gap-2 mb-2'>
                     <span className='text-xs font-bold text-gray-900 dark:text-white'>
                       {carrier}
                     </span>
@@ -154,16 +166,16 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = () => {
                       <ExternalLink className='w-3.5 h-3.5' />
                     </a>
                   </div>
+                  <p className='text-xl font-bold text-gray-900 dark:text-white'>
+                    {rates.international.toFixed(2)}%
+                  </p>
                 </div>
-                <p className='text-xl font-bold text-gray-900 dark:text-white'>
-                  {rates.international.toFixed(2)}%
-                </p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
 
-          {/* EMAX — per-kg, not percentage. CN/VN only. */}
-          <div className='px-4 py-3'>
+          {/* EMAX — full-width row (per-kg, not percentage. CN/VN only.) */}
+          <div className='px-4 py-3 border-t border-gray-100 dark:border-gray-700'>
             <div className='flex items-center justify-between mb-2'>
               <span className='text-xs font-bold text-gray-900 dark:text-white'>EMAX</span>
               <span className='text-[10px] text-gray-400'>per-kg · CN/VN only</span>
