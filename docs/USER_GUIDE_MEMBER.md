@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** International Logistics Quoting System
 >
-> Version 3.2 | Last Updated: 2026-04-30
+> Version 3.3 | Last Updated: 2026-07-19
 
 ---
 
@@ -24,8 +24,18 @@
 ### Login
 
 1. Navigate to `/login`
-2. Enter your email and password
-3. Click **Sign In**
+2. Enter your **email** and **password**
+3. Click **Sign In** (로그인)
+
+#### Password-free Sign-in (비밀번호 없이 로그인)
+
+If you forgot your password or prefer a simpler login:
+
+1. On the login page, click **"Sign in with email link"** below the sign-in button
+2. Enter your email address
+3. Click **"Email me a sign-in link"** (로그인 링크 보내기)
+4. Check your inbox — the secure login link expires in 15 minutes
+5. Click the link in your email to sign in instantly (no password needed)
 
 > First time? Click **Sign Up** at `/signup` to create an account with your company info and nationality.
 

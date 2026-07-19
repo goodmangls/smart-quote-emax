@@ -60,6 +60,7 @@ async function getAuthErrorMessage(response: Response, fallback: string): Promis
   const status = response.status;
   if (status === 401) return 'Invalid credentials';
   if (status === 403) return 'Access denied';
+  if (status === 429) return 'Too many attempts. Please wait a moment and try again.';
   if (status >= 500) return 'Server error';
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) return fallback;
