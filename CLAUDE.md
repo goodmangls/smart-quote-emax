@@ -63,7 +63,7 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
 
       ocs_tariff.ts            # OCS rate tables and handling charges (TW/HK/SG/CN/JP)
       fsc-history.ts           # FSC historical rates with localStorage persistence (UPS/DHL/FedEx/OCS)
-      rates.ts                 # KRW cost constants, DEFAULT_EXCHANGE_RATE=1450, DEFAULT_FSC_PERCENT=47.5 (UPS), 47.75 (DHL), 45.5 (FedEx)
+      rates.ts                 # KRW cost constants, DEFAULT_EXCHANGE_RATE=1450, DEFAULT_FSC_PERCENT=40.5 (UPS), 38.5 (DHL), 39.75 (FedEx)
       business-rules.ts        # Surge thresholds, packing weight buffer/addition
       options.ts               # Country options, carrier options, incoterm options
       addon-utils.ts           # Shared AddonRateLike/NormalizedRate types, calcAddonFee(), findRate()
@@ -340,7 +340,7 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SENTRY_DSN`, `VITE_CHANNEL_TALK_PLUGIN_KEY`, `VITE_ENABLE_SENTRY`
 - **ENV policy**: `VITE_*` keys are inlined into the client bundle at build time — use only for keys that are safe to expose to browsers (Supabase anon, public DSNs, public SDK keys with referrer/origin restrictions). Server-side secrets (Slack webhooks, EIA API key, admin tokens) MUST live only in the Rails API or Vercel serverless environment variables without the `VITE_` prefix. Slack alerts and EIA jet-fuel requests are already proxied through the Rails backend (`/api/v1/notifications/slack`, `/api/v1/jet_fuel`) — do not re-introduce `VITE_SLACK_WEBHOOK_URL` or `VITE_EIA_API_KEY`.
 - **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`, `ocs_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.
-- **Market defaults** (as of 2026-04-20): `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=47.5` (UPS), `DEFAULT_FSC_PERCENT_DHL=47.75`, `DEFAULT_FSC_PERCENT_FEDEX=45.5`, `DEFAULT_FSC_PERCENT_OCS=10.0` in `src/config/rates.ts`
+- **Market defaults** (as of 2026-07-20): `DEFAULT_EXCHANGE_RATE=1450` (하나은행 월요일 09시 송금환율), `DEFAULT_FSC_PERCENT=40.5` (UPS), `DEFAULT_FSC_PERCENT_DHL=38.5`, `DEFAULT_FSC_PERCENT_FEDEX=39.75`, `DEFAULT_FSC_PERCENT_OCS=25.0` in `src/config/rates.ts`
 - **FSC history**: `src/config/fsc-history.ts` tracks weekly UPS and monthly DHL/FedEx/OCS FSC rates. Update when rates change.
 - **Exchange rate policy**: Live API 자동세팅 비활성화, 매주 월요일 수동 업데이트 (하나은행 기준)
 - **Error tracking**: Sentry (`@sentry/browser`) integrated across all catch blocks

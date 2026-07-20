@@ -39,11 +39,11 @@ module Constants
     EMAX_HANDLING_CHARGE = 15000
 
     # EMAX FSC is per-kg KRW (no percentage), 15-day variable.
-    # Effective 2026-06-16 through 2026-07-15.
+    # Effective 2026-07-16 through 2026-07-31.
     # Mirror of frontend src/config/emax_tariff.ts EMAX_FSC_PER_KG.
     EMAX_FSC_PER_KG = {
-      "CN" => 1360,
-      "VN" => 1420
+      "CN" => 930,
+      "VN" => 980
     }
   end
 end
