@@ -2,8 +2,14 @@ import { type SurchargeRule } from '@/api/surchargeApi';
 import { formatKRW } from '@/lib/format';
 
 export const CARRIER_LINKS: Record<string, { label: string; url: string }> = {
-  UPS: { label: 'UPS Surcharges', url: 'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page' },
-  DHL: { label: 'DHL Surcharges', url: 'https://mydhl.express.dhl/kr/ko/ship/surcharges.html' },
+  UPS: {
+    label: 'UPS Surcharges',
+    url: 'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page',
+  },
+  DHL: {
+    label: 'DHL Surcharges',
+    url: 'https://mydhl.express.dhl/kr/ko/ship/surcharges.html#/fuel_surcharge',
+  },
 };
 
 export const EMPTY_FORM: Partial<SurchargeRule> = {

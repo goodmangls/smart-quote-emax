@@ -5,7 +5,9 @@ import {
   DEFAULT_FSC_PERCENT_DHL,
   DEFAULT_FSC_PERCENT_FEDEX,
   DEFAULT_FSC_PERCENT_OCS,
+  DHL_FSC_URL,
   FEDEX_FSC_URL,
+  UPS_FSC_URL,
 } from '@/config/rates';
 import { EMAX_FSC_PER_KG } from '@/config/emax_tariff';
 import { Fuel, ExternalLink, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
@@ -52,8 +54,8 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
   const [addRate, setAddRate] = useState('');
 
   const carrierLinks: Record<string, string | null> = {
-    UPS: 'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page',
-    DHL: 'https://mydhl.express.dhl/kr/ko/ship/surcharges.html',
+    UPS: UPS_FSC_URL,
+    DHL: DHL_FSC_URL,
     FEDEX: FEDEX_FSC_URL,
     OCS: null, // Official OCS FSC URL not published
   };

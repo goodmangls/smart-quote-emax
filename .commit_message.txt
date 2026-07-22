@@ -1,1 +1,1 @@
-🔄 FSC 요율 업데이트: UPS 40.5% / DHL 38.5% / FedEx 39.75% / OCS 25% / EMAX CN 930·VN 980원/kg (2026-07-20 기준)
+🔗 DHL FSC 링크를 #/fuel_surcharge URL로 통일
