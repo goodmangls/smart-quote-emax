@@ -124,7 +124,7 @@ describe('AuthContext', () => {
       });
 
       expect(result!.success).toBe(false);
-      expect(result!.error).toBe('Invalid credentials');
+      expect(result!.error).toBe('Email or password is incorrect.');
       expect(captured!.user).toBeNull();
       expect(captured!.isAuthenticated).toBe(false);
       expect(localStorage.getItem(REFRESH_KEY)).toBeNull();
@@ -142,7 +142,7 @@ describe('AuthContext', () => {
       });
 
       expect(result!.success).toBe(false);
-      expect(result!.error).toBe('Network error');
+      expect(result!.error).toBe('Network error.');
     });
   });
 
