@@ -1,1 +1,1 @@
-✅ EMAX 로그인 e2e를 현재 Magic Link 전환 흐름에 동기화
+✅ EMAX 로그인 e2e 남은 기대값 정합성 수정

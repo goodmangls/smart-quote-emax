@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Accessibility', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('smartQuoteLanguage', 'en');
+    });
+  });
+
   test('landing page has proper heading structure', async ({ page }) => {
     await page.goto('/');
     const h1 = page.locator('h1');

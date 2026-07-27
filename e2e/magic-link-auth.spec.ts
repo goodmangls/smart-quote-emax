@@ -21,7 +21,7 @@ test.describe('Magic Link Authentication', () => {
       await gotoMagicLinkMode(page);
       await expect(page.locator('#magic-email')).toBeVisible();
       await expect(page.locator('#login-password')).toHaveCount(0);
-      await expect(page.getByText(/Password-free sign-in/i)).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Password-free sign-in' })).toBeVisible();
     });
 
     test('shows magic link email and send button by default', async ({ page }) => {
@@ -121,7 +121,7 @@ test.describe('Magic Link Authentication', () => {
 
       await page.goto('/auth/verify?token=invalid-token-xyz');
 
-      await expect(page.getByText(/Invalid credentials/i)).toBeVisible();
+      await expect(page.getByText(/Email or password is incorrect/i)).toBeVisible();
       await expect(page.getByRole('link', { name: /Back to login/i })).toBeVisible();
     });
 
