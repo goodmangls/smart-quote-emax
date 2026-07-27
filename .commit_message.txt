@@ -1,1 +1,1 @@
-✅ EMAX FSC 업데이트 후 CI 테스트 기대값 동기화
+✅ EMAX 로그인 e2e를 현재 Magic Link 전환 흐름에 동기화
