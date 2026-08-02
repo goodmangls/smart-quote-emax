@@ -137,9 +137,9 @@ describe('fsc-history', () => {
       expect(result.ups).toEqual(expect.arrayContaining(custom.ups));
       expect(result.dhl).toEqual(expect.arrayContaining(custom.dhl));
       expect(result.ocs).toEqual(expect.arrayContaining(custom.ocs));
-      expect(result.ups.at(-1)).toEqual({ date: '2026-07-27', rate: 44.75 });
-      expect(result.dhl.at(-1)).toEqual({ date: '2026-07-27', rate: 38.75 });
-      expect(result.fedex.at(-1)).toEqual({ date: '2026-07-27', rate: 44.0 });
+      expect(result.ups.at(-1)).toEqual({ date: '2026-08-03', rate: 46.25 });
+      expect(result.dhl.at(-1)).toEqual({ date: '2026-08-03', rate: 38.25 });
+      expect(result.fedex.at(-1)).toEqual({ date: '2026-08-03', rate: 45.5 });
     });
 
     it('returns default data when localStorage contains corrupted JSON', () => {
@@ -189,9 +189,9 @@ describe('fsc-history', () => {
 
       const result = loadFscHistory();
 
-      expect(result.ups.at(-1)).toEqual({ date: '2026-07-27', rate: 44.75 });
-      expect(result.dhl.at(-1)).toEqual({ date: '2026-07-27', rate: 38.75 });
-      expect(result.fedex.at(-1)).toEqual({ date: '2026-07-27', rate: 44.0 });
+      expect(result.ups.at(-1)).toEqual({ date: '2026-08-03', rate: 46.25 });
+      expect(result.dhl.at(-1)).toEqual({ date: '2026-08-03', rate: 38.25 });
+      expect(result.fedex.at(-1)).toEqual({ date: '2026-08-03', rate: 45.5 });
       expect(result.ocs).toEqual(DEFAULT_FSC_HISTORY.ocs);
     });
   });
@@ -204,10 +204,10 @@ describe('fsc-history', () => {
       expect(DEFAULT_FSC_HISTORY.ocs.every((e) => typeof e.rate === 'number')).toBe(true);
     });
 
-    it('includes the 2026-07-27 FSC update for all percentage carriers', () => {
-      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-07-27', rate: 44.75 });
-      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-07-27', rate: 38.75 });
-      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-07-27', rate: 44.0 });
+    it('includes the 2026-08-03 FSC update for all percentage carriers', () => {
+      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-08-03', rate: 46.25 });
+      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-08-03', rate: 38.25 });
+      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-08-03', rate: 45.5 });
       expect(DEFAULT_FSC_HISTORY.ocs.at(-1)).toEqual({ date: '2026-07-13', rate: 25.0 });
     });
   });
