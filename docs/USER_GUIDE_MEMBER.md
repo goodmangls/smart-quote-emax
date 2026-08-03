@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** International Logistics Quoting System
 >
-> Version 3.4 | Last Updated: 2026-07-19
+> Version 3.5 | Last Updated: 2026-08-03
 
 ---
 
@@ -89,8 +89,12 @@ Access via `/quote` from the dashboard or header navigation.
 
 ### Step 2: Cargo Details
 
+Select **Shipping Item**:
+- **Parcel** (default) — merchandise / parcel rates (Qty, Weight, L/W/H)
+- **Document** — envelope / document rates (UPS up to 5.0kg, DHL up to 2.0kg, FedEx Envelope ≤0.5kg / Pak ≤2.5kg). Heavier shipments automatically use Parcel rates (quote continues; result shows **Rated as Parcel**). Cargo shows an inline warning with a **Switch to Parcel** button. Document mode shows **Qty + Weight only** (envelope dimensions are standardized) and forces Packing Type to NONE. EMAX and OCS do not offer Document rates.
+
 For each item, enter:
-- **Width / Length / Height** (cm)
+- **Width / Length / Height** (cm) — Parcel only
 - **Weight** (kg)
 - **Quantity**
 
@@ -103,7 +107,7 @@ Click **+ Add Item** for multi-piece shipments. The system automatically:
 
 | Field | Description |
 |-------|-------------|
-| Packing Type | None, Wooden Box, Skid, or Vacuum |
+| Packing Type | None, Wooden Box, Skid, or Vacuum (disabled for Document) |
 | Manual Packing Cost | Override auto-calculated packing cost |
 | Manual Surge Cost | Additional surcharge (applied to all carriers) |
 | Exchange Rate | Auto-fetched live USD/KRW rate (editable) |

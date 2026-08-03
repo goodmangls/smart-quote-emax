@@ -70,18 +70,44 @@ class QuoteCalculator
   end
 
   def calculate_overseas
+    shipping_item_type = @input[:shippingItemType] || "NON_DOCUMENT"
     fsc = @input[:fscPercent] || default_fsc_for(@carrier)
     @overseas_result = case @carrier
     when "DHL"
-      Calculators::DhlCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
+      Calculators::DhlCost.call(
+        billable_weight: @billable_weight,
+        country: @input[:destinationCountry],
+        fsc_percent: fsc,
+        shipping_item_type: shipping_item_type
+      )
     when "EMAX"
       Calculators::EmaxCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry])
     when "FDX", "FEDEX"
-      Calculators::FedexCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
+      Calculators::FedexCost.call(
+        billable_weight: @billable_weight,
+        country: @input[:destinationCountry],
+        fsc_percent: fsc,
+        shipping_item_type: shipping_item_type
+      )
     when "OCS"
       Calculators::OcsCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
     else
-      Calculators::UpsCost.call(billable_weight: @billable_weight, country: @input[:destinationCountry], fsc_percent: fsc)
+      Calculators::UpsCost.call(
+        billable_weight: @billable_weight,
+        country: @input[:destinationCountry],
+        fsc_percent: fsc,
+        shipping_item_type: shipping_item_type
+      )
+    end
+
+    if shipping_item_type == "DOCUMENT"
+      if @carrier == "DHL" && @billable_weight > Constants::DhlTariff::DHL_DOC_MAX_KG
+        @user_warnings << "Document rates apply up to 2.0kg on DHL; Parcel tariff used for this weight."
+      elsif (@carrier == "FDX" || @carrier == "FEDEX") && @billable_weight > Constants::FedexTariff::FEDEX_DOC_MAX_KG
+        @user_warnings << "Document rates apply up to 2.5kg on FedEx (Envelope/Pak); IP Parcel tariff used for this weight."
+      elsif @carrier == "UPS" && @billable_weight > Constants::UpsTariff::UPS_DOC_MAX_KG
+        @user_warnings << "Document rates apply up to 5.0kg on UPS; Parcel tariff used for this weight."
+      end
     end
   end
 

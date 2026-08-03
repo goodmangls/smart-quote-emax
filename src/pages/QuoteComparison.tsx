@@ -1,5 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { QuoteInput, Incoterm, PackingType, CargoItem, CostBreakdown } from '../types';
+import {
+  QuoteInput,
+  Incoterm,
+  PackingType,
+  CargoItem,
+  CostBreakdown,
+  ShippingItemType,
+} from '../types';
 import { calculateQuote } from '@/features/quote/services/calculationService';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -187,6 +194,8 @@ const QuoteComparison: React.FC = () => {
             <CargoSection
               items={items}
               onChange={handleUpdateItems}
+              shippingItemType={ShippingItemType.NON_DOCUMENT}
+              onShippingItemTypeChange={() => {}}
               isMobileView={isNarrowViewport}
             />
           </div>

@@ -1,4 +1,11 @@
-import { QuoteInput, QuoteResult, PackingType, Incoterm, CargoItem } from '@/types';
+import {
+  QuoteInput,
+  QuoteResult,
+  PackingType,
+  Incoterm,
+  CargoItem,
+  ShippingItemType,
+} from '@/types';
 import {
   FUMIGATION_FEE,
   DEFAULT_EXCHANGE_RATE,
@@ -7,10 +14,9 @@ import {
   WAR_RISK_SURCHARGE_RATE,
   TRANSIT_TIMES,
 } from '@/config/rates';
-import { UPS_EXACT_RATES, UPS_RANGE_RATES } from '@/config/ups_tariff';
-import { DHL_EXACT_RATES, DHL_RANGE_RATES } from '@/config/dhl_tariff';
-import { FEDEX_EXACT_RATES, FEDEX_RANGE_RATES } from '@/config/fedex_tariff';
 import { EMAX_EXACT_RATES, EMAX_RANGE_RATES, EMAX_FSC_PER_KG } from '@/config/emax_tariff';
+import { resolveCarrierRateTables } from './rateTableResolver';
+import { getDocumentCapKg } from './documentCaps';
 import {
   OCS_EXACT_RATES,
   OCS_RANGE_RATES,
@@ -171,13 +177,18 @@ export const calculateItemCosts = (
   };
 };
 
-export const calculateUpsCosts = (billableWeight: number, country: string): CarrierCostResult => {
+export const calculateUpsCosts = (
+  billableWeight: number,
+  country: string,
+  shippingItemType: ShippingItemType = ShippingItemType.NON_DOCUMENT,
+): CarrierCostResult => {
   const zoneInfo = determineUpsZone(country);
+  const { exact, range } = resolveCarrierRateTables('UPS', shippingItemType, billableWeight);
   const intlBase = lookupCarrierRate(
     billableWeight,
     zoneInfo.rateKey,
-    UPS_EXACT_RATES,
-    UPS_RANGE_RATES as RangeRateEntry[],
+    exact,
+    range as RangeRateEntry[],
   );
   const intlWarRisk = intlBase * (WAR_RISK_SURCHARGE_RATE / 100);
   return {
@@ -191,13 +202,18 @@ export const calculateUpsCosts = (billableWeight: number, country: string): Carr
 
 // --- DHL Calculator ---
 
-export const calculateDhlCosts = (billableWeight: number, country: string): CarrierCostResult => {
+export const calculateDhlCosts = (
+  billableWeight: number,
+  country: string,
+  shippingItemType: ShippingItemType = ShippingItemType.NON_DOCUMENT,
+): CarrierCostResult => {
   const zoneInfo = determineDhlZone(country);
+  const { exact, range } = resolveCarrierRateTables('DHL', shippingItemType, billableWeight);
   const intlBase = lookupCarrierRate(
     billableWeight,
     zoneInfo.rateKey,
-    DHL_EXACT_RATES,
-    DHL_RANGE_RATES as RangeRateEntry[],
+    exact,
+    range as RangeRateEntry[],
   );
   const intlWarRisk = intlBase * (WAR_RISK_SURCHARGE_RATE / 100);
   return {
@@ -211,13 +227,18 @@ export const calculateDhlCosts = (billableWeight: number, country: string): Carr
 
 // --- FedEx Calculator ---
 
-export const calculateFedexCosts = (billableWeight: number, country: string): CarrierCostResult => {
+export const calculateFedexCosts = (
+  billableWeight: number,
+  country: string,
+  shippingItemType: ShippingItemType = ShippingItemType.NON_DOCUMENT,
+): CarrierCostResult => {
   const zoneInfo = determineFedexZone(country);
+  const { exact, range } = resolveCarrierRateTables('FEDEX', shippingItemType, billableWeight);
   const intlBase = lookupCarrierRate(
     billableWeight,
     zoneInfo.rateKey,
-    FEDEX_EXACT_RATES,
-    FEDEX_RANGE_RATES as RangeRateEntry[],
+    exact,
+    range as RangeRateEntry[],
   );
   const intlWarRisk = intlBase * (WAR_RISK_SURCHARGE_RATE / 100);
   return {
@@ -334,13 +355,18 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   }
 
   // 3. Carrier Costs (routing by carrier)
+  const shippingItemType = input.shippingItemType ?? ShippingItemType.NON_DOCUMENT;
   let carrierResult: CarrierCostResult;
   switch (carrier) {
     case 'DHL':
-      carrierResult = calculateDhlCosts(billableWeight, input.destinationCountry);
+      carrierResult = calculateDhlCosts(billableWeight, input.destinationCountry, shippingItemType);
       break;
     case 'FEDEX':
-      carrierResult = calculateFedexCosts(billableWeight, input.destinationCountry);
+      carrierResult = calculateFedexCosts(
+        billableWeight,
+        input.destinationCountry,
+        shippingItemType,
+      );
       break;
     case 'EMAX':
       carrierResult = calculateEmaxCosts(billableWeight, input.destinationCountry);
@@ -349,8 +375,24 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
       carrierResult = calculateOcsCosts(billableWeight, input.destinationCountry);
       break;
     default:
-      carrierResult = calculateUpsCosts(billableWeight, input.destinationCountry);
+      carrierResult = calculateUpsCosts(billableWeight, input.destinationCountry, shippingItemType);
       break;
+  }
+
+  const docCapKg = getDocumentCapKg(carrier);
+  const documentRatedAsParcel =
+    shippingItemType === ShippingItemType.DOCUMENT && billableWeight > docCapKg;
+
+  if (documentRatedAsParcel) {
+    if (carrier === 'FEDEX') {
+      userWarnings.push(
+        `Document rates apply up to ${docCapKg}kg on FedEx (Envelope/Pak); IP Parcel tariff used for this weight.`,
+      );
+    } else if (carrier === 'UPS' || carrier === 'DHL') {
+      userWarnings.push(
+        `Document rates apply up to ${docCapKg}kg on ${carrier}; Parcel tariff used for this weight.`,
+      );
+    }
   }
 
   // System surcharges from DB (War Risk, PSS, EBS, etc.)
@@ -486,6 +528,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     transitTime: carrierResult.transitTime,
     carrier,
     warnings: userWarnings,
+    documentRatedAsParcel: documentRatedAsParcel || undefined,
     breakdown: {
       packingMaterial: itemResult.packingMaterialCost,
       packingLabor: itemResult.packingLaborCost,

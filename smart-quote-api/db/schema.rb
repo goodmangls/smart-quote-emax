@@ -125,6 +125,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_11_000001) do
     t.boolean "is_jeju_pickup", default: false
     t.string "incoterm", limit: 5, null: false
     t.string "packing_type", limit: 20, default: "NONE", null: false
+    t.string "shipping_item_type", limit: 20, default: "NON_DOCUMENT", null: false
     t.decimal "discount_percent", precision: 5, scale: 2, null: false
     t.decimal "duty_tax_estimate", precision: 12, default: "0"
     t.decimal "exchange_rate", precision: 10, scale: 2, null: false

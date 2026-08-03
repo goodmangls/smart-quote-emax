@@ -154,7 +154,7 @@ module Api
         params.permit(
           :originCountry, :destinationCountry, :destinationZip,
           :domesticRegionCode, :isJejuPickup,
-          :incoterm, :packingType, :shippingMode,
+          :incoterm, :packingType, :shippingItemType, :shippingMode,
           :discountPercent, :dutyTaxEstimate,
           :exchangeRate, :fscPercent,
           :manualDomesticCost, :manualPackingCost, :manualSurgeCost,
@@ -181,6 +181,7 @@ module Api
           is_jeju_pickup:       i["isJejuPickup"]       || false,
           incoterm:             i["incoterm"],
           packing_type:         i["packingType"]        || "NONE",
+          shipping_item_type:   i["shippingItemType"]   || "NON_DOCUMENT",
           discount_percent:     i["discountPercent"]    || 15,
           duty_tax_estimate:    i["dutyTaxEstimate"]    || 0,
           exchange_rate:        i["exchangeRate"],

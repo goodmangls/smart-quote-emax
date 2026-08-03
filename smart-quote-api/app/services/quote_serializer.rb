@@ -41,6 +41,7 @@ class QuoteSerializer
       isJejuPickup: quote.is_jeju_pickup,
       incoterm: quote.incoterm,
       packingType: quote.packing_type,
+      shippingItemType: quote.shipping_item_type,
       inputDiscountPercent: quote.discount_percent.to_f,
       dutyTaxEstimate: quote.duty_tax_estimate.to_i,
       exchangeRate: quote.exchange_rate.to_f,

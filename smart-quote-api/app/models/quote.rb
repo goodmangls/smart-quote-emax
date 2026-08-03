@@ -4,6 +4,7 @@ class Quote < ApplicationRecord
 
   VALID_INCOTERMS = %w[EXW FOB C&F CIF DAP DDP].freeze
   VALID_PACKING_TYPES = %w[NONE WOODEN_BOX SKID VACUUM].freeze
+  VALID_SHIPPING_ITEM_TYPES = %w[NON_DOCUMENT DOCUMENT].freeze
   VALID_STATUSES = %w[draft sent accepted rejected confirmed expired].freeze
   DEFAULT_VALIDITY_DAYS = 7
 
@@ -11,6 +12,7 @@ class Quote < ApplicationRecord
   validates :destination_country, presence: true, length: { maximum: 3 }
   validates :incoterm, presence: true, inclusion: { in: VALID_INCOTERMS }
   validates :packing_type, presence: true, inclusion: { in: VALID_PACKING_TYPES }
+  validates :shipping_item_type, presence: true, inclusion: { in: VALID_SHIPPING_ITEM_TYPES }
   validates :discount_percent, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :total_quote_amount, presence: true
   validates :total_cost_amount, presence: true

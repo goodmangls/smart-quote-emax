@@ -9,6 +9,7 @@ FactoryBot.define do
     is_jeju_pickup { false }
     incoterm { "FOB" }
     packing_type { "NONE" }
+    shipping_item_type { "NON_DOCUMENT" }
     discount_percent { 15.0 }
     duty_tax_estimate { 0 }
     exchange_rate { 1300.0 }

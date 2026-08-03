@@ -155,6 +155,30 @@ export const translations: Record<Language, Record<string, string>> = {
     // Calculator - Sections
     'calc.section.route': '경로 및 배송조건',
     'calc.section.cargo': '화물 상세설정',
+    'calc.label.shippingItem': 'Shipping Item',
+    'calc.option.nonDocument': 'Parcel',
+    'calc.option.document': 'Document',
+    'calc.cargo.addItem': 'Add Box',
+    'calc.cargo.addEnvelope': 'Add Envelope',
+    'calc.cargo.itemLabel': 'Box #{n}',
+    'calc.cargo.envelopeLabel': 'Envelope #{n}',
+    'calc.cargo.duplicateItem': 'Duplicate this box',
+    'calc.cargo.duplicateEnvelope': 'Duplicate this envelope',
+    'calc.cargo.removeItem': 'Remove this box',
+    'calc.cargo.removeEnvelope': 'Remove this envelope',
+    'calc.cargo.minOneItem': 'At least one box required',
+    'calc.cargo.minOneEnvelope': 'At least one envelope required',
+    'calc.hint.documentWeightCap':
+      'Document 요율은 {kg}kg까지 적용됩니다. 초과 시 Parcel 요율이 사용됩니다.',
+    'calc.hint.documentDimsFixed': 'Envelope 치수는 규격 고정입니다 — Qty와 Weight만 입력하세요.',
+    'calc.hint.documentNoPacking':
+      'Document 화물은 Packing Type NONE으로 고정됩니다 (목포장/스키드 불가).',
+    'calc.hint.documentOverCap':
+      '입력 무게({weight}kg)가 {carrier} Document 한도({kg}kg)를 초과했습니다. 현재 Parcel 요율로 견적됩니다.',
+    'calc.action.switchToParcel': 'Parcel로 전환',
+    'calc.badge.ratedAsParcel': 'Parcel 요율 적용 중',
+    'calc.badge.ratedAsParcelHint':
+      '이 무게에는 Document 요율이 적용되지 않았습니다. Shipping Item은 Document로 남아 있습니다 — 치수·포장 옵션을 맞추려면 Parcel로 전환하세요.',
     'calc.section.service': '부가 서비스 옵션',
     'calc.section.financial': '재무 및 환율 적용',
     'calc.financial.exchangeHint': '하나은행 월요일 09시 송금환율 기준 · 매주 수동 업데이트',
@@ -562,6 +586,31 @@ export const translations: Record<Language, Record<string, string>> = {
     // Calculator - Sections
     'calc.section.route': 'Route & Delivery Terms',
     'calc.section.cargo': 'Cargo Details',
+    'calc.label.shippingItem': 'Shipping Item',
+    'calc.option.nonDocument': 'Parcel',
+    'calc.option.document': 'Document',
+    'calc.cargo.addItem': 'Add Box',
+    'calc.cargo.addEnvelope': 'Add Envelope',
+    'calc.cargo.itemLabel': 'Box #{n}',
+    'calc.cargo.envelopeLabel': 'Envelope #{n}',
+    'calc.cargo.duplicateItem': 'Duplicate this box',
+    'calc.cargo.duplicateEnvelope': 'Duplicate this envelope',
+    'calc.cargo.removeItem': 'Remove this box',
+    'calc.cargo.removeEnvelope': 'Remove this envelope',
+    'calc.cargo.minOneItem': 'At least one box required',
+    'calc.cargo.minOneEnvelope': 'At least one envelope required',
+    'calc.hint.documentWeightCap':
+      'Document rates apply up to {kg}kg. Heavier shipments use the Parcel tariff.',
+    'calc.hint.documentDimsFixed':
+      'Envelope dimensions are standardized — enter Qty and Weight only.',
+    'calc.hint.documentNoPacking':
+      'Document shipments use packing type NONE (no wooden/skid packing).',
+    'calc.hint.documentOverCap':
+      'Entered weight ({weight}kg) exceeds {carrier} Document limit ({kg}kg). Quote is currently priced with the Parcel tariff.',
+    'calc.action.switchToParcel': 'Switch to Parcel',
+    'calc.badge.ratedAsParcel': 'Rated as Parcel',
+    'calc.badge.ratedAsParcelHint':
+      'Document rates were not applied for this weight. Shipping Item is still Document — switch to Parcel to match dimensions and packing options.',
     'calc.section.service': 'Additional Service Options',
     'calc.section.financial': 'Financial & Exchange Rate Application',
     'calc.financial.exchangeHint': 'Hana Bank Mon 9AM remittance rate · Updated weekly',

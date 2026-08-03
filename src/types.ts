@@ -14,6 +14,12 @@ export enum PackingType {
   VACUUM = 'VACUUM',
 }
 
+/** Shipment content class for carrier tariff selection (PDF Document vs Non-Document). */
+export enum ShippingItemType {
+  NON_DOCUMENT = 'NON_DOCUMENT',
+  DOCUMENT = 'DOCUMENT', // Envelope / documents — uses Document rate tables when within weight cap
+}
+
 export interface CargoItem {
   id: string;
   width: number; // cm
@@ -30,6 +36,8 @@ export interface QuoteInput {
   incoterm: Incoterm;
   shippingMode?: 'Door-to-Door' | 'Door-to-Airport';
   packingType: PackingType;
+  /** Document/Envelope vs Non-Document (parcel). Defaults to NON_DOCUMENT. */
+  shippingItemType?: ShippingItemType;
   items: CargoItem[];
   discountPercent: number; // Target discount in % (default 0, 정가 그대로)
   dutyTaxEstimate: number; // For DDP only
@@ -133,6 +141,8 @@ export interface QuoteResult {
   transitTime: string;
   carrier: string; // 'UPS' | 'DHL' | 'EMAX' | 'FEDEX'
   warnings: string[];
+  /** True when Shipping Item is Document but billable weight exceeded Document tariff cap → Parcel/IP rates applied */
+  documentRatedAsParcel?: boolean;
   // Input echo — preserves the FSC% the user applied so displays/PDF match exactly without derive-from-amount rounding (see CostBreakdownCard).
   fscPercent: number;
 
@@ -173,6 +183,7 @@ export interface QuoteDetail {
   isJejuPickup: boolean;
   incoterm: string;
   packingType: string;
+  shippingItemType?: ShippingItemType | string;
   dutyTaxEstimate: number;
   exchangeRate: number;
   fscPercent: number;
