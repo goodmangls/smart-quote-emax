@@ -1,1 +1,1 @@
-📄 Document Rate 포트 — UPS/DHL/FedEx Document 요율·UI·BE 마이그레이션·테스트 동기화
+🔧 /compare Document Rate 토글·계산 파이프라인 연동 수정

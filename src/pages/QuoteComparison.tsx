@@ -20,6 +20,8 @@ import {
 } from '@/config/rates';
 import { RouteSection } from '@/features/quote/components/RouteSection';
 import { CargoSection } from '@/features/quote/components/CargoSection';
+import { DOCUMENT_ENVELOPE_DIMS_CM } from '@/features/quote/components/documentEnvelope';
+import { getDocumentCapKg } from '@/features/quote/services/documentCaps';
 import { Scale, TrendingDown, Info, AlertTriangle, RefreshCw } from 'lucide-react';
 import { formatNum } from '@/lib/format';
 
@@ -37,6 +39,22 @@ function overseasSurchargesExBaseFsc(bd: CostBreakdown): number {
 interface ComparisonSlot {
   carrier: NonNullable<QuoteInput['overseasCarrier']>;
   discount: number;
+}
+
+/** Carrier with the strictest Document weight cap among comparison slots (for CargoSection hints). */
+function strictestDocCapCarrier(
+  slots: ComparisonSlot[],
+): NonNullable<QuoteInput['overseasCarrier']> {
+  let minCap = Infinity;
+  let carrier: NonNullable<QuoteInput['overseasCarrier']> = 'UPS';
+  for (const slot of slots) {
+    const cap = getDocumentCapKg(slot.carrier);
+    if (cap < minCap) {
+      minCap = cap;
+      carrier = slot.carrier;
+    }
+  }
+  return carrier;
 }
 
 /** Default FSC% per overseas carrier — mirrors `QuoteCalculator` carrier-switch behavior. */
@@ -85,6 +103,9 @@ const QuoteComparison: React.FC = () => {
   });
 
   const [items, setItems] = useState<CargoItem[]>(INITIAL_CARGO);
+  const [shippingItemType, setShippingItemType] = useState<ShippingItemType>(
+    ShippingItemType.NON_DOCUMENT,
+  );
   const [exchangeRate] = useState(DEFAULT_EXCHANGE_RATE);
 
   // Slots
@@ -101,6 +122,7 @@ const QuoteComparison: React.FC = () => {
         overseasCarrier: slot.carrier,
         discountPercent: slot.discount,
         packingType: PackingType.NONE,
+        shippingItemType,
       };
       try {
         return calculateQuote(input);
@@ -108,7 +130,7 @@ const QuoteComparison: React.FC = () => {
         return null;
       }
     });
-  }, [routeData, items, exchangeRate, slots]);
+  }, [routeData, items, exchangeRate, slots, shippingItemType]);
 
   const updateSlot = (index: number, updates: Partial<ComparisonSlot>) => {
     setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, ...updates } : s)));
@@ -116,6 +138,23 @@ const QuoteComparison: React.FC = () => {
 
   const handleUpdateItems = (newItems: CargoItem[]) => {
     setItems(newItems);
+  };
+
+  /** Mirrors `InputSection` — atomic shippingItemType + envelope dims when switching to Document. */
+  const handleShippingItemTypeChange = (value: ShippingItemType) => {
+    if (value === ShippingItemType.DOCUMENT) {
+      setShippingItemType(value);
+      setItems((prev) =>
+        prev.map((item) => ({
+          ...item,
+          length: DOCUMENT_ENVELOPE_DIMS_CM.length,
+          width: DOCUMENT_ENVELOPE_DIMS_CM.width,
+          height: DOCUMENT_ENVELOPE_DIMS_CM.height,
+        })),
+      );
+      return;
+    }
+    setShippingItemType(value);
   };
 
   const handleReset = () => {
@@ -127,8 +166,11 @@ const QuoteComparison: React.FC = () => {
       incoterm: Incoterm.DAP,
     });
     setItems(INITIAL_CARGO);
+    setShippingItemType(ShippingItemType.NON_DOCUMENT);
     setSlots(INITIAL_SLOTS);
   };
+
+  const docCapCarrier = strictestDocCapCarrier(slots);
 
   const bestPriceIndex = useMemo(() => {
     let min = Infinity;
@@ -194,9 +236,10 @@ const QuoteComparison: React.FC = () => {
             <CargoSection
               items={items}
               onChange={handleUpdateItems}
-              shippingItemType={ShippingItemType.NON_DOCUMENT}
-              onShippingItemTypeChange={() => {}}
+              shippingItemType={shippingItemType}
+              onShippingItemTypeChange={handleShippingItemTypeChange}
               isMobileView={isNarrowViewport}
+              overseasCarrier={docCapCarrier}
             />
           </div>
         </div>
