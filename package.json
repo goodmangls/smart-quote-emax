@@ -15,7 +15,9 @@
     "test": "vitest",
     "test:e2e": "npx playwright test",
     "design:lint": "design.md lint DESIGN.md",
-    "design:diff": "node scripts/design-diff.mjs"
+    "design:diff": "node scripts/design-diff.mjs",
+    "design:detect": "node scripts/impeccable-detector.mjs",
+    "design:detect:all": "node scripts/impeccable-detector.mjs --all"
   },
   "dependencies": {
     "@sentry/browser": "^10.43.0",
