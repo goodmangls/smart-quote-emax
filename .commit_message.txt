@@ -1,1 +1,1 @@
-🧪 test(api): test 캐시를 null_store→memory_store — 캐시 검증 스펙 5건 해소 (rspec 19→14)
+🧪 test(api): 인증 쿠키 스펙 6건 해소 — https! 누락·Rack 3 소문자 속성·delete 조기반환 (rspec 14→8)
