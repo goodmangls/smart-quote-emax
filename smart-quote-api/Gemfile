@@ -57,3 +57,9 @@ group :development, :test do
   gem "shoulda-matchers"
   gem "faker"
 end
+
+group :test do
+  # exchange_rates / resend_email_delivery 스펙이 stub_request 를 쓴다.
+  # require: false — rails_helper 에서 webmock/rspec 을 명시적으로 로드한다.
+  gem "webmock", require: false
+end
