@@ -1,1 +1,1 @@
-✅ test(api): 잔여 5건 해소 — 근거 없는 요율 기대값·기간 지난 FSC 값·매처 불일치 (rspec 224/224 green)
+⏱️ ci(backend): backend 잡에 timeout-minutes 10 추가 — 원인 미상 정지 재발 시 6시간 소모 방지
