@@ -1,1 +1,1 @@
-⛽ UPS·DHL·FedEx FSC 2026-08-10 주간 요율 반영 (UPS 46.75 / DHL 40.25 / FedEx 46.00)
+🧪 ci(backend): Rails rspec·rubocop 잡 추가 — 프론트 잡과 독립 실행, postgres 서비스 + db:test:prepare
