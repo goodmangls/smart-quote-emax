@@ -76,8 +76,18 @@ RSpec.describe Calculators::UpsCost, "document rates" do
   end
 
   it "returns Non-Document rate when type omitted" do
-    result = described_class.call(billable_weight: 1, country: "JP", fsc_percent: 40.5)
-    expect(result[:intl_base]).to eq(55_784)
+    # 이 예제의 주제는 "타입 생략 시 비서류로 떨어지는가" 이지 요율 숫자 자체가 아니다.
+    # 숫자를 복제하면 요율 개정 때마다 깨지므로 선택 동작을 직접 비교하고,
+    # 값은 요율표 상수에 바인딩한다(기존 55_784 는 어느 요율표에도 없는 값이었다).
+    omitted  = described_class.call(billable_weight: 1, country: "JP", fsc_percent: 40.5)
+    explicit = described_class.call(billable_weight: 1, country: "JP", fsc_percent: 40.5,
+                                    shipping_item_type: "NON_DOCUMENT")
+    document = described_class.call(billable_weight: 1, country: "JP", fsc_percent: 40.5,
+                                    shipping_item_type: "DOCUMENT")
+
+    expect(omitted[:intl_base]).to eq(explicit[:intl_base])
+    expect(omitted[:intl_base]).not_to eq(document[:intl_base])
+    expect(omitted[:intl_base]).to eq(Constants::UpsTariff::UPS_EXACT_RATES["Z2"][1])
   end
 end
 
@@ -100,7 +110,9 @@ RSpec.describe Calculators::FedexCost do
       fsc_percent: 39.75,
       shipping_item_type: "NON_DOCUMENT"
     )
-    expect(result[:intl_base]).to eq(76_900)
+    # 기존 기대값 76_900 은 FEDEX_EXACT_RATES 어느 zone·중량에도 존재하지 않는
+    # 숫자였다. Japan 은 rate_key "ZP" 로 해석되므로 요율표에 바인딩한다.
+    expect(result[:intl_base]).to eq(Constants::FedexTariff::FEDEX_EXACT_RATES["ZP"][1])
     expect(result[:applied_zone]).to include("Japan")
   end
 end

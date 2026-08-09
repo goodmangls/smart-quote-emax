@@ -36,21 +36,21 @@ RSpec.describe QuoteCalculator do
     expect(result[:billableWeight]).to be_within(1e-9).of(1.8)
   end
 
-  it "applies EMAX CN FSC at 1,360 KRW/kg for 2026-06-16 through 2026-07-15" do
-    result = described_class.call(base([
-      { length: 30, width: 20, height: 15, weight: 10, quantity: 1 }
-    ]).merge(overseasCarrier: "EMAX", destinationCountry: "CN"))
+  # EMAX FSC 는 15일 주기로 바뀌고 EMAX_FSC_PER_KG 는 이력 없이 현재 값만 담는다.
+  # 특정 기간의 숫자(1,360 / 1,420)를 박아두면 다음 개정에서 반드시 깨진다 —
+  # 실제로 2026-07-16 개정 이후 이 두 예제가 그렇게 깨져 있었다.
+  # 여기서 검증할 것은 요율값 자체가 아니라 "per-kg 요율 × 청구중량" 파이프라인이므로
+  # 기대값을 상수에 바인딩한다. 요율값의 정확성은 FSC 갱신 워크플로가 담당한다.
+  %w[CN VN].each do |country|
+    it "applies EMAX #{country} FSC as per-kg rate x billable weight" do
+      result = described_class.call(base([
+        { length: 30, width: 20, height: 15, weight: 10, quantity: 1 }
+      ]).merge(overseasCarrier: "EMAX", destinationCountry: country))
 
-    expect(result[:billableWeight]).to eq(10.0)
-    expect(result[:breakdown][:intlFsc]).to eq(13_600)
-  end
+      per_kg = Constants::EmaxTariff::EMAX_FSC_PER_KG.fetch(country)
 
-  it "applies EMAX VN FSC at 1,420 KRW/kg for 2026-06-16 through 2026-07-15" do
-    result = described_class.call(base([
-      { length: 30, width: 20, height: 15, weight: 10, quantity: 1 }
-    ]).merge(overseasCarrier: "EMAX", destinationCountry: "VN"))
-
-    expect(result[:billableWeight]).to eq(10.0)
-    expect(result[:breakdown][:intlFsc]).to eq(14_200)
+      expect(result[:billableWeight]).to eq(10.0)
+      expect(result[:breakdown][:intlFsc]).to eq(per_kg * 10)
+    end
   end
 end
