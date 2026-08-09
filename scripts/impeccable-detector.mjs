@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { closeSync, mkdirSync, openSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const UI_EXTENSIONS = new Set([
@@ -136,32 +136,71 @@ if (!includeAdvisory) detectorArgs.push('--no-advisory');
 detectorArgs.push(...forwardedArgs, ...targets);
 
 console.log(`Running: npx ${detectorArgs.join(' ')}`);
-const result = run('npx', detectorArgs);
-const stdout = result.stdout || '';
+
+// Send the detector's stdout straight to a file descriptor instead of a pipe.
+// impeccable exits as soon as it has written its JSON, and on a pipe that exit
+// discards anything the parent has not drained yet — which silently truncated
+// the report at exactly 65536 bytes mid-string and made every --all run fail to
+// parse. Raising maxBuffer does NOT help (verified: identical truncation at
+// 64MB); a file descriptor has no such handoff.
+mkdirSync(dirname(reportPath), { recursive: true });
+const reportFd = openSync(reportPath, 'w');
+let result;
+try {
+  result = spawnSync('npx', detectorArgs, {
+    encoding: 'utf8',
+    stdio: ['ignore', reportFd, 'pipe'],
+    shell: false,
+  });
+} finally {
+  closeSync(reportFd);
+}
+
 const stderr = result.stderr || '';
-
-writeFileSync(reportPath, stdout || '[]\n');
-
 if (stderr.trim()) {
   console.error(stderr.trim());
 }
 
-let findings = 0;
+// impeccable exits 0 when it finds nothing and 2 when it finds something.
+// Any other status — or a spawn failure — means the detector never produced a
+// usable report, and reporting "Findings: 0" for that would be a false all-clear.
+if (result.error) {
+  console.error(`Impeccable detector failed to start: ${result.error.message}`);
+  process.exit(1);
+}
+if (result.status !== 0 && result.status !== 2) {
+  console.error(
+    `Impeccable detector exited with unexpected status ${result.status}. Partial output left at ${reportPath}.`,
+  );
+  process.exit(1);
+}
+
+let parsed;
 try {
-  const parsed = JSON.parse(stdout || '[]');
-  findings = Array.isArray(parsed) ? parsed.length : 0;
+  parsed = JSON.parse(readFileSync(reportPath, 'utf8') || '[]');
 } catch (error) {
   console.error(`Failed to parse Impeccable JSON output written to ${reportPath}: ${error.message}`);
   process.exit(1);
 }
 
+// `--no-advisory` is forwarded to the detector but advisory-severity findings
+// still come back (154 of 161 on a full scan), so drop them here as well.
+// Otherwise --fail-on-findings would trip on type-ramp advisories.
+const allFindings = Array.isArray(parsed) ? parsed : [];
+const kept = includeAdvisory
+  ? allFindings
+  : allFindings.filter((f) => f && f.severity !== 'advisory');
+const suppressed = allFindings.length - kept.length;
+
+if (suppressed > 0) {
+  writeFileSync(reportPath, `${JSON.stringify(kept, null, 2)}\n`);
+}
+
+const findings = kept.length;
+
 console.log(`Impeccable detector report: ${reportPath}`);
 console.log(`Scanned targets: ${targets.join(', ')}`);
-console.log(`Findings: ${findings}`);
-
-if (result.status === 1 || result.status === null) {
-  process.exit(result.status || 1);
-}
+console.log(`Findings: ${findings}${suppressed > 0 ? ` (${suppressed} advisory suppressed)` : ''}`);
 
 if (findings > 0 && failOnFindings) {
   process.exit(2);
