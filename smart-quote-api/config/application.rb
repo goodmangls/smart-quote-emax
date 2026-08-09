@@ -36,6 +36,16 @@ module SmartQuoteApi
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Ruby 포맷 schema.rb 는 plpgsql 함수(next_quote_seq)를 표현하지 못한다.
+    # schema.rb 로 만든 테스트 DB 에는 함수가 없어 프로덕션과 스키마가 어긋났고,
+    # 그 탓에 채번 관련 스펙이 PG::InFailedSqlTransaction 으로 무너졌다.
+    # structure.sql 로 덤프해 테스트 DB 가 프로덕션 스키마를 그대로 재현하게 한다.
+    #
+    # 주의: 20260314000001 이 이후 이름이 바뀐 MarginRule 상수를 참조해
+    # `db:migrate` 를 처음부터 재생할 수 없다. structure.sql 재생성이 필요하면
+    # 기존 DB 에 새 마이그레이션만 적용한 뒤 `db:schema:dump` 로 덤프할 것.
+    config.active_record.schema_format = :sql
+
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.

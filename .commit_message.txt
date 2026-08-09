@@ -1,1 +1,1 @@
-🧪 ci(backend): Rails rspec·rubocop 잡 추가 — 프론트 잡과 독립 실행, postgres 서비스 + db:test:prepare
+🐛 fix(db): next_quote_seq 무효 SQL 교정 + structure.sql 전환 — 테스트 DB가 프로덕션 스키마 재현 (rspec 26→22)
