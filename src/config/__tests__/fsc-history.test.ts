@@ -137,9 +137,12 @@ describe('fsc-history', () => {
       expect(result.ups).toEqual(expect.arrayContaining(custom.ups));
       expect(result.dhl).toEqual(expect.arrayContaining(custom.dhl));
       expect(result.ocs).toEqual(expect.arrayContaining(custom.ocs));
-      expect(result.ups.at(-1)).toEqual({ date: '2026-08-03', rate: 46.25 });
-      expect(result.dhl.at(-1)).toEqual({ date: '2026-08-03', rate: 38.25 });
-      expect(result.fedex.at(-1)).toEqual({ date: '2026-08-03', rate: 45.5 });
+      // 이 예제가 검증하는 것은 "병합해도 최신 기본 시드가 살아남는가" 이지 특정 요율값이
+      // 아니다. 숫자를 복제하면 FSC 갱신마다 무관한 테스트가 깨진다 — 시드에 바인딩한다.
+      // 시드 값 자체의 정합성은 아래 'includes the latest confirmed FSC seed entries'가 지킨다.
+      expect(result.ups.at(-1)).toEqual(DEFAULT_FSC_HISTORY.ups.at(-1));
+      expect(result.dhl.at(-1)).toEqual(DEFAULT_FSC_HISTORY.dhl.at(-1));
+      expect(result.fedex.at(-1)).toEqual(DEFAULT_FSC_HISTORY.fedex.at(-1));
     });
 
     it('returns default data when localStorage contains corrupted JSON', () => {
@@ -186,9 +189,12 @@ describe('fsc-history', () => {
 
       const result = loadFscHistory();
 
-      expect(result.ups.at(-1)).toEqual({ date: '2026-08-03', rate: 46.25 });
-      expect(result.dhl.at(-1)).toEqual({ date: '2026-08-03', rate: 38.25 });
-      expect(result.fedex.at(-1)).toEqual({ date: '2026-08-03', rate: 45.5 });
+      // 이 예제가 검증하는 것은 "병합해도 최신 기본 시드가 살아남는가" 이지 특정 요율값이
+      // 아니다. 숫자를 복제하면 FSC 갱신마다 무관한 테스트가 깨진다 — 시드에 바인딩한다.
+      // 시드 값 자체의 정합성은 아래 'includes the latest confirmed FSC seed entries'가 지킨다.
+      expect(result.ups.at(-1)).toEqual(DEFAULT_FSC_HISTORY.ups.at(-1));
+      expect(result.dhl.at(-1)).toEqual(DEFAULT_FSC_HISTORY.dhl.at(-1));
+      expect(result.fedex.at(-1)).toEqual(DEFAULT_FSC_HISTORY.fedex.at(-1));
       expect(result.ocs).toEqual(DEFAULT_FSC_HISTORY.ocs);
     });
   });
@@ -202,9 +208,11 @@ describe('fsc-history', () => {
     });
 
     it('includes the latest confirmed FSC seed entries for all percentage carriers', () => {
-      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-08-03', rate: 46.25 });
-      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-08-03', rate: 38.25 });
-      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-08-03', rate: 45.5 });
+      // 의도적인 사람-확인 체크포인트다. FSC 갱신 시 여기가 깨지는 것이 정상이며,
+      // 공식 페이지에서 확인한 값으로 갱신하면서 시드 반영을 이중 확인하게 만든다.
+      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-08-10', rate: 46.75 });
+      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-08-10', rate: 40.25 });
+      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-08-10', rate: 46.0 });
       expect(DEFAULT_FSC_HISTORY.ocs.at(-1)).toEqual({ date: '2026-07-20', rate: 25.0 });
     });
   });
