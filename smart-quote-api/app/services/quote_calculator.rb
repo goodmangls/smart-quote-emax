@@ -237,7 +237,7 @@ class QuoteCalculator
   def default_fsc_for(carrier)
     case carrier
     when "DHL"         then DEFAULT_FSC_PERCENT_DHL
-    when "FDX","FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
+    when "FDX", "FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
     when "OCS"         then DEFAULT_FSC_PERCENT_OCS
     when "EMAX"        then 0
     else                    DEFAULT_FSC_PERCENT  # UPS and others

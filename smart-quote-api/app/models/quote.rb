@@ -74,5 +74,4 @@ class Quote < ApplicationRecord
     # Fallback: unique suffix using timestamp if function is unavailable (e.g. test env)
     self.reference_no = "SQ-#{year}-#{Time.current.to_i % 100_000}"
   end
-
 end
