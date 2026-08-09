@@ -7,7 +7,18 @@ RSpec.describe DiscountRule, type: :model do
     it { should validate_presence_of(:rule_type) }
     it { should validate_inclusion_of(:rule_type).in_array(%w[flat weight_based]) }
     it { should validate_presence_of(:priority) }
-    it { should validate_numericality_of(:priority).only_integer.is_greater_than_or_equal_to(0).is_less_than_or_equal_to(200) }
+    # 모델은 numericality: { only_integer: true, in: 0..200 } 을 쓴다.
+    # shoulda 의 is_greater_than_or_equal_to / is_less_than_or_equal_to 매처는
+    # 그 옵션들이 만드는 개별 메시지("must be greater than or equal to 0")를
+    # 기대하는데, in: 옵션은 "must be in 0..200" 하나만 낸다. 동작은 같으므로
+    # 사용자에게 노출되는 메시지를 바꾸는 대신 경계값 동작을 직접 검증한다.
+    it "priority 는 0..200 범위의 정수만 허용한다" do
+      expect(build(:discount_rule, priority: 0)).to be_valid
+      expect(build(:discount_rule, priority: 200)).to be_valid
+      expect(build(:discount_rule, priority: -1)).not_to be_valid
+      expect(build(:discount_rule, priority: 201)).not_to be_valid
+      expect(build(:discount_rule, priority: 1.5)).not_to be_valid
+    end
     it { should validate_presence_of(:discount_percent) }
     it { should validate_numericality_of(:discount_percent).is_greater_than_or_equal_to(5).is_less_than_or_equal_to(50) }
     it { should validate_numericality_of(:weight_min).is_greater_than_or_equal_to(0).allow_nil }
