@@ -1,1 +1,1 @@
-🧪 test(api): webmock 도입 — stub_request 미정의로 실패하던 스펙 해소 (rspec 22→19)
+🧪 test(api): test 캐시를 null_store→memory_store — 캐시 검증 스펙 5건 해소 (rspec 19→14)
