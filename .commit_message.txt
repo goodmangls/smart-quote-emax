@@ -1,1 +1,1 @@
-🔧 /compare Document Rate 토글·계산 파이프라인 연동 수정
+🔧 fix(design): impeccable 디텍터 파이프 절단·무음 실패·advisory 미필터 3건 수정 — 161건 중 실제 신호 7건만 리포트
