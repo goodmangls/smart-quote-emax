@@ -78,13 +78,13 @@ class QuoteSerializer
     carrier = quote.breakdown.dig("carrier") || quote.overseas_carrier
     country = quote.destination_country
     zone    = quote.applied_zone
-    cache_key = [carrier, country, zone]
+    cache_key = [ carrier, country, zone ]
 
     current = if surcharge_cache
                 surcharge_cache[cache_key] || []
-              else
+    else
                 SurchargeResolver.resolve(carrier: carrier, country: country, zone: zone)
-              end
+    end
 
     stored_codes = stored.map { |s| s["code"] }.sort
     current_codes = current.map { |s| s[:code] }.sort

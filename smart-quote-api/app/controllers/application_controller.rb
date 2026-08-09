@@ -7,4 +7,3 @@ class ApplicationController < ActionController::API
     render json: { error: { code: "PARAMETER_MISSING", message: e.message } }, status: :bad_request
   end
 end
-
