@@ -54,8 +54,10 @@ RSpec.describe "Api::V1::Auth Magic Link", type: :request do
       body = JSON.parse(response.body)
       expect(body["token"]).to be_present
       expect(body).not_to have_key("refresh_token")
-      expect(response.headers["Set-Cookie"]).to include("refresh_token=")
-      expect(response.headers["Set-Cookie"]).to include("HttpOnly")
+      # Rack 3 는 쿠키 속성명을 소문자로 낸다("HttpOnly" 가 아니라 "httponly").
+      set_cookie = Array(response.headers["Set-Cookie"]).join("\n").downcase
+      expect(set_cookie).to include("refresh_token=")
+      expect(set_cookie).to include("; httponly")
     end
 
     it "returns user info alongside the JWT" do
