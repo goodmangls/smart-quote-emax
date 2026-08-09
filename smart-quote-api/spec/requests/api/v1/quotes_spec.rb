@@ -14,7 +14,10 @@ RSpec.describe "Api::V1::Quotes", type: :request do
       totalQuoteAmountUSD: 1_150.50,
       totalCostAmount: 1_200_000,
       discountAmount: 300_000,
-      appliedDiscountPercent: 20.0,
+      # QuoteCalculator 가 실제로 내는 키는 :discountPercent 다.
+      # :appliedDiscountPercent 는 어디에도 존재하지 않는 이름이라 스텁이
+      # applied_discount_percent 에 nil 을 넘겨 NotNullViolation 이 났다.
+      discountPercent: 20.0,
       billableWeight: 15.5,
       appliedZone: "Z5",
       domesticTruckType: "1t Truck",
@@ -65,6 +68,26 @@ RSpec.describe "Api::V1::Quotes", type: :request do
 
   def json
     JSON.parse(response.body)
+  end
+
+  # 위 calculator_result 는 손으로 유지하는 스텁이라 실제 반환 계약과 조용히 어긋날 수
+  # 있다. 실제로 :appliedDiscountPercent 라는 존재하지 않는 키를 쓰고 있었고, 그 결과
+  # applied_discount_percent 에 nil 이 들어가 NotNullViolation 이 났다.
+  # 스텁을 추측이 아니라 소스에 묶어 재발을 막는다.
+  describe "QuoteCalculator 반환 계약" do
+    before { allow(QuoteCalculator).to receive(:call).and_call_original }
+
+    it "컨트롤러가 읽는 키를 실제 결과가 모두 제공한다" do
+      result = QuoteCalculator.call(valid_params.deep_stringify_keys)
+
+      # QuotesController#result_attributes 가 읽는 키 중 NOT NULL 컬럼에 들어가는 것들
+      %i[
+        totalQuoteAmount totalQuoteAmountUSD totalCostAmount discountAmount
+        discountPercent billableWeight
+      ].each do |key|
+        expect(result).to have_key(key), "QuoteCalculator 결과에 #{key} 가 없다"
+      end
+    end
   end
 
   describe "POST /api/v1/quotes/calculate" do

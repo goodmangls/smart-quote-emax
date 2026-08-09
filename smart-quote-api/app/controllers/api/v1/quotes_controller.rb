@@ -188,8 +188,12 @@ module Api
           fsc_percent:          i["fscPercent"],
           manual_domestic_cost: i["manualDomesticCost"],
           manual_packing_cost:  i["manualPackingCost"],
-          manual_surge_cost:    i["manualSurgeCost"],
-          pickup_in_seoul_cost: i["pickupInSeoulCost"],
+          # 아래 두 컬럼은 DB 에서 NOT NULL DEFAULT 0 이다. 명시적 nil 을 넘기면
+          # 기본값이 적용되지 않고 NotNullViolation(500)이 난다. 필드를 생략한
+          # 클라이언트 요청이 500 이 되지 않도록 다른 선택 필드와 같은 방식으로 채운다.
+          # (manual_domestic_cost / manual_packing_cost 는 nullable 이라 nil 허용)
+          manual_surge_cost:    i["manualSurgeCost"]    || 0,
+          pickup_in_seoul_cost: i["pickupInSeoulCost"]  || 0,
           overseas_carrier:     i["overseasCarrier"]    || "UPS"
         }
       end
