@@ -74,6 +74,10 @@ RSpec.configure do |config|
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
 
+  # test 환경은 memory_store 를 쓴다(null_store 는 캐시 검증 스펙을 성립시키지 못함).
+  # 프로세스 수명 내내 살아남으므로 예제마다 비워 교차 오염을 막는다.
+  config.before { Rails.cache.clear }
+
   # FactoryBot
   config.include FactoryBot::Syntax::Methods
 

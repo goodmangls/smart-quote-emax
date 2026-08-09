@@ -20,7 +20,11 @@ Rails.application.configure do
 
   # Show full error reports.
   config.consider_all_requests_local = true
-  config.cache_store = :null_store
+  # null_store 는 write 를 조용히 버려서 캐시를 검증하는 스펙이 성립하지 않는다
+  # (ExchangeRates 컨트롤러의 캐시 히트 경로, DiscountRuleResolver 캐싱).
+  # memory_store 는 프로세스 안에서만 산다. 예제 간 격리는 rails_helper 의
+  # before 훅에서 Rails.cache.clear 로 보장한다(자동으로 비워지지 않는다).
+  config.cache_store = :memory_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
