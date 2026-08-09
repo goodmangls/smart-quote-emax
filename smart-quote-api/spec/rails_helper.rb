@@ -10,6 +10,12 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# 외부 HTTP 를 차단하고 stub_request 를 제공한다. 스텁되지 않은 호출은 예외가 되므로
+# 실수로 실제 API(openexchangerates, api.resend.com 등)를 때리는 스펙이 드러난다.
+# allow_localhost — Capybara/Selenium 같은 로컬 드라이버를 향후 붙일 여지를 남긴다.
+require 'webmock/rspec'
+WebMock.disable_net_connect!(allow_localhost: true)
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end

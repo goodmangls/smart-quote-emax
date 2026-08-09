@@ -1,1 +1,1 @@
-🐛 fix(db): next_quote_seq 무효 SQL 교정 + structure.sql 전환 — 테스트 DB가 프로덕션 스키마 재현 (rspec 26→22)
+🧪 test(api): webmock 도입 — stub_request 미정의로 실패하던 스펙 해소 (rspec 22→19)
