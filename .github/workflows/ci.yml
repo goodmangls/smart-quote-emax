@@ -45,6 +45,9 @@ jobs:
   # needs: 를 걸지 않는 이유 — check 실패 시 SKIPPED 로 빠지면 백엔드 부채가 은폐된다.
   backend:
     runs-on: ubuntu-latest
+    # 스위트는 로컬에서 3초대에 끝난다. 원인 미상의 전체 실행 정지를 한 번 관측했으므로
+    # (이후 5회 재현 안 됨) 기본값 360분 대신 짧게 잡아 재발 시 빠르게 실패시킨다.
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: smart-quote-api
