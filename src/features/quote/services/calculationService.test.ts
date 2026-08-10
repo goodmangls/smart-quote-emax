@@ -101,7 +101,7 @@ describe('calculationService', () => {
 
   describe('determineFedexZone', () => {
     it('maps US to ZF', () => {
-      expect(determineFedexZone('US')).toEqual({ rateKey: 'ZF', label: 'US/CA/NZ/MX' });
+      expect(determineFedexZone('US')).toEqual({ rateKey: 'ZF', label: 'US/CA/MX' });
     });
 
     it('maps HK to ZV', () => {
@@ -337,7 +337,8 @@ describe('calculationService', () => {
         destinationCountry: 'US',
       });
       expect(result.carrier).toBe('FEDEX');
-      expect(result.appliedZone).toBe('US/CA/NZ/MX');
+      // NZ moved to zone U (Australia/NZ) in the 2026-08 sync against the official table.
+      expect(result.appliedZone).toBe('US/CA/MX');
       expect(result.breakdown.intlBase).toBeGreaterThan(0);
     });
 

@@ -1,92 +1,112 @@
+# frozen_string_literal: true
+
 module Calculators
   class FedexZone
+    # Source of truth: "FDX 국가별 ZONE.pdf" (FedEx official zone table, 수출 columns).
+    # Generated — mirrors frontend src/config/fedex_zones.ts. Do not hand-edit entries.
+    ZONE_MAP = {
+      # A (1)
+      "MO" => "ZA",
+      # D (5)
+      "BN" => "ZD", "GU" => "ZD", "KH" => "ZD", "LA" => "ZD", "MN" => "ZD",
+      # F (4)
+      "CA" => "ZF", "MX" => "ZF", "PR" => "ZF", "US" => "ZF",
+      # G (18)
+      "AT" => "ZG", "CH" => "ZG", "CZ" => "ZG", "DK" => "ZG", "FI" => "ZG", "FO" => "ZG", "GL" => "ZG",
+      "GR" => "ZG", "HU" => "ZG", "IE" => "ZG", "LI" => "ZG", "LU" => "ZG", "MC" => "ZG", "NO" => "ZG",
+      "PL" => "ZG", "PT" => "ZG", "SE" => "ZG", "SK" => "ZG",
+      # H (29)
+      "AD" => "ZH", "AL" => "ZH", "AM" => "ZH", "AZ" => "ZH", "BA" => "ZH", "BG" => "ZH", "BY" => "ZH",
+      "CY" => "ZH", "EE" => "ZH", "GE" => "ZH", "GI" => "ZH", "HR" => "ZH", "IL" => "ZH", "IS" => "ZH",
+      "KG" => "ZH", "KZ" => "ZH", "LT" => "ZH", "LV" => "ZH", "MD" => "ZH", "ME" => "ZH", "MK" => "ZH",
+      "MT" => "ZH", "RO" => "ZH", "RS" => "ZH", "RU" => "ZH", "SI" => "ZH", "TR" => "ZH", "UA" => "ZH",
+      "UZ" => "ZH",
+      # I (62)
+      "AG" => "ZI", "AI" => "ZI", "AN" => "ZI", "AR" => "ZI", "AS" => "ZI", "AW" => "ZI", "BB" => "ZI",
+      "BM" => "ZI", "BO" => "ZI", "BQ" => "ZI", "BR" => "ZI", "BS" => "ZI", "BZ" => "ZI", "CK" => "ZI",
+      "CL" => "ZI", "CO" => "ZI", "CR" => "ZI", "CW" => "ZI", "DM" => "ZI", "DO" => "ZI", "EC" => "ZI",
+      "FJ" => "ZI", "FM" => "ZI", "GD" => "ZI", "GF" => "ZI", "GP" => "ZI", "GT" => "ZI", "GY" => "ZI",
+      "HN" => "ZI", "HT" => "ZI", "JM" => "ZI", "KN" => "ZI", "KY" => "ZI", "LC" => "ZI", "MF" => "ZI",
+      "MH" => "ZI", "MP" => "ZI", "MQ" => "ZI", "MS" => "ZI", "NC" => "ZI", "NI" => "ZI", "PA" => "ZI",
+      "PE" => "ZI", "PF" => "ZI", "PG" => "ZI", "PW" => "ZI", "PY" => "ZI", "SR" => "ZI", "SV" => "ZI",
+      "SX" => "ZI", "TC" => "ZI", "TL" => "ZI", "TO" => "ZI", "TT" => "ZI", "UY" => "ZI", "VC" => "ZI",
+      "VE" => "ZI", "VG" => "ZI", "VI" => "ZI", "VU" => "ZI", "WF" => "ZI", "WS" => "ZI",
+      # J (65)
+      "AE" => "ZJ", "AF" => "ZJ", "AO" => "ZJ", "BD" => "ZJ", "BF" => "ZJ", "BH" => "ZJ", "BI" => "ZJ",
+      "BJ" => "ZJ", "BT" => "ZJ", "BW" => "ZJ", "CD" => "ZJ", "CG" => "ZJ", "CI" => "ZJ", "CM" => "ZJ",
+      "CV" => "ZJ", "DJ" => "ZJ", "DZ" => "ZJ", "EG" => "ZJ", "ER" => "ZJ", "ET" => "ZJ", "GA" => "ZJ",
+      "GH" => "ZJ", "GM" => "ZJ", "GN" => "ZJ", "IQ" => "ZJ", "JO" => "ZJ", "KE" => "ZJ", "KW" => "ZJ",
+      "LB" => "ZJ", "LK" => "ZJ", "LR" => "ZJ", "LS" => "ZJ", "LY" => "ZJ", "MA" => "ZJ", "MG" => "ZJ",
+      "ML" => "ZJ", "MR" => "ZJ", "MU" => "ZJ", "MV" => "ZJ", "MW" => "ZJ", "MZ" => "ZJ", "NA" => "ZJ",
+      "NE" => "ZJ", "NG" => "ZJ", "NP" => "ZJ", "OM" => "ZJ", "PK" => "ZJ", "PS" => "ZJ", "QA" => "ZJ",
+      "RE" => "ZJ", "RW" => "ZJ", "SA" => "ZJ", "SC" => "ZJ", "SN" => "ZJ", "SY" => "ZJ", "SZ" => "ZJ",
+      "TD" => "ZJ", "TG" => "ZJ", "TN" => "ZJ", "TZ" => "ZJ", "UG" => "ZJ", "YE" => "ZJ", "ZA" => "ZJ",
+      "ZM" => "ZJ", "ZW" => "ZJ",
+      # K (1)
+      "CN-S" => "ZK",
+      # M (7)
+      "BE" => "ZM", "DE" => "ZM", "ES" => "ZM", "FR" => "ZM", "GB" => "ZM", "IT" => "ZM", "NL" => "ZM",
+      # N (1)
+      "VN" => "ZN",
+      # O (1)
+      "IN" => "ZO",
+      # P (1)
+      "JP" => "ZP",
+      # Q (1)
+      "MY" => "ZQ",
+      # R (1)
+      "TH" => "ZR",
+      # S (1)
+      "PH" => "ZS",
+      # T (1)
+      "ID" => "ZT",
+      # U (2)
+      "AU" => "ZU", "NZ" => "ZU",
+      # V (1)
+      "HK" => "ZV",
+      # W (1)
+      "CN" => "ZW",
+      # X (1)
+      "TW" => "ZX",
+      # Y (1)
+      "SG" => "ZY"
+    }.freeze
+
+    ZONE_LABELS = {
+      "ZA" => "Macau",
+      "ZD" => "GU/LA/MN/BN",
+      "ZE" => "US West",
+      "ZF" => "US/CA/MX",
+      "ZG" => "Europe II",
+      "ZH" => "Eastern Europe/C.Asia",
+      "ZI" => "LatAm/Caribbean",
+      "ZJ" => "Africa/Middle East",
+      "ZK" => "China South",
+      "ZM" => "Western Europe",
+      "ZN" => "Vietnam",
+      "ZO" => "India",
+      "ZP" => "Japan",
+      "ZQ" => "Malaysia",
+      "ZR" => "Thailand",
+      "ZS" => "Philippines",
+      "ZT" => "Indonesia",
+      "ZU" => "Australia/NZ",
+      "ZV" => "Hong Kong",
+      "ZW" => "China",
+      "ZX" => "Taiwan",
+      "ZY" => "Singapore"
+    }.freeze
+
+    # Unlisted destinations fall back to the most expensive common zone so an
+    # unknown country is never quoted below cost.
+    DEFAULT_ZONE = "ZJ"
+    DEFAULT_LABEL = "Rest of World"
+
     def self.call(country)
-      new(country).call
-    end
+      rate_key = ZONE_MAP[country]
+      return { rate_key: rate_key, label: ZONE_LABELS[rate_key] } if rate_key
 
-    def initialize(country)
-      @country = country
-    end
-
-    def call
-      # Zone V: Hong Kong
-      return result("ZV", "Hong Kong") if %w[HK].include?(@country)
-
-      # Zone A: Macau
-      return result("ZA", "Macau") if %w[MO].include?(@country)
-
-      # Zone W: China
-      return result("ZW", "China") if %w[CN].include?(@country)
-
-      # Zone X: Taiwan
-      return result("ZX", "Taiwan") if %w[TW].include?(@country)
-
-      # Zone Y: Singapore
-      return result("ZY", "Singapore") if %w[SG].include?(@country)
-
-      # Zone P: Japan
-      return result("ZP", "Japan") if %w[JP].include?(@country)
-
-      # Zone Q: Malaysia
-      return result("ZQ", "Malaysia") if %w[MY].include?(@country)
-
-      # Zone R: Thailand
-      return result("ZR", "Thailand") if %w[TH].include?(@country)
-
-      # Zone S: Philippines
-      return result("ZS", "Philippines") if %w[PH].include?(@country)
-
-      # Zone T: Indonesia
-      return result("ZT", "Indonesia") if %w[ID].include?(@country)
-
-      # Zone N: Vietnam
-      return result("ZN", "Vietnam") if %w[VN].include?(@country)
-
-      # Zone O: India
-      return result("ZO", "India") if %w[IN].include?(@country)
-
-      # Zone U: Australia
-      return result("ZU", "Australia") if %w[AU].include?(@country)
-
-      # Zone D: Guam, Saipan, Laos, Mongolia, Brunei
-      return result("ZD", "GU/MP/LA/MN/BN") if %w[GU MP LA MN BN].include?(@country)
-
-      # Zone F: USA, Canada, New Zealand, Mexico (Treating E/US West also as F for simplicity unless specialized routing exists)
-      return result("ZF", "US/CA/NZ/MX") if %w[US CA NZ MX].include?(@country)
-
-      # Zone M: Italy, Spain, UK, Germany, France, etc. (Western Europe)
-      if %w[IT ES GB DE FR CH FI SE NO PT IE MC].include?(@country)
-        return result("ZM", "Western Europe")
-      end
-
-      # Zone G: Austria, Denmark, Hungary, Belgium, Czech, Greece, Netherlands, Poland, Israel
-      if %w[AT DK HU BE CZ GR NL PL IL].include?(@country)
-        return result("ZG", "Europe II")
-      end
-
-      # Zone H: Eastern Europe, Russia, Romania, Turkey
-      if %w[RU RO TR BG EE LV LT SK SI UA BY].include?(@country)
-        return result("ZH", "Eastern Europe")
-      end
-
-      # Zone I: South America
-      if %w[AR BR CL PY PE UY CO VE EC BO].include?(@country)
-        return result("ZI", "South America")
-      end
-
-      # Zone J: Middle East & Africa (Approximation)
-      if %w[AE SA BH QA JO LB EG ZA PK].include?(@country)
-        return result("ZJ", "Middle East")
-      end
-
-      # Default catch-all
-      result("ZJ", "Rest of World")
-    end
-
-    private
-
-    def result(rate_key, label)
-      { rate_key: rate_key, label: label }
+      { rate_key: DEFAULT_ZONE, label: DEFAULT_LABEL }
     end
   end
 end
