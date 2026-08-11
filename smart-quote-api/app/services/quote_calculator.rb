@@ -49,12 +49,25 @@ class QuoteCalculator
     # chargeable weight up to 0.5kg individually, then sum (total_billable_weight).
     # A single box keeps the legacy max-of-totals behavior unchanged.
     total_box_count = (@input[:items] || []).sum { |it| it[:quantity].to_i }
-    @billable_weight = if total_box_count >= 2
+    raw_billable_weight = if total_box_count >= 2
       @item_result[:total_billable_weight]
     else
       [ @item_result[:total_actual_weight], @item_result[:total_packed_volumetric_weight] ].max
     end
     @user_warnings = @item_result[:warnings].dup
+
+    # FedEx rates a package meeting the 추가 취급 요금 – 용적 criteria at no less than
+    # 18kg. The surcharge is flat, so the rule lands on the tariff lookup below.
+    # nil unless a package actually triggers it — other carriers are untouched.
+    fedex_min_chargeable = if @carrier == "FEDEX"
+      Calculators::CarrierAddonCost.fedex_min_chargeable_weight(@input[:items], @input[:packingType] || "NONE")
+    end
+    @billable_weight = fedex_min_chargeable ? [ raw_billable_weight, fedex_min_chargeable ].max : raw_billable_weight
+
+    if fedex_min_chargeable && @billable_weight > raw_billable_weight
+      @user_warnings << "FedEx Minimum Chargeable Weight: rated at #{@billable_weight}kg " \
+                        "(actual #{raw_billable_weight}kg) — package meets the Additional Handling – Dimension criteria."
+    end
 
     if @item_result[:total_packed_volumetric_weight] > @item_result[:total_actual_weight] * 1.2
       @user_warnings << "High Volumetric Weight Detected (>20% over actual). Consider Repacking."
@@ -151,7 +164,10 @@ class QuoteCalculator
       ups_add_ons: @input[:upsAddOns],
       dhl_declared_value: @input[:dhlDeclaredValue] || 0,
       incoterm: @input[:incoterm],
-      resolved_addon_rates: @input[:resolvedAddonRates]
+      resolved_addon_rates: @input[:resolvedAddonRates],
+      fedex_add_ons: @input[:fedexAddOns],
+      fedex_declared_value: @input[:fedexDeclaredValue] || 0,
+      destination_country: @input[:destinationCountry]
     )
     @carrier_addon_total = result[:total]
     @carrier_addon_details = result[:details]

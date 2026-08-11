@@ -28,6 +28,7 @@ import { applyPackingDimensions } from '@/lib/packing-utils';
 import { MAX_DISCOUNT_PERCENT } from '@/config/business-rules';
 import { calculateDhlAddOnCosts } from './dhlAddonCalculator';
 import { calculateUpsAddOnCosts } from './upsAddonCalculator';
+import { calculateFedexAddOnCosts, getFedexMinChargeableWeight } from './fedexAddonCalculator';
 
 // --- Types for Internal Calculations ---
 interface ItemCalculationResult {
@@ -325,11 +326,27 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
   // chargeable weight up to 0.5kg individually, then sum (totalBillableWeight).
   // A single box keeps the legacy max-of-totals behavior unchanged.
   const totalBoxCount = input.items.reduce((sum, it) => sum + it.quantity, 0);
-  const billableWeight =
+  const rawBillableWeight =
     totalBoxCount >= 2
       ? itemResult.totalBillableWeight
       : Math.max(itemResult.totalActualWeight, itemResult.totalPackedVolumetricWeight);
   const userWarnings = [...itemResult.warnings];
+
+  // FedEx rates a package meeting the 추가 취급 요금 – 용적 criteria at no less than
+  // 18kg. The surcharge itself is flat, so this rule lands on the tariff lookup.
+  // Null unless a package actually triggers it — other carriers are untouched.
+  const fedexMinChargeable =
+    carrier === 'FEDEX' ? getFedexMinChargeableWeight(input.items, input.packingType) : null;
+  const billableWeight =
+    fedexMinChargeable !== null
+      ? Math.max(rawBillableWeight, fedexMinChargeable)
+      : rawBillableWeight;
+
+  if (fedexMinChargeable !== null && billableWeight > rawBillableWeight) {
+    userWarnings.push(
+      `FedEx Minimum Chargeable Weight: rated at ${billableWeight}kg (actual ${rawBillableWeight}kg) — package meets the Additional Handling – Dimension criteria.`,
+    );
+  }
 
   if (itemResult.totalPackedVolumetricWeight > itemResult.totalActualWeight * 1.2) {
     userWarnings.push('High Volumetric Weight Detected (>20% over actual). Consider Repacking.');
@@ -437,6 +454,10 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     const upsAddOns = calculateUpsAddOnCosts(input, billableWeight, input.fscPercent);
     carrierAddOnTotal = upsAddOns.total;
     carrierAddOnDetails = upsAddOns.details.length > 0 ? upsAddOns.details : undefined;
+  } else if (carrier === 'FEDEX') {
+    const fedexAddOns = calculateFedexAddOnCosts(input, billableWeight, input.fscPercent);
+    carrierAddOnTotal = fedexAddOns.total;
+    carrierAddOnDetails = fedexAddOns.details.length > 0 ? fedexAddOns.details : undefined;
   }
 
   // 4. Duty
