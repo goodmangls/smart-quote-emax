@@ -1,1 +1,1 @@
-🗺️ fix(fedex): 공식 존 표 기준으로 국가 매핑 전면 동기화 — 73→205개국, 존 13건 정정 (IL 과소견적 17.4%, MP 74.2%, SK 과대 14.8%)
+🔒 security(api): 백엔드 취약 gem 일괄 패치 — bundler-audit 고유 권고 70건(High 12) → 0건, rails 8.0.4→8.0.5.1·rack 3.2.6·nokogiri 1.19.4·jwt 3.2.0 등 16개 타깃 업데이트 + puma 를 7.2 계열로 고정 (smart-quote-main PR #77 과 동일 처리)
