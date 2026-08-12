@@ -1,7 +1,7 @@
 class AddonRate < ApplicationRecord
   CHARGE_TYPES = %w[fixed per_piece per_carton calculated].freeze
   UNITS = %w[shipment piece carton].freeze
-  CARRIERS = %w[UPS DHL].freeze
+  CARRIERS = %w[UPS DHL FEDEX].freeze
 
   validates :code, presence: true, length: { maximum: 20 }
   validates :carrier, presence: true, inclusion: { in: CARRIERS }

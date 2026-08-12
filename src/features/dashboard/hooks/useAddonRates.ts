@@ -11,7 +11,7 @@ interface CacheEntry {
 
 const cache: Record<string, CacheEntry> = {};
 
-export function useAddonRates(carrier: 'DHL' | 'UPS') {
+export function useAddonRates(carrier: 'DHL' | 'UPS' | 'FEDEX') {
   const [rates, setRates] = useState<AddonRate[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

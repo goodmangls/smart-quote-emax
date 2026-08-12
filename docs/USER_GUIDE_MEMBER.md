@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** International Logistics Quoting System
 >
-> Version 3.5 | Last Updated: 2026-08-03
+> Version 3.6 | Last Updated: 2026-08-12
 
 ---
 
@@ -128,6 +128,14 @@ When selecting **WOODEN_BOX**, **SKID**, or **VACUUM**, a detailed info panel sh
 
 - **UPS Add-Ons**: Additional Handling Surcharge (AHS), Large Package, Over Maximum, Surge Fee (auto-detected for Middle East/Israel), etc.
 - **DHL Add-Ons**: Non-Stackable, Overweight, Remote Area, Emergency Situation (EMG), Trade Sanctions (TSD), Manual Waybill (MWB), Lithium Battery (LBI/LBM), etc.
+- **FedEx Add-Ons**: Saturday Pickup/Delivery, Residential Delivery, signature options (Indirect/Direct/Adult), Dangerous Goods (accessible/inaccessible), Dry Ice, Address Correction, Broker Select, Declared Value. Non-standard handling (Additional Handling – Dimension/Weight/Packaging, Oversize, Unauthorized Package) is **auto-detected** from box dimensions and weight.
+
+### FedEx Non-Standard Handling — two rules worth knowing
+
+- **Only the highest fee applies.** If one package meets several criteria (say both Oversize and Additional Handling – Dimension), FedEx charges the single highest amount, not the sum. The panel shows the winning charge only.
+- **18kg minimum chargeable weight.** A package meeting the Additional Handling – Dimension criteria is rated at no less than 18kg. Because the surcharge itself is a flat fee, this changes the **base rate lookup** — a 5kg long box is quoted at the 18kg rate. The result shows a *FedEx Minimum Chargeable Weight* warning when this applies.
+
+> FedEx Freight (IPF/IEF) rates, contract-based premiums (Monitoring & Intervention, Priority Alert, On-Demand Care) and the out-of-area OPA/ODA surcharges are **not** included in the quote.
 
 ### UPS Surge Fee Auto-Detection
 

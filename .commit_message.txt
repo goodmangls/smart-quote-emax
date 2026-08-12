@@ -1,1 +1,1 @@
-🔒 security(api): 백엔드 취약 gem 일괄 패치 — bundler-audit 고유 권고 70건(High 12) → 0건, rails 8.0.4→8.0.5.1·rack 3.2.6·nokogiri 1.19.4·jwt 3.2.0 등 16개 타깃 업데이트 + puma 를 7.2 계열로 고정 (smart-quote-main PR #77 과 동일 처리)
+📦 feat(fedex): FedEx 2026 부대요금 이식 (smart-quote-main PR #78 과 동일 규칙) — 비표준화물 자동감지 5종(최고액 1건만)·선택 11종·위험물 greater-of·신고금액 계단식, 18kg 최소 청구 중량은 base 요율에 적용. FE/BE 17케이스 일치·타 캐리어 4종 무영향 확인

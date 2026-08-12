@@ -62,6 +62,10 @@ export interface QuoteInput {
   // UPS Add-on Services
   upsAddOns?: string[]; // Selected UPS add-on codes (e.g. ['RES', 'RMT'])
 
+  // FedEx Add-on Services
+  fedexAddOns?: string[]; // Selected FedEx add-on codes (e.g. ['SPU', 'DGA'])
+  fedexDeclaredValue?: number; // Declared value for the FedEx Declared Value Surcharge (KRW)
+
   // DB-driven surcharges (resolved from API, applied in calculateQuote)
   resolvedSurcharges?: Array<{
     code: string;
@@ -75,7 +79,7 @@ export interface QuoteInput {
   // DB-driven add-on rates (resolved from API, replaces hardcoded dhl_addons/ups_addons)
   resolvedAddonRates?: Array<{
     code: string;
-    carrier: 'DHL' | 'UPS';
+    carrier: 'DHL' | 'UPS' | 'FEDEX';
     nameEn: string;
     nameKo: string;
     chargeType: 'fixed' | 'per_piece' | 'per_carton' | 'calculated';

@@ -6,6 +6,7 @@
 
 import { DHL_ADDON_RATES } from '@/config/dhl_addons';
 import { UPS_ADDON_RATES } from '@/config/ups_addons';
+import { FEDEX_ADDON_RATES, FEDEX_HARDCODED_DEFAULTS } from '@/config/fedex_addons';
 import type { AddonRate } from '@/api/addonRateApi';
 
 // ── Shared Types (used in calculationService.ts) ──
@@ -140,6 +141,46 @@ export function normalizeUpsRates(dbRates?: AddonRate[]): NormalizedRate[] {
 }
 
 // ── Shared calcAddonFee function (CRITICAL 1 + 3) ──
+
+export function normalizeFedexRates(dbRates?: AddonRate[]): NormalizedRate[] {
+  if (dbRates && dbRates.length > 0) {
+    return dbRates.map((r) => ({
+      code: r.code,
+      nameKo: r.nameKo,
+      nameEn: r.nameEn,
+      amount: r.amount,
+      chargeType: r.chargeType,
+      unit: r.unit,
+      fscApplicable: r.fscApplicable,
+      autoDetect: r.autoDetect,
+      selectable: r.selectable,
+      condition: r.condition,
+      perKgRate: r.perKgRate,
+      ratePercent: null,
+      minAmount: r.minAmount,
+      detectRules: r.detectRules,
+    }));
+  }
+  return FEDEX_ADDON_RATES.map((r) => {
+    const defaults = FEDEX_HARDCODED_DEFAULTS[r.code];
+    return {
+      code: r.code,
+      nameKo: r.nameKo,
+      nameEn: r.nameEn,
+      amount: r.amount,
+      chargeType: r.chargeType,
+      unit: r.unit,
+      fscApplicable: r.fscApplicable,
+      autoDetect: r.autoDetect ?? false,
+      selectable: r.selectable,
+      condition: r.condition ?? null,
+      perKgRate: defaults?.perKgRate ?? null,
+      minAmount: defaults?.minAmount ?? null,
+      ratePercent: null,
+      detectRules: null,
+    };
+  });
+}
 
 export const calcAddonFee = (
   rate: { chargeType: string; amount: number; perKgRate?: number | null; ratePercent?: number | null; minAmount?: number | null },

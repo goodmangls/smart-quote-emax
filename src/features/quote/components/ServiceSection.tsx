@@ -6,6 +6,7 @@ import { inputStyles } from './input-styles';
 import { SurchargePanel } from './SurchargePanel';
 import { DhlAddOnPanel } from './DhlAddOnPanel';
 import { UpsAddOnPanel } from './UpsAddOnPanel';
+import { FedExAddOnPanel } from './FedExAddOnPanel';
 import { PackingTypeInfo } from './PackingTypeInfo';
 import { useSurcharges } from '@/features/dashboard/hooks/useSurcharges';
 import { useAddonRates } from '@/features/dashboard/hooks/useAddonRates';
@@ -49,7 +50,7 @@ export const ServiceSection: React.FC<Props> = ({
   const systemTotal = totalAmount(intlBase);
 
   // DB-driven add-on rates (fallback to hardcoded in panels if API fails)
-  const { rates: dbAddonRates } = useAddonRates(carrier as 'DHL' | 'UPS');
+  const { rates: dbAddonRates } = useAddonRates(carrier as 'DHL' | 'UPS' | 'FEDEX');
 
   // Generic field setter (cast to bypass generic constraint for useSyncToInput)
   const setField = onFieldChange as (key: string, value: unknown) => void;
@@ -200,6 +201,21 @@ export const ServiceSection: React.FC<Props> = ({
               dbRates={dbAddonRates.length > 0 ? dbAddonRates : undefined}
               destinationCountry={input.destinationCountry}
               destinationZip={input.destinationZip}
+            />
+          )}
+
+          {carrier === 'FEDEX' && (
+            <FedExAddOnPanel
+              selectedAddOns={input.fedexAddOns || []}
+              onAddOnsChange={(codes) => onFieldChange('fedexAddOns', codes)}
+              declaredValue={input.fedexDeclaredValue || 0}
+              onDeclaredValueChange={(val) => onFieldChange('fedexDeclaredValue', val)}
+              items={input.items}
+              packingType={input.packingType}
+              billableWeight={billableWeight}
+              isMobileView={isMobileView}
+              dbRates={dbAddonRates.length > 0 ? dbAddonRates : undefined}
+              destinationCountry={input.destinationCountry}
             />
           )}
 

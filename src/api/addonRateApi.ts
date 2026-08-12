@@ -3,7 +3,7 @@ import { request } from '@/api/apiClient';
 export interface AddonRate {
   id: number;
   code: string;
-  carrier: 'DHL' | 'UPS';
+  carrier: 'DHL' | 'UPS' | 'FEDEX';
   nameEn: string;
   nameKo: string;
   description: string | null;
@@ -24,7 +24,7 @@ export interface AddonRate {
   sortOrder: number;
 }
 
-export async function resolveAddonRates(carrier: 'DHL' | 'UPS'): Promise<AddonRate[]> {
+export async function resolveAddonRates(carrier: 'DHL' | 'UPS' | 'FEDEX'): Promise<AddonRate[]> {
   const data = await request<{ addonRates: AddonRate[] }>(
     `/api/v1/addon_rates/resolve?carrier=${carrier}`
   );
