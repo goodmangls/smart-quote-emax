@@ -1,1 +1,1 @@
-📦 feat(fedex): FedEx 2026 부대요금 이식 (smart-quote-main PR #78 과 동일 규칙) — 비표준화물 자동감지 5종(최고액 1건만)·선택 11종·위험물 greater-of·신고금액 계단식, 18kg 최소 청구 중량은 base 요율에 적용. FE/BE 17케이스 일치·타 캐리어 4종 무영향 확인
+⛽ UPS·DHL·FedEx FSC 2026-08-17 주간 요율 반영
