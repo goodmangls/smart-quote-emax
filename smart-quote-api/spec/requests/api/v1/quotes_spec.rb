@@ -105,6 +105,18 @@ RSpec.describe "Api::V1::Quotes", type: :request do
       expect(response).to have_http_status(:unauthorized)
     end
 
+    it "renders a 422 error envelope instead of a bare 500 when saving raises" do
+      # Production served empty 500s for months (UnknownAttributeError from a
+      # drifted schema) because create had no rescue — the error envelope is
+      # what makes the next such failure diagnosable from the client side.
+      allow(QuoteCalculator).to receive(:call).and_raise(StandardError, "boom")
+
+      post "/api/v1/quotes", params: valid_params, headers: user_headers, as: :json
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json.dig("error", "code")).to eq("CALCULATION_ERROR")
+    end
+
     it "creates a quote for authenticated user" do
       post "/api/v1/quotes", params: valid_params, headers: user_headers, as: :json
 

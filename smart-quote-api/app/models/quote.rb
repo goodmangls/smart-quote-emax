@@ -44,6 +44,11 @@ class Quote < ApplicationRecord
   }
 
   before_validation :generate_reference_no, on: :create
+  # Model-level default: never depend on the DB column default for status —
+  # sibling smart-quote-main shipped a production DB without it (every save
+  # failed validation), and this repo's production DB drifted the same way
+  # (see the 20260818090000 repair migration).
+  before_validation ->(quote) { quote.status ||= "draft" }, on: :create
   before_create :set_validity_date
 
   def expired?

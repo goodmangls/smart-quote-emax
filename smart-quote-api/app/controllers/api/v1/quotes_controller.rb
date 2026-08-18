@@ -36,6 +36,11 @@ module Api
         else
           render json: { error: { code: "VALIDATION_ERROR", message: quote.errors.full_messages.join(", ") } }, status: :unprocessable_entity
         end
+      rescue StandardError => e
+        # Without this, save-path exceptions surface as bare 500s with empty
+        # bodies — the schema-drift outage went undiagnosable for months.
+        Rails.logger.error "[CREATE] #{e.class}: #{e.message}"
+        render json: { error: { code: "CALCULATION_ERROR", message: "Failed to create quote" } }, status: :unprocessable_entity
       end
 
       # GET /api/v1/quotes

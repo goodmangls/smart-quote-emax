@@ -1,1 +1,1 @@
-⛽ UPS·DHL·FedEx FSC 2026-08-17 주간 요율 반영
+🚑 fix(quote): 프로덕션 저장 전면 불능 P0 복구 — quotes 테이블에 20260310 마이그레이션 5개 컬럼 부재(stale schema 로드로 버전만 적용 처리)로 모든 저장이 UnknownAttributeError 500. column_exists? 가드 복구 마이그레이션 + status 모델 기본값(main ae662d5 이식) + create rescue 계층(빈 500→422 진단 가능)
