@@ -877,6 +877,7 @@ ALTER TABLE ONLY public.quotes
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260818120000'),
 ('20260818090000'),
 ('20260809000001'),
 ('20260803000001'),

@@ -1,1 +1,1 @@
-🚑 fix(quote): 프로덕션 저장 전면 불능 P0 복구 — quotes 테이블에 20260310 마이그레이션 5개 컬럼 부재(stale schema 로드로 버전만 적용 처리)로 모든 저장이 UnknownAttributeError 500. column_exists? 가드 복구 마이그레이션 + status 모델 기본값(main ae662d5 이식) + create rescue 계층(빈 500→422 진단 가능)
+🚑 fix(db): quotes 스키마 포괄 정합 마이그레이션 — 프로덕션 DB가 create_quotes 재작성(1515e6d discount 전환) 이전 세대라 discount 계열 컬럼 부재+구세대 NOT NULL 잔존 가능. structure.sql 기준 전 컬럼 가드 추가 + 비정합 legacy NOT NULL 동적 완화 + next_quote_seq 멱등 재생성(정규식 가드 포함)
