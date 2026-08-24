@@ -11,13 +11,8 @@ import { calculateQuote } from '@/features/quote/services/calculationService';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  DEFAULT_EXCHANGE_RATE,
-  DEFAULT_FSC_PERCENT,
-  DEFAULT_FSC_PERCENT_DHL,
-  DEFAULT_FSC_PERCENT_FEDEX,
-  DEFAULT_FSC_PERCENT_OCS,
-} from '@/config/rates';
+import { DEFAULT_EXCHANGE_RATE } from '@/config/rates';
+import { useCarrierFscDefault } from '@/features/quote/hooks/useCarrierFscDefault';
 import { RouteSection } from '@/features/quote/components/RouteSection';
 import { CargoSection } from '@/features/quote/components/CargoSection';
 import { DOCUMENT_ENVELOPE_DIMS_CM } from '@/features/quote/components/documentEnvelope';
@@ -55,22 +50,6 @@ function strictestDocCapCarrier(
     }
   }
   return carrier;
-}
-
-/** Default FSC% per overseas carrier — mirrors `QuoteCalculator` carrier-switch behavior. */
-function defaultFscForCarrier(carrier: NonNullable<QuoteInput['overseasCarrier']>): number {
-  switch (carrier) {
-    case 'DHL':
-      return DEFAULT_FSC_PERCENT_DHL;
-    case 'FEDEX':
-      return DEFAULT_FSC_PERCENT_FEDEX;
-    case 'OCS':
-      return DEFAULT_FSC_PERCENT_OCS;
-    case 'EMAX':
-      return 0;
-    default:
-      return DEFAULT_FSC_PERCENT;
-  }
 }
 
 const INITIAL_SLOTS: ComparisonSlot[] = [
@@ -111,13 +90,18 @@ const QuoteComparison: React.FC = () => {
   // Slots
   const [slots, setSlots] = useState<ComparisonSlot[]>(INITIAL_SLOTS);
 
+  // Each row quotes its own carrier at that carrier's default, so only `resolve`
+  // is needed — there is no single selected FSC to keep in step, and omitting
+  // onApply turns the hook's sync half off.
+  const { resolve: resolveFsc } = useCarrierFscDefault({ carrier: 'UPS' });
+
   const results = useMemo(() => {
     return slots.map((slot) => {
       const input: QuoteInput = {
         ...routeData,
         items,
         exchangeRate,
-        fscPercent: defaultFscForCarrier(slot.carrier),
+        fscPercent: resolveFsc(slot.carrier),
         dutyTaxEstimate: 0,
         overseasCarrier: slot.carrier,
         discountPercent: slot.discount,
@@ -130,7 +114,7 @@ const QuoteComparison: React.FC = () => {
         return null;
       }
     });
-  }, [routeData, items, exchangeRate, slots, shippingItemType]);
+  }, [routeData, items, exchangeRate, slots, shippingItemType, resolveFsc]);
 
   const updateSlot = (index: number, updates: Partial<ComparisonSlot>) => {
     setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, ...updates } : s)));
@@ -220,7 +204,7 @@ const QuoteComparison: React.FC = () => {
                 ...routeData,
                 items,
                 exchangeRate,
-                fscPercent: DEFAULT_FSC_PERCENT,
+                fscPercent: resolveFsc('UPS'),
                 dutyTaxEstimate: 0,
                 discountPercent: 0,
                 packingType: PackingType.NONE,
