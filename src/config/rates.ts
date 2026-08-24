@@ -18,6 +18,29 @@ export const DEFAULT_FSC_PERCENT = 47.0; // UPS default, effective 2026-08-24
 export const DEFAULT_FSC_PERCENT_DHL = 42.5; // DHL default, effective 2026-08-24
 export const DEFAULT_FSC_PERCENT_FEDEX = 46.5; // FedEx default, effective 2026-08-24
 export const DEFAULT_FSC_PERCENT_OCS = 25.0; // OCS default, effective 2026-07-20
+
+/**
+ * Shipped fuel surcharge for a carrier — the fallback used until the DB rate
+ * (admin FSC widget) loads, and when it fails to.
+ *
+ * EMAX is 0 here on purpose: its fuel is charged per kg from EMAX_FSC_PER_KG,
+ * on a separate branch, so the percentage is never applied to it.
+ */
+export const defaultFscFor = (carrier: string | undefined): number => {
+  switch (carrier) {
+    case 'DHL':
+      return DEFAULT_FSC_PERCENT_DHL;
+    case 'FEDEX':
+    case 'FDX':
+      return DEFAULT_FSC_PERCENT_FEDEX;
+    case 'OCS':
+      return DEFAULT_FSC_PERCENT_OCS;
+    case 'EMAX':
+      return 0;
+    default:
+      return DEFAULT_FSC_PERCENT;
+  }
+};
 export const UPS_FSC_URL =
   'https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page';
 export const UPS_RATES_HUB_URL =

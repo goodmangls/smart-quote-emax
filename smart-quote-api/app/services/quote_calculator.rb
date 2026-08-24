@@ -249,15 +249,41 @@ class QuoteCalculator
   end
 
   # Single source of truth for carrier FSC default rates.
-  # EMAX returns 0 since it has no FSC.
+  # Fuel surcharge to charge when the request carries none.
+  #
+  # Reads fsc_rates first — that is what makes a rate set in the admin FSC
+  # widget reach a quote. Before 2026-08-24 this returned only the constants,
+  # so FscFetcher was wired to the controller and to nothing else, and raising a
+  # rate in the widget changed no quote. The constants stay as the fallback for
+  # a carrier with no row and for a failed DB read (FscFetcher already returns
+  # DEFAULT_RATES in that case), so a quote is never blocked on the database.
+  #
+  # EMAX is settled before the lookup: its fuel is charged per kg on a separate
+  # branch in calculate_totals, so the percentage here is unused — and it must
+  # not start picking one up if an EMAX row ever appears in the table.
   def default_fsc_for(carrier)
+    return 0 if carrier == "EMAX"
+
+    db_rate = db_fsc_rates.dig(fsc_rate_key(carrier), "international")
+    return db_rate.to_f if db_rate
+
     case carrier
     when "DHL"         then DEFAULT_FSC_PERCENT_DHL
     when "FDX", "FEDEX" then DEFAULT_FSC_PERCENT_FEDEX
     when "OCS"         then DEFAULT_FSC_PERCENT_OCS
-    when "EMAX"        then 0
     else                    DEFAULT_FSC_PERCENT  # UPS and others
     end
+  end
+
+  # Memoised: default_fsc_for runs several times per calculation and every call
+  # to FscFetcher reads the database.
+  def db_fsc_rates
+    @db_fsc_rates ||= FscFetcher.current_rates
+  end
+
+  # Some call sites pass FDX; fsc_rates keys on FEDEX.
+  def fsc_rate_key(carrier)
+    carrier == "FDX" ? "FEDEX" : carrier
   end
 
   private

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import {
   QuoteInput,
   QuoteResult,
@@ -16,13 +16,8 @@ import { Header } from '@/components/layout/Header';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  DEFAULT_EXCHANGE_RATE,
-  DEFAULT_FSC_PERCENT,
-  DEFAULT_FSC_PERCENT_DHL,
-  DEFAULT_FSC_PERCENT_FEDEX,
-  DEFAULT_FSC_PERCENT_OCS,
-} from '@/config/rates';
+import { DEFAULT_EXCHANGE_RATE, DEFAULT_FSC_PERCENT } from '@/config/rates';
+import { useCarrierFscDefault } from '@/features/quote/hooks/useCarrierFscDefault';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useResolvedDiscount } from '@/features/dashboard/hooks/useResolvedDiscount';
 import { CalculatorActionBar } from './components/CalculatorActionBar';
@@ -70,21 +65,19 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
   const isKorean = user?.nationality === 'KR';
 
   const [input, setInput] = useState<QuoteInput>(INITIAL_INPUT);
-  const [lastFscCarrier, setLastFscCarrier] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    const carrier = input.overseasCarrier || 'UPS';
-    if (lastFscCarrier !== carrier) {
-      let carrierDefault = DEFAULT_FSC_PERCENT;
-      if (carrier === 'DHL') carrierDefault = DEFAULT_FSC_PERCENT_DHL;
-      else if (carrier === 'FEDEX') carrierDefault = DEFAULT_FSC_PERCENT_FEDEX;
-      else if (carrier === 'OCS') carrierDefault = DEFAULT_FSC_PERCENT_OCS;
-      else if (carrier === 'EMAX') carrierDefault = 0;
-
-      setInput((prev) => ({ ...prev, fscPercent: carrierDefault }));
-      setLastFscCarrier(carrier);
-    }
-  }, [input.overseasCarrier, lastFscCarrier]);
+  // Fuel surcharge defaults come from the DB (the admin FSC widget), falling
+  // back to the shipped constant while that request is in flight. The hook owns
+  // the carrier-switch reset and the "don't clobber a manual rate" rule.
+  const applyFsc = useCallback(
+    (next: number) => setInput((prev) => ({ ...prev, fscPercent: next })),
+    [],
+  );
+  const { resolve: resolveFsc } = useCarrierFscDefault({
+    carrier: input.overseasCarrier || 'UPS',
+    fscPercent: input.fscPercent,
+    onApply: applyFsc,
+  });
 
   const result = useMemo<QuoteResult | null>(() => {
     try {
@@ -106,10 +99,12 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
 
     try {
       // Auto-pick cheapest among UPS / DHL / FedEx for the new destination
+      // Same DB-backed rate the calculator quotes with, so the cheapest pick is
+      // decided on the figures the user will actually see.
       const candidates: Array<{ carrier: 'UPS' | 'DHL' | 'FEDEX'; fsc: number }> = [
-        { carrier: 'UPS', fsc: DEFAULT_FSC_PERCENT },
-        { carrier: 'DHL', fsc: DEFAULT_FSC_PERCENT_DHL },
-        { carrier: 'FEDEX', fsc: DEFAULT_FSC_PERCENT_FEDEX },
+        { carrier: 'UPS', fsc: resolveFsc('UPS') },
+        { carrier: 'DHL', fsc: resolveFsc('DHL') },
+        { carrier: 'FEDEX', fsc: resolveFsc('FEDEX') },
       ];
       let best = candidates[0];
       let bestAmount = Number.POSITIVE_INFINITY;
@@ -130,12 +125,11 @@ const QuoteCalculator: React.FC<{ isPublic?: boolean }> = ({ isPublic = false })
           overseasCarrier: best.carrier,
           fscPercent: best.fsc,
         }));
-        setLastFscCarrier(best.carrier);
       }
     } catch {
       /* keep current carrier */
     }
-  }, [input.destinationCountry, result, input.overseasCarrier, input]);
+  }, [input.destinationCountry, result, input.overseasCarrier, input, resolveFsc]);
 
   const hasManuallyChangedDiscount = React.useRef(false);
   const discountResolutionTimeout = React.useRef<NodeJS.Timeout | null>(null);
