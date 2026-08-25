@@ -3,12 +3,26 @@ import userEvent from '@testing-library/user-event';
 import { ExchangeRateWidget } from '../ExchangeRateWidget';
 import type { ExchangeRate } from '@/types/dashboard';
 
+/**
+ * Pin the quoting rate. The widget reads DEFAULT_EXCHANGE_RATE from the module,
+ * and that constant moves whenever /fx-update runs — leaving it live would make
+ * these tests fail on an unrelated week. The drift cases below own this number.
+ */
+// vi.hoisted, because vi.mock is lifted above ordinary top-level consts.
+const { APPLIED_RATE } = vi.hoisted(() => ({ APPLIED_RATE: 1350 }));
+
+vi.mock('@/config/rates', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/config/rates')>()),
+  DEFAULT_EXCHANGE_RATE: APPLIED_RATE,
+}));
+
 function makeRate(currency: string, overrides: Partial<ExchangeRate> = {}): ExchangeRate {
   return {
     currency,
     code: 'TST',
     flag: '🏳️',
-    rate: 1385.5,
+    // Comfortably inside the applied bucket so unrelated cases stay quiet.
+    rate: 1370,
     previousClose: 1380.0,
     change: 5.5,
     changePercent: 0.4,
@@ -56,6 +70,60 @@ function mockFscHook(overrides: Record<string, unknown> = {}) {
 
 describe('ExchangeRateWidget', () => {
   afterEach(() => vi.restoreAllMocks());
+
+  /**
+   * The widget watches USD/KRW all day; the quoting rate only moves when
+   * someone runs /fx-update. These pin the reminder that connects the two —
+   * without it a stale quoting rate is invisible, which is how this repo sat
+   * five months behind at 1450.
+   */
+  describe('quoting-rate drift reminder', () => {
+    const showUsd = (rate: number) => {
+      mockUseExchangeRates.mockReturnValue(
+        mockHook({ data: [makeRate('USD', { code: 'USD', flag: '🇺🇸', rate })] })
+      );
+      mockUseFscRates.mockReturnValue(mockFscHook());
+      render(<ExchangeRateWidget />);
+    };
+
+    it('says nothing while the market sits inside the applied bucket', () => {
+      showUsd(1370); // applied 1350 -> bucket [1350, 1400)
+
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.queryByText('widget.exchange.fxDrift.title')).not.toBeInTheDocument();
+    });
+
+    it('warns once the market leaves the bucket, and names the rate to move to', () => {
+      showUsd(1402);
+
+      const alert = screen.getByRole('status');
+      expect(alert).toHaveTextContent('widget.exchange.fxDrift.title');
+      // Applied -> suggested, rendered outside the translated sentence so the
+      // numbers survive a missing translation.
+      expect(alert).toHaveTextContent('1,350 → 1,400');
+      expect(alert).toHaveTextContent('widget.exchange.fxDrift.action');
+    });
+
+    it('gives an earlier heads-up while still inside but near the boundary', () => {
+      showUsd(1396);
+
+      const alert = screen.getByRole('status');
+      expect(alert).toHaveTextContent('widget.exchange.fxDrift.near');
+      expect(alert).not.toHaveTextContent('widget.exchange.fxDrift.title');
+      // 1400 - 1396 = 4 KRW to the boundary.
+      expect(alert).toHaveTextContent('(−4)');
+    });
+
+    it('stays quiet when no USD rate came back', () => {
+      mockUseExchangeRates.mockReturnValue(
+        mockHook({ data: [makeRate('EUR', { code: 'EUR', rate: 1600 })] })
+      );
+      mockUseFscRates.mockReturnValue(mockFscHook());
+      render(<ExchangeRateWidget />);
+
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+  });
 
   it('renders loading skeleton when loading', () => {
     mockUseExchangeRates.mockReturnValue(mockHook({ loading: true }));

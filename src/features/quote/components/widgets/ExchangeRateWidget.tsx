@@ -1,11 +1,12 @@
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { RefreshCw, TrendingUp, TrendingDown, Minus, DollarSign, Fuel, ExternalLink } from 'lucide-react';
+import { RefreshCw, TrendingUp, TrendingDown, Minus, DollarSign, Fuel, ExternalLink, AlertTriangle } from 'lucide-react';
 import { WidgetSkeleton } from '@/features/dashboard/components/WidgetSkeleton';
 import { WidgetError } from '@/features/dashboard/components/WidgetError';
 import { useExchangeRates } from '@/features/dashboard/hooks/useExchangeRates';
 import { useFscRates } from '@/features/dashboard/hooks/useFscRates';
-import { UPS_FSC_URL, DHL_FSC_URL } from '@/config/rates';
+import { UPS_FSC_URL, DHL_FSC_URL, DEFAULT_EXCHANGE_RATE } from '@/config/rates';
+import { evaluateFxDrift } from '@/features/dashboard/lib/fxDrift';
 
 export const ExchangeRateWidget: React.FC = () => {
   const { t } = useLanguage();
@@ -46,6 +47,12 @@ export const ExchangeRateWidget: React.FC = () => {
     return 'text-gray-500 bg-gray-50 dark:text-gray-400 dark:bg-gray-800';
   };
 
+  // The dashboard sees the market continuously; the quoting rate only moves
+  // when someone runs /fx-update. Surface the gap rather than leaving a stale
+  // rate to be noticed months later — this repo sat at 1450 for five months.
+  const usdRate = exchangeData.find((r) => r.code === 'USD' || r.currency === 'USD')?.rate;
+  const fxDrift = evaluateFxDrift({ market: usdRate, applied: DEFAULT_EXCHANGE_RATE });
+
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden transition-colors duration-200 h-full flex flex-col">
       {/* Header */}
@@ -85,6 +92,45 @@ export const ExchangeRateWidget: React.FC = () => {
           <WidgetError message={error} onRetry={handleRetry} />
         ) : (
           <div className="space-y-6">
+            {fxDrift.level !== 'ok' && (
+              <div
+                role="status"
+                className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-[11px] leading-relaxed ${
+                  fxDrift.level === 'drift'
+                    ? 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300'
+                    : 'bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300'
+                }`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="font-bold">
+                    {t(
+                      fxDrift.level === 'drift'
+                        ? 'widget.exchange.fxDrift.title'
+                        : 'widget.exchange.fxDrift.near'
+                    )}
+                  </p>
+                  {/* Rendered as numbers, not interpolated into a translated
+                      sentence — these are the actionable part and must survive a
+                      missing or wrong translation. */}
+                  <p className="mt-0.5 tabular-nums">
+                    {fxDrift.market.toFixed(2)}
+                    {' · '}
+                    {fxDrift.applied.toLocaleString()}
+                    {fxDrift.level === 'drift' ? (
+                      <>
+                        {' → '}
+                        <strong>{fxDrift.suggested.toLocaleString()}</strong>
+                      </>
+                    ) : (
+                      <> (−{fxDrift.distanceToBoundary.toFixed(0)})</>
+                    )}
+                  </p>
+                  <p className="mt-0.5 opacity-80">{t('widget.exchange.fxDrift.action')}</p>
+                </div>
+              </div>
+            )}
+
             {/* Exchange Rates */}
             <div>
               <div className="flex items-center justify-between mb-3 text-[10px] font-semibold text-gray-400 dark:text-gray-400 uppercase tracking-wider">
