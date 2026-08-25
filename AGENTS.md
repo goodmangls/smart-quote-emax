@@ -1,8 +1,8 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex and other coding agents when working with code in this repository.
 
-> 이 파일은 `AGENTS.md` 의 쌍둥이다. **한쪽만 고치면 두 에이전트가 다른 사실을 보게 된다** — 내용 변경은 항상 두 파일에 함께 적용할 것.
+> 이 파일은 `CLAUDE.md` 의 쌍둥이다. **한쪽만 고치면 두 에이전트가 다른 사실을 보게 된다** — 내용 변경은 항상 두 파일에 함께 적용할 것.
 
 ## Project Overview
 
