@@ -226,7 +226,15 @@ export const ServiceSection: React.FC<Props> = ({
                 type='number'
                 step='any'
                 value={input.dutyTaxEstimate}
-                onChange={(e) => onFieldChange('dutyTaxEstimate', Number(e.target.value))}
+                // Clamped like exchangeRate/fscPercent in FinancialSection. The
+                // backend now rejects a negative duty estimate outright, so an
+                // unclamped field would hand the user a 422 for something the
+                // form should never have let them submit.
+                min={0}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  onFieldChange('dutyTaxEstimate', isNaN(v) || v < 0 ? 0 : v);
+                }}
                 className={ic}
                 inputMode='decimal'
                 autoComplete='off'

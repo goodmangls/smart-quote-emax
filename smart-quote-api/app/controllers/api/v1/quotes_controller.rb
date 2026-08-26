@@ -3,13 +3,46 @@ module Api
     class QuotesController < ApplicationController
       include JwtAuthenticatable
 
+      InvalidInputError = Class.new(StandardError)
+
+      # Ported from smart-quote-main. Without these, a caller could send
+      # fscPercent 9999 and get a total ~200x the correct one, or exchangeRate 0
+      # and get a 200 whose totalQuoteAmountUSD was silently null — both
+      # confirmed live against production on 2026-08-26.
+      #
+      # nil means "not supplied" and is always allowed; the calculator has its
+      # own defaults. discountPercent is deliberately absent — the calculator
+      # already clamps it to 0..MAX_DISCOUNT_PERCENT, which bounds the money.
+      NUMERIC_INPUT_BOUNDS = {
+        "exchangeRate" => { min: 0, exclusive_min: true, max: 10_000 },
+        "fscPercent" => { min: 0, max: 200 },
+        "dutyTaxEstimate" => { min: 0 },
+        "manualDomesticCost" => { min: 0 },
+        "manualPackingCost" => { min: 0 },
+        "manualSurgeCost" => { min: 0 },
+        "pickupInSeoulCost" => { min: 0 },
+        "dhlDeclaredValue" => { min: 0 },
+        "fedexDeclaredValue" => { min: 0 }
+      }.freeze
+
+      # Anything not matching this is rejected outright rather than coerced.
+      # `"abc".to_f` and `"".to_f` are both 0.0, so a range check alone accepts
+      # junk as a valid zero.
+      NUMERIC_INPUT_PATTERN = /\A-?\d+(\.\d+)?\z/
+
       before_action :authenticate_user!, except: [ :calculate ]
 
       # POST /api/v1/quotes/calculate (public - stateless)
       def calculate
         input = clean_params
+        validate_numeric_bounds!(input)
         result = QuoteCalculator.call(input)
         render json: result
+        # Must precede the StandardError rescue below, which would otherwise
+        # flatten a specific "fscPercent must be at most 200" into a generic
+        # "Failed to calculate quote" and tell the caller nothing.
+      rescue InvalidInputError => e
+        render json: { error: { code: "INVALID_INPUT", message: e.message } }, status: :unprocessable_content
       rescue StandardError => e
         Rails.logger.error "[CALCULATE] #{e.class}: #{e.message}"
         render json: { error: { code: "CALCULATION_ERROR", message: "Failed to calculate quote" } }, status: :unprocessable_content
@@ -18,6 +51,7 @@ module Api
       # POST /api/v1/quotes (calculate + save)
       def create
         input = clean_params
+        validate_numeric_bounds!(input)
         result = QuoteCalculator.call(input)
 
         quote = current_user.quotes.new(
@@ -36,6 +70,8 @@ module Api
         else
           render json: { error: { code: "VALIDATION_ERROR", message: quote.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
+      rescue InvalidInputError => e
+        render json: { error: { code: "INVALID_INPUT", message: e.message } }, status: :unprocessable_content
       rescue StandardError => e
         # Without this, save-path exceptions surface as bare 500s with empty
         # bodies — the schema-drift outage went undiagnosable for months.
@@ -152,6 +188,29 @@ module Api
           Quote.recent
         else
           current_user.quotes.recent
+        end
+      end
+
+      def validate_numeric_bounds!(input)
+        NUMERIC_INPUT_BOUNDS.each do |key, bounds|
+          raw = input[key] || input[key.to_sym]
+          next if raw.nil?
+
+          unless raw.is_a?(Numeric) || raw.to_s.match?(NUMERIC_INPUT_PATTERN)
+            raise InvalidInputError, "#{key} must be a number"
+          end
+
+          value = raw.to_f
+          min = bounds[:min]
+
+          if bounds[:exclusive_min] ? value <= min : value < min
+            floor = bounds[:exclusive_min] ? "greater than #{min}" : "at least #{min}"
+            raise InvalidInputError, "#{key} must be #{floor}"
+          end
+
+          if bounds[:max] && value > bounds[:max]
+            raise InvalidInputError, "#{key} must be at most #{bounds[:max]}"
+          end
         end
       end
 
