@@ -96,6 +96,72 @@ RSpec.describe "Api::V1::Quotes", type: :request do
 
       expect(response).to have_http_status(:ok)
     end
+
+    # These four were confirmed live against production on 2026-08-26: every one
+    # returned 200 with a quote. The money cases are the point — fscPercent 9999
+    # produced a total ~200x the correct one, and exchangeRate 0 divided straight
+    # through so totalQuoteAmountUSD came back null while KRW looked fine. The
+    # caller sees a success envelope with a silently missing figure.
+    #
+    # Asserting on the error CODE and MESSAGE, not just the status: the blanket
+    # `rescue StandardError` already answers 422 for anything that raises, so a
+    # status-only assertion cannot tell a real rejection from a generic failure.
+    context "numeric input bounds" do
+      def expect_rejected(params, field)
+        post "/api/v1/quotes/calculate", params: valid_params.merge(params), as: :json
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json["error"]["code"]).to eq("INVALID_INPUT")
+        expect(json["error"]["message"]).to match(/#{field}/)
+      end
+
+      it "rejects an fscPercent above the ceiling" do
+        expect_rejected({ fscPercent: 9999 }, "fscPercent")
+      end
+
+      it "rejects a negative fscPercent" do
+        expect_rejected({ fscPercent: -50 }, "fscPercent")
+      end
+
+      # 0 is not "unset" here — it divides the total and yields Infinity, which
+      # serialises to null. There is no reading of 0 that produces a usable rate.
+      it "rejects an exchangeRate of 0" do
+        expect_rejected({ exchangeRate: 0 }, "exchangeRate")
+      end
+
+      # The case a range check alone lets through: "abc".to_f and "".to_f are
+      # both 0.0, so junk arrives looking like a valid zero.
+      it "rejects a non-numeric exchangeRate" do
+        expect_rejected({ exchangeRate: "abc" }, "exchangeRate")
+      end
+
+      it "rejects a negative manual cost" do
+        expect_rejected({ manualPackingCost: -1 }, "manualPackingCost")
+      end
+
+      # discountPercent is deliberately not bounded here: the calculator already
+      # clamps it to 0..MAX_DISCOUNT_PERCENT, which is what bounds the money.
+      # This one runs the real calculator — the file-level stub would otherwise
+      # return a canned discountPercent and the clamp assertion would prove
+      # nothing about clamping.
+      it "still accepts an out-of-range discountPercent, which the calculator clamps" do
+        allow(QuoteCalculator).to receive(:call).and_call_original
+
+        post "/api/v1/quotes/calculate", params: valid_params.merge(discountPercent: 999), as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(json["discountPercent"]).to eq(Constants::Rates::MAX_DISCOUNT_PERCENT)
+      end
+
+      it "leaves a quote with no optional numbers supplied alone" do
+        allow(QuoteCalculator).to receive(:call).and_call_original
+
+        post "/api/v1/quotes/calculate",
+             params: valid_params.except(:exchangeRate, :fscPercent), as: :json
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "POST /api/v1/quotes" do
