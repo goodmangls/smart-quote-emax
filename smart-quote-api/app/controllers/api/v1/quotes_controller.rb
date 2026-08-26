@@ -12,7 +12,7 @@ module Api
         render json: result
       rescue StandardError => e
         Rails.logger.error "[CALCULATE] #{e.class}: #{e.message}"
-        render json: { error: { code: "CALCULATION_ERROR", message: "Failed to calculate quote" } }, status: :unprocessable_entity
+        render json: { error: { code: "CALCULATION_ERROR", message: "Failed to calculate quote" } }, status: :unprocessable_content
       end
 
       # POST /api/v1/quotes (calculate + save)
@@ -34,13 +34,13 @@ module Api
           AuditLog.track!(user: current_user, action: "quote.created", resource: quote, ip_address: request.remote_ip)
           render json: QuoteSerializer.detail(quote), status: :created
         else
-          render json: { error: { code: "VALIDATION_ERROR", message: quote.errors.full_messages.join(", ") } }, status: :unprocessable_entity
+          render json: { error: { code: "VALIDATION_ERROR", message: quote.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
       rescue StandardError => e
         # Without this, save-path exceptions surface as bare 500s with empty
         # bodies — the schema-drift outage went undiagnosable for months.
         Rails.logger.error "[CREATE] #{e.class}: #{e.message}"
-        render json: { error: { code: "CALCULATION_ERROR", message: "Failed to create quote" } }, status: :unprocessable_entity
+        render json: { error: { code: "CALCULATION_ERROR", message: "Failed to create quote" } }, status: :unprocessable_content
       end
 
       # GET /api/v1/quotes
@@ -77,7 +77,7 @@ module Api
 
         if permitted[:status].present?
           unless Quote::VALID_STATUSES.include?(permitted[:status])
-            return render json: { error: { code: "INVALID_STATUS", message: "Invalid status" } }, status: :unprocessable_entity
+            return render json: { error: { code: "INVALID_STATUS", message: "Invalid status" } }, status: :unprocessable_content
           end
         end
 
@@ -90,7 +90,7 @@ module Api
           AuditLog.track!(user: current_user, action: action, resource: quote, metadata: metadata, ip_address: request.remote_ip)
           render json: QuoteSerializer.detail(quote)
         else
-          render json: { error: { code: "VALIDATION_ERROR", message: quote.errors.full_messages.join(", ") } }, status: :unprocessable_entity
+          render json: { error: { code: "VALIDATION_ERROR", message: quote.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
       rescue ActiveRecord::RecordNotFound
         render json: { error: { code: "NOT_FOUND", message: "Quote not found" } }, status: :not_found
@@ -104,7 +104,7 @@ module Api
         message = params[:message]
 
         unless email.present? && email.match?(URI::MailTo::EMAIL_REGEXP)
-          return render json: { error: { code: "INVALID_EMAIL", message: "Valid email required" } }, status: :unprocessable_entity
+          return render json: { error: { code: "INVALID_EMAIL", message: "Valid email required" } }, status: :unprocessable_content
         end
 
         QuoteMailer.send_quote(quote, email, recipient_name: name, message: message).deliver_later
@@ -134,7 +134,7 @@ module Api
         AuditLog.track!(user: current_user, action: "quote.exported", resource: Quote.new(id: 0), metadata: { count: result[:count], filters: params.permit(:q, :destination_country, :date_from, :date_to, :status).to_h }, ip_address: request.remote_ip)
         send_data result[:csv_data], filename: "quotes-#{Date.current}.csv", type: "text/csv"
       rescue QuoteExporter::TooLargeError => e
-        render json: { error: { code: "EXPORT_TOO_LARGE", message: e.message } }, status: :unprocessable_entity
+        render json: { error: { code: "EXPORT_TOO_LARGE", message: e.message } }, status: :unprocessable_content
       end
 
       private

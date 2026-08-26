@@ -85,7 +85,7 @@ RSpec.describe "Api::V1::DiscountRules", type: :request do
            params: valid_params.merge(discount_percent: 3),
            headers: admin_headers, as: :json
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(json["error"]["code"]).to eq("VALIDATION_ERROR")
     end
 
@@ -121,7 +121,7 @@ RSpec.describe "Api::V1::DiscountRules", type: :request do
           params: { discount_percent: 60 },
           headers: admin_headers, as: :json
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 

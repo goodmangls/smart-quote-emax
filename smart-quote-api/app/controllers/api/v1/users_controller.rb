@@ -21,13 +21,13 @@ module Api
         permitted = params.permit(:name, :company, :nationality, :role, networks: [])
 
         if permitted[:role].present? && !%w[admin user member].include?(permitted[:role])
-          return render json: { error: { code: "INVALID_ROLE", message: "Role must be admin, user, or member" } }, status: :unprocessable_entity
+          return render json: { error: { code: "INVALID_ROLE", message: "Role must be admin, user, or member" } }, status: :unprocessable_content
         end
 
         if user.update(permitted.to_h)
           render json: user_detail(user)
         else
-          render json: { error: { code: "VALIDATION_ERROR", message: user.errors.full_messages.join(", ") } }, status: :unprocessable_entity
+          render json: { error: { code: "VALIDATION_ERROR", message: user.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
       end
 

@@ -105,6 +105,19 @@ RSpec.describe "Api::V1::Quotes", type: :request do
       expect(response).to have_http_status(:unauthorized)
     end
 
+    # Everything else here asserts through a Rack status symbol, and those get
+    # renamed: :unprocessable_entity was deprecated in favour of
+    # :unprocessable_content, and Rack 3.2 already dropped the old name from its
+    # lookup table. A symbol assertion cannot tell you the wire code did not move
+    # with it, so pin the number itself once.
+    it "answers a failed save with HTTP 422 on the wire" do
+      allow(QuoteCalculator).to receive(:call).and_raise(StandardError, "boom")
+
+      post "/api/v1/quotes", params: valid_params, headers: user_headers, as: :json
+
+      expect(response.status).to eq(422)
+    end
+
     it "renders a 422 error envelope instead of a bare 500 when saving raises" do
       # Production served empty 500s for months (UnknownAttributeError from a
       # drifted schema) because create had no rescue — the error envelope is
@@ -113,7 +126,7 @@ RSpec.describe "Api::V1::Quotes", type: :request do
 
       post "/api/v1/quotes", params: valid_params, headers: user_headers, as: :json
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(json.dig("error", "code")).to eq("CALCULATION_ERROR")
     end
 
@@ -151,7 +164,7 @@ RSpec.describe "Api::V1::Quotes", type: :request do
 
         post "/api/v1/quotes", params: valid_params.merge(incoterm: "INVALID"), headers: admin_headers, as: :json
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(json["error"]["code"]).to eq("VALIDATION_ERROR")
       end
     end

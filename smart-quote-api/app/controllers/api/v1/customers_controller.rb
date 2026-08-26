@@ -32,7 +32,7 @@ module Api
         if customer.save
           render json: customer_json(customer), status: :created
         else
-          render json: { error: { code: "VALIDATION_ERROR", message: customer.errors.full_messages.join(", ") } }, status: :unprocessable_entity
+          render json: { error: { code: "VALIDATION_ERROR", message: customer.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
       end
 
@@ -43,7 +43,7 @@ module Api
         if customer.update(customer_params)
           render json: customer_json(customer)
         else
-          render json: { error: { code: "VALIDATION_ERROR", message: customer.errors.full_messages.join(", ") } }, status: :unprocessable_entity
+          render json: { error: { code: "VALIDATION_ERROR", message: customer.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
       rescue ActiveRecord::RecordNotFound
         render json: { error: { code: "NOT_FOUND", message: "Customer not found" } }, status: :not_found
