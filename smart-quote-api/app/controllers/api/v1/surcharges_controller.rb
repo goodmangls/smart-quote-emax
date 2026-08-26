@@ -25,7 +25,7 @@ module Api
           render json: serialize(surcharge), status: :created
         else
           render json: { error: { code: "VALIDATION_ERROR", messages: surcharge.errors.full_messages } },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         end
       end
 
@@ -38,7 +38,7 @@ module Api
           render json: serialize(@surcharge)
         else
           render json: { error: { code: "VALIDATION_ERROR", messages: @surcharge.errors.full_messages } },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         end
       end
 

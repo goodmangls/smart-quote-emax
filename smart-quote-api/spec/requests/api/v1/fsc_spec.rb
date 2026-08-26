@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::Fsc", type: :request do
            headers: admin_headers,
            as: :json
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(json.dig("error", "code")).to eq("INVALID_CARRIER")
     end
 

@@ -25,7 +25,7 @@ module Api
           render json: serialize(rate), status: :created
         else
           render json: { error: { code: "VALIDATION_ERROR", messages: rate.errors.full_messages } },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         end
       end
 
@@ -37,7 +37,7 @@ module Api
           render json: serialize(@addon_rate)
         else
           render json: { error: { code: "VALIDATION_ERROR", messages: @addon_rate.errors.full_messages } },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         end
       end
 
@@ -54,7 +54,7 @@ module Api
         carrier = params[:carrier]&.upcase
         unless carrier.present? && AddonRate::CARRIERS.include?(carrier)
           return render json: { error: { code: "INVALID_CARRIER", message: "carrier must be UPS or DHL" } },
-                        status: :unprocessable_entity
+                        status: :unprocessable_content
         end
 
         result = AddonRateResolver.resolve(carrier: carrier)

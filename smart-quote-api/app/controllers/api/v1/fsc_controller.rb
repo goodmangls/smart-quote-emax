@@ -23,7 +23,7 @@ module Api
         domestic = params[:domestic]&.to_f
 
         unless FscRate::SUPPORTED_CARRIERS.include?(carrier)
-          return render json: { error: { code: "INVALID_CARRIER", message: "Carrier must be one of: #{FscRate::SUPPORTED_CARRIERS.join(', ')}" } }, status: :unprocessable_entity
+          return render json: { error: { code: "INVALID_CARRIER", message: "Carrier must be one of: #{FscRate::SUPPORTED_CARRIERS.join(', ')}" } }, status: :unprocessable_content
         end
 
         FscFetcher.update!(
@@ -44,7 +44,7 @@ module Api
         render json: { success: true, rates: FscFetcher.current_rates }
       rescue StandardError => e
         Rails.logger.error "[FSC] #{e.class}: #{e.message}"
-        render json: { error: { code: "UPDATE_FAILED", message: "FSC rate update failed" } }, status: :unprocessable_entity
+        render json: { error: { code: "UPDATE_FAILED", message: "FSC rate update failed" } }, status: :unprocessable_content
       end
     end
   end

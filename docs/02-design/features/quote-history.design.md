@@ -457,7 +457,7 @@ module Api
         if quote.save
           render json: quote_response(quote, result), status: :created
         else
-          render json: { error: { code: 'VALIDATION_ERROR', message: quote.errors.full_messages.join(', ') } }, status: :unprocessable_entity
+          render json: { error: { code: 'VALIDATION_ERROR', message: quote.errors.full_messages.join(', ') } }, status: :unprocessable_content
         end
       end
 

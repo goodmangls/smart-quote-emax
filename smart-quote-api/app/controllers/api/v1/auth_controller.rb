@@ -15,7 +15,7 @@ module Api
         else
           render json: {
             error: { code: "VALIDATION_ERROR", message: user.errors.full_messages.join(", ") }
-          }, status: :unprocessable_entity
+          }, status: :unprocessable_content
         end
       end
 
@@ -63,17 +63,17 @@ module Api
         return if performed?
 
         unless current_user.authenticate(params[:current_password])
-          return render json: { error: { code: "INVALID_PASSWORD", message: "Current password is incorrect" } }, status: :unprocessable_entity
+          return render json: { error: { code: "INVALID_PASSWORD", message: "Current password is incorrect" } }, status: :unprocessable_content
         end
 
         if params[:password].blank? || params[:password] != params[:password_confirmation]
-          return render json: { error: { code: "VALIDATION_ERROR", message: "Password confirmation does not match" } }, status: :unprocessable_entity
+          return render json: { error: { code: "VALIDATION_ERROR", message: "Password confirmation does not match" } }, status: :unprocessable_content
         end
 
         if current_user.update(password: params[:password])
           render json: { message: "Password updated successfully" }
         else
-          render json: { error: { code: "VALIDATION_ERROR", message: current_user.errors.full_messages.join(", ") } }, status: :unprocessable_entity
+          render json: { error: { code: "VALIDATION_ERROR", message: current_user.errors.full_messages.join(", ") } }, status: :unprocessable_content
         end
       end
 
