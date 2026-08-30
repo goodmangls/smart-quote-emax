@@ -216,9 +216,9 @@ describe('fsc-history', () => {
     it('includes the latest confirmed FSC seed entries for all percentage carriers', () => {
       // 의도적인 사람-확인 체크포인트다. FSC 갱신 시 여기가 깨지는 것이 정상이며,
       // 공식 페이지에서 확인한 값으로 갱신하면서 시드 반영을 이중 확인하게 만든다.
-      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-08-24', rate: 47.0 });
-      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-08-24', rate: 42.5 });
-      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-08-24', rate: 46.5 });
+      expect(DEFAULT_FSC_HISTORY.ups.at(-1)).toEqual({ date: '2026-08-31', rate: 48.25 });
+      expect(DEFAULT_FSC_HISTORY.dhl.at(-1)).toEqual({ date: '2026-08-31', rate: 43.25 });
+      expect(DEFAULT_FSC_HISTORY.fedex.at(-1)).toEqual({ date: '2026-08-31', rate: 47.75 });
       // OCS 는 ad-hoc 주기라 주간 갱신에 따라 움직이지 않는다.
       expect(DEFAULT_FSC_HISTORY.ocs.at(-1)).toEqual({ date: '2026-07-20', rate: 25.0 });
     });
