@@ -14,9 +14,9 @@ export const TRANSIT_TIMES = {
 
 // Market Defaults
 export const DEFAULT_EXCHANGE_RATE = 1350; // Manual: 하나은행 월요일 09시 송금환율 (2026-08-25)
-export const DEFAULT_FSC_PERCENT = 47.0; // UPS default, effective 2026-08-24
-export const DEFAULT_FSC_PERCENT_DHL = 42.5; // DHL default, effective 2026-08-24
-export const DEFAULT_FSC_PERCENT_FEDEX = 46.5; // FedEx default, effective 2026-08-24
+export const DEFAULT_FSC_PERCENT = 48.25; // UPS default, effective 2026-08-31
+export const DEFAULT_FSC_PERCENT_DHL = 43.25; // DHL default, effective 2026-08-31
+export const DEFAULT_FSC_PERCENT_FEDEX = 47.75; // FedEx default, effective 2026-08-31
 export const DEFAULT_FSC_PERCENT_OCS = 25.0; // OCS default, effective 2026-07-20
 
 /**
