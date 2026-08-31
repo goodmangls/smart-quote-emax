@@ -35,7 +35,7 @@ function hookResult(overrides: Record<string, unknown> = {}) {
         Object.entries(DB_RATES).map(([carrier, rate]) => [
           carrier,
           { international: rate, domestic: rate },
-        ])
+        ]),
       ),
       updatedAt: '2026-08-31T00:00:00.000Z',
     },
@@ -144,6 +144,91 @@ describe('FscRateWidget', () => {
       await user.click(screen.getByLabelText('FSC 요율 저장'));
 
       await waitFor(() => expect(mockRetry).toHaveBeenCalled());
+    });
+
+    it('names which carriers landed when a save fails part-way through', async () => {
+      // UPS and DHL commit, FEDEX blows up. `fsc_rates` is now half-written:
+      // two carriers charge the new rate, two charge the old one. Reporting only
+      // "저장 실패" would leave the admin unable to tell which state it is in.
+      mockUpdateFscRate
+        .mockResolvedValueOnce({ success: true })
+        .mockResolvedValueOnce({ success: true })
+        .mockRejectedValueOnce(new Error('500 Internal Server Error'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent('일부만 저장됐습니다');
+      expect(alert).toHaveTextContent('UPS·DHL 는 새 요율');
+      expect(alert).toHaveTextContent('FEDEX·OCS 는 이전 요율');
+    });
+
+    it('says nothing landed when the very first carrier fails', async () => {
+      mockUpdateFscRate.mockRejectedValue(new Error('network down'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('변경된 캐리어는 없습니다');
+    });
+
+    it('keeps the editor open on failure so the partial write can be re-submitted', async () => {
+      mockUpdateFscRate.mockRejectedValue(new Error('network down'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await screen.findByRole('alert');
+      expect(screen.getByLabelText('FSC 요율 저장')).toBeInTheDocument();
+      expect(screen.getByLabelText('UPS FSC 요율 (%)')).toBeInTheDocument();
+    });
+
+    it('re-reads the table after a failed save so the display matches reality', async () => {
+      mockUpdateFscRate.mockRejectedValue(new Error('network down'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await waitFor(() => expect(mockRetry).toHaveBeenCalled());
+    });
+
+    it('raises no alert on a successful save', async () => {
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await waitFor(() => expect(mockRetry).toHaveBeenCalled());
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('clears a previous failure when the editor is reopened', async () => {
+      mockUpdateFscRate.mockRejectedValue(new Error('network down'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+      await screen.findByRole('alert');
+
+      await user.click(screen.getByLabelText('FSC 요율 편집 취소'));
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
     it('writes nothing when the edit is cancelled', async () => {

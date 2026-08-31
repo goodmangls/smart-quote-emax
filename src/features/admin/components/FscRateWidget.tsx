@@ -15,6 +15,7 @@ import {
   X,
   Loader2,
   RefreshCw,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   FscHistoryData,
@@ -40,8 +41,16 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
   // missing row or a failed read. The widget therefore has to show the DB, not the
   // constants: displaying constants is what let a stale row sit unnoticed.
   const { data, loading, retry: fetchRates } = useFscRates();
-  const { isEditing, saving, editRates, setEditRates, handleEditStart, handleSave, handleCancel } =
-    useFscRateEdit(data, fetchRates);
+  const {
+    isEditing,
+    saving,
+    saveError,
+    editRates,
+    setEditRates,
+    handleEditStart,
+    handleSave,
+    handleCancel,
+  } = useFscRateEdit(data, fetchRates);
 
   // History state
   const [history, setHistory] = useState<FscHistoryData>(() => loadFscHistory());
@@ -161,6 +170,16 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
         </div>
       </div>
 
+      {saveError && (
+        <div
+          role='alert'
+          className='px-4 py-2 border-b border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 flex items-start gap-2'
+        >
+          <AlertTriangle className='w-3.5 h-3.5 mt-0.5 shrink-0 text-red-600 dark:text-red-400' />
+          <p className='text-[11px] leading-relaxed text-red-700 dark:text-red-300'>{saveError}</p>
+        </div>
+      )}
+
       {loading && !data ? (
         <div className='p-6 text-center text-xs text-gray-400'>
           <Loader2 className='w-4 h-4 animate-spin mx-auto' />
@@ -210,9 +229,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                         min={0}
                         max={100}
                         value={editRates[carrier]}
-                        onChange={(e) =>
-                          setEditRates({ ...editRates, [carrier]: e.target.value })
-                        }
+                        onChange={(e) => setEditRates({ ...editRates, [carrier]: e.target.value })}
                         aria-label={`${carrier} FSC 요율 (%)`}
                         className='w-20 px-1.5 py-1 text-sm font-bold rounded border border-emax-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emax-500 text-center'
                       />
