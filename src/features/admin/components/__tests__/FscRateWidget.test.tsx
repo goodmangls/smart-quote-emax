@@ -146,10 +146,9 @@ describe('FscRateWidget', () => {
       await waitFor(() => expect(mockRetry).toHaveBeenCalled());
     });
 
-    it('names which carriers landed when a save fails part-way through', async () => {
-      // UPS and DHL commit, FEDEX blows up. `fsc_rates` is now half-written:
-      // two carriers charge the new rate, two charge the old one. Reporting only
-      // "저장 실패" would leave the admin unable to tell which state it is in.
+    it('separates saved, indeterminate and untouched carriers when a save fails part-way', async () => {
+      // UPS and DHL get a success response, FEDEX throws, OCS is never sent.
+      // Those are three DIFFERENT states and the message must not merge them.
       mockUpdateFscRate
         .mockResolvedValueOnce({ success: true })
         .mockResolvedValueOnce({ success: true })
@@ -162,12 +161,33 @@ describe('FscRateWidget', () => {
       await user.click(screen.getByLabelText('FSC 요율 저장'));
 
       const alert = await screen.findByRole('alert');
-      expect(alert).toHaveTextContent('일부만 저장됐습니다');
-      expect(alert).toHaveTextContent('UPS·DHL 는 새 요율');
-      expect(alert).toHaveTextContent('FEDEX·OCS 는 이전 요율');
+      expect(alert).toHaveTextContent('UPS·DHL 는 저장됐습니다');
+      expect(alert).toHaveTextContent('FEDEX 는 응답을 받지 못해 반영 여부가 확실하지 않습니다');
+      expect(alert).toHaveTextContent('OCS 는 시도되지 않아 이전 요율입니다');
     });
 
-    it('says nothing landed when the very first carrier fails', async () => {
+    it('never claims the failed carrier is unchanged — the server may have committed it', async () => {
+      // A thrown request only means the client saw no response. A timeout or a 502
+      // can arrive after the row was written, so asserting "이전 요율" for FEDEX
+      // would be telling the admin something we cannot know.
+      mockUpdateFscRate
+        .mockResolvedValueOnce({ success: true })
+        .mockResolvedValueOnce({ success: true })
+        .mockRejectedValueOnce(new Error('socket hang up'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      const alert = await screen.findByRole('alert');
+      expect(alert).not.toHaveTextContent('FEDEX·OCS 는 시도되지 않아');
+      expect(alert).not.toHaveTextContent('FEDEX 는 시도되지 않아');
+      expect(alert).toHaveTextContent('현재 값으로 확인해 주세요');
+    });
+
+    it('treats the very first carrier as indeterminate rather than untouched', async () => {
       mockUpdateFscRate.mockRejectedValue(new Error('network down'));
 
       const user = userEvent.setup();
@@ -176,7 +196,10 @@ describe('FscRateWidget', () => {
       await user.click(screen.getByLabelText('FSC 요율 편집'));
       await user.click(screen.getByLabelText('FSC 요율 저장'));
 
-      expect(await screen.findByRole('alert')).toHaveTextContent('변경된 캐리어는 없습니다');
+      const alert = await screen.findByRole('alert');
+      expect(alert).toHaveTextContent('UPS 는 응답을 받지 못해 반영 여부가 확실하지 않습니다');
+      expect(alert).toHaveTextContent('DHL·FEDEX·OCS 는 시도되지 않아 이전 요율입니다');
+      expect(alert).not.toHaveTextContent('저장됐습니다');
     });
 
     it('keeps the editor open on failure so the partial write can be re-submitted', async () => {
