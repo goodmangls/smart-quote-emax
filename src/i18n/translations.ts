@@ -45,10 +45,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'compare.slotsRegionAria': '운임사별 견적 비교 슬롯 세 개',
 
     // Landing Page
-    'landing.title.main': '190개국 국제 운임,',
+    'landing.title.main': '220+개국 국제 운임,',
     'landing.title.sub': '1초 만에 견적 완료.',
     'landing.subtitle':
-      '정직과 신용으로 고객에게 최선을 다하는 기업, 이맥스 국제특송(E-MAX)의 스마트 견적 시스템입니다. 전 세계 190개국 Door-to-Door 운임을 실시간 환율과 FSC를 반영하여 즉시 산출합니다.',
+      '정직과 신용으로 고객에게 최선을 다하는 기업, 이맥스 국제특송(E-MAX)의 스마트 견적 시스템입니다. 전 세계 220+개국 Door-to-Door 운임을 실시간 환율과 FSC를 반영하여 즉시 산출합니다.',
     'landing.getStarted': '무료로 시작하기',
     'landing.featuresLabel': '이맥스 국제특송 핵심 서비스',
     'landing.featuresTitle': '전국 36개 지사망, 믿고 맡기는 이맥스 네트워크',
@@ -62,9 +62,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'landing.verifiedCarriers.desc':
       '36개 국내 지사망을 보유한 이맥스만의 강력한 물류 인프라를 통해 안전하고 신속한 배송을 보장합니다.',
     'landing.liveRates': '실시간 요율 연동',
-    'landing.globalPorts': '190+ 국가 커버리지',
+    'landing.globalPorts': '220+ 국가 커버리지',
     'landing.stat.carriers': '3개 특송 캐리어',
-    'landing.stat.countries': '190개 목적지 국가',
+    'landing.stat.countries': '목적지 국가',
     'landing.stat.calculation': '1초 견적 소요 시간',
     'landing.stat.available': '전국 36개 지사망',
     'landing.mock.route': 'ICN(서울) → LAX(로스앤젤레스)',
@@ -481,7 +481,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Landing Page
     'landing.title.main': 'Freight Quotes for',
-    'landing.title.sub': '190+ Countries, Instantly.',
+    'landing.title.sub': '220+ Countries, Instantly.',
     'landing.subtitle':
       'E-MAX Worldwide Express - A company doing its best for customers with integrity and credit. Express shipping solutions for global logistics partners. Calculate Door-to-Door costs instantly.',
     'landing.getStarted': 'Get Started Free',
@@ -497,9 +497,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'landing.verifiedCarriers.desc':
       'A powerful logistics infrastructure with 36 domestic branch offices across Korea, ensuring safe and rapid delivery.',
     'landing.liveRates': 'Live Rate Sync',
-    'landing.globalPorts': '190+ Countries Covered',
+    'landing.globalPorts': '220+ Countries Covered',
     'landing.stat.carriers': '3 Express Carriers',
-    'landing.stat.countries': '190 Destinations',
+    'landing.stat.countries': 'Destinations',
     'landing.stat.calculation': '1s Quote Time',
     'landing.stat.available': '36 Branch Offices',
     'landing.mock.route': 'ICN (Seoul) → LAX (Los Angeles)',
