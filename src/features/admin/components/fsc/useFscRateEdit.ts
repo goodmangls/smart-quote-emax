@@ -112,14 +112,17 @@ export function useFscRateEdit(data: FscRates | null, fetchRates: () => Promise<
       // had no way to know the table was half-written.
       Sentry.captureException(err);
       setSaveError(describeSaveFailure(written, inFlight));
-      // Re-read regardless, so the widget shows what is actually in the table
+      // Re-read regardless, so the widget can show what is actually in the table
       // rather than what the admin thought they saved. Editing stays open so the
       // partial write stays visible and re-submittable.
-      try {
-        await fetchRates();
-      } catch {
-        // The read failure is already surfaced by useFscRates' own error state.
-      }
+      //
+      // No try/catch here: `fetchRates` is useFscRates' `retry`, which swallows
+      // its own failure into that hook's `error` state and never rejects. The
+      // widget reads that state — a failed re-read must NOT be rendered as a
+      // confirmed "현재 DB" value, because `data` then still holds the pre-save
+      // read. That is the likely path, too: a POST that died on the network is
+      // usually followed by a GET that dies the same way.
+      await fetchRates();
     } finally {
       setSaving(false);
     }

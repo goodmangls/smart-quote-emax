@@ -211,6 +211,63 @@ describe('FscRateWidget', () => {
       expect(screen.getByTestId('fsc-db-value-FEDEX')).toHaveTextContent('현재 DB: 33.33%');
     });
 
+    it('does not pass off the pre-save read as "현재 DB" when the re-read also fails', async () => {
+      // The likely path: a POST that died on the network is followed by a GET that
+      // dies the same way. useFscRates keeps the OLD data and only sets `error`, so
+      // rendering 33.33 as the current DB value would assert a table state nobody
+      // ever observed — exactly the lie this error path exists to prevent.
+      mockUpdateFscRate.mockRejectedValue(new Error('socket hang up'));
+      mockRetry.mockImplementation(() => {
+        mockUseFscRates.mockReturnValue(hookResult({ error: 'Failed to load FSC rates' }));
+      });
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await screen.findByRole('alert');
+
+      await waitFor(() =>
+        expect(screen.getByTestId('fsc-db-value-FEDEX')).toHaveTextContent(
+          '현재 DB: 읽지 못했습니다'
+        )
+      );
+      expect(screen.getByTestId('fsc-db-value-FEDEX')).not.toHaveTextContent('33.33');
+    });
+
+    it('offers a way to re-read the table without discarding the typed values', async () => {
+      mockUpdateFscRate.mockRejectedValue(new Error('socket hang up'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.clear(screen.getByLabelText('UPS FSC 요율 (%)'));
+      await user.type(screen.getByLabelText('UPS FSC 요율 (%)'), '48.25');
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await screen.findByRole('alert');
+
+      const reread = screen.getByLabelText('현재 DB 값 다시 읽기');
+      mockRetry.mockClear();
+      await user.click(reread);
+
+      expect(mockRetry).toHaveBeenCalled();
+      // The edit survives the re-read, so the admin can resubmit without retyping.
+      expect(screen.getByLabelText('UPS FSC 요율 (%)')).toHaveValue(48.25);
+    });
+
+    it('keeps the re-read control out of the way until a save has failed', async () => {
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+
+      expect(screen.queryByLabelText('현재 DB 값 다시 읽기')).not.toBeInTheDocument();
+    });
+
     it('does not clutter the editor with DB values when there is no failure', async () => {
       const user = userEvent.setup();
       render(<FscRateWidget />);

@@ -40,7 +40,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
   // and useCarrierFscDefault both read it, with rates.ts only as the fallback for a
   // missing row or a failed read. The widget therefore has to show the DB, not the
   // constants: displaying constants is what let a stale row sit unnoticed.
-  const { data, loading, retry: fetchRates } = useFscRates();
+  const { data, loading, error: ratesError, retry: fetchRates } = useFscRates();
   const {
     isEditing,
     saving,
@@ -133,6 +133,20 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                   <Check className='w-3.5 h-3.5' />
                 )}
               </button>
+              {/* Only after a failed save. The recovery advice is "check 현재 DB", and
+                  the plain refresh control is hidden while editing — without this the
+                  admin would have to cancel (losing their input) to re-read the table. */}
+              {saveError && (
+                <button
+                  onClick={fetchRates}
+                  disabled={loading || saving}
+                  className='text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors disabled:opacity-40'
+                  title='현재 DB 값 다시 읽기'
+                  aria-label='현재 DB 값 다시 읽기'
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              )}
               <button
                 onClick={handleCancel}
                 disabled={saving}
@@ -230,11 +244,15 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                           min={0}
                           max={100}
                           value={editRates[carrier]}
-                          onChange={(e) => setEditRates({ ...editRates, [carrier]: e.target.value })}
+                          onChange={(e) =>
+                            setEditRates({ ...editRates, [carrier]: e.target.value })
+                          }
                           aria-label={`${carrier} FSC 요율 (%)`}
                           className='w-20 px-1.5 py-1 text-sm font-bold rounded border border-emax-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emax-500 text-center'
                         />
-                        <span className='text-sm font-bold text-gray-500 dark:text-gray-400'>%</span>
+                        <span className='text-sm font-bold text-gray-500 dark:text-gray-400'>
+                          %
+                        </span>
                       </div>
                       {/* After a failed save the cells still render what the admin typed, so
                           without this the "check the current value" advice points at nothing.
@@ -245,10 +263,16 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                           className='text-[10px] text-gray-500 dark:text-gray-400'
                           data-testid={`fsc-db-value-${carrier}`}
                         >
-                          현재 DB:{' '}
-                          {typeof rates?.international === 'number'
-                            ? `${rates.international.toFixed(2)}%`
-                            : '—'}
+                          {/* A failed re-read leaves `data` holding the PRE-SAVE read, so
+                              rendering it as "현재 DB" would assert a table state we never
+                              observed — the same lie this whole error path exists to avoid. */}
+                          {ratesError
+                            ? '현재 DB: 읽지 못했습니다'
+                            : `현재 DB: ${
+                                typeof rates?.international === 'number'
+                                  ? `${rates.international.toFixed(2)}%`
+                                  : '—'
+                              }`}
                         </span>
                       )}
                     </div>
