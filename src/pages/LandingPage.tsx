@@ -90,7 +90,7 @@ export const LandingPage: React.FC = () => {
                   <div className="mt-6 grid grid-cols-2 gap-3">
                     {[
                       { label: t('landing.stat.carriers'), value: '5', icon: Truck },
-                      { label: t('landing.stat.countries'), value: '250+', icon: Globe },
+                      { label: t('landing.stat.countries'), value: '220+', icon: Globe },
                       { label: t('landing.stat.calculation'), value: '1s', icon: Zap },
                       { label: t('landing.stat.available'), value: '24/7', icon: ShieldCheck },
                     ].map((item) => (
@@ -127,7 +127,7 @@ export const LandingPage: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
                 { value: '5', label: t('landing.stat.carriers'), icon: Truck },
-                { value: '250+', label: t('landing.stat.countries'), icon: Globe },
+                { value: '220+', label: t('landing.stat.countries'), icon: Globe },
                 { value: '1s', label: t('landing.stat.calculation'), icon: Zap },
                 { value: '24/7', label: t('landing.stat.available'), icon: ShieldCheck },
               ].map((stat) => (
