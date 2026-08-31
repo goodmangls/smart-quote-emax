@@ -1,16 +1,22 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { FscRates } from '@/api/fscApi';
-import {
-  DEFAULT_FSC_PERCENT,
-  DEFAULT_FSC_PERCENT_DHL,
-  DEFAULT_FSC_PERCENT_FEDEX,
-  DEFAULT_FSC_PERCENT_OCS,
-  DHL_FSC_URL,
-  FEDEX_FSC_URL,
-  UPS_FSC_URL,
-} from '@/config/rates';
+import { DHL_FSC_URL, FEDEX_FSC_URL, UPS_FSC_URL } from '@/config/rates';
 import { EMAX_FSC_PER_KG } from '@/config/emax_tariff';
-import { Fuel, ExternalLink, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { useFscRates } from '@/features/dashboard/hooks/useFscRates';
+import { useFscRateEdit, EDITABLE_FSC_CARRIERS } from './fsc/useFscRateEdit';
+import {
+  Fuel,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Trash2,
+  Pencil,
+  Check,
+  X,
+  Loader2,
+  RefreshCw,
+  AlertTriangle,
+} from 'lucide-react';
 import {
   FscHistoryData,
   FscHistoryEntry,
@@ -30,19 +36,21 @@ interface FscRateWidgetProps {
 }
 
 export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }) => {
-  // rates.ts is the single source of truth for FSC (DB auto-apply disabled)
-  const data: FscRates = useMemo(
-    () => ({
-      rates: {
-        UPS: { international: DEFAULT_FSC_PERCENT, domestic: DEFAULT_FSC_PERCENT },
-        DHL: { international: DEFAULT_FSC_PERCENT_DHL, domestic: DEFAULT_FSC_PERCENT_DHL },
-        FEDEX: { international: DEFAULT_FSC_PERCENT_FEDEX, domestic: DEFAULT_FSC_PERCENT_FEDEX },
-        OCS: { international: DEFAULT_FSC_PERCENT_OCS, domestic: DEFAULT_FSC_PERCENT_OCS },
-      },
-      updatedAt: new Date().toISOString(),
-    }),
-    [],
-  );
+  // `fsc_rates` (DB) is what a quote actually charges — QuoteCalculator#default_fsc_for
+  // and useCarrierFscDefault both read it, with rates.ts only as the fallback for a
+  // missing row or a failed read. The widget therefore has to show the DB, not the
+  // constants: displaying constants is what let a stale row sit unnoticed.
+  const { data, loading, error: ratesError, retry: fetchRates } = useFscRates();
+  const {
+    isEditing,
+    saving,
+    saveError,
+    editRates,
+    setEditRates,
+    handleEditStart,
+    handleSave,
+    handleCancel,
+  } = useFscRateEdit(data, fetchRates);
 
   // History state
   const [history, setHistory] = useState<FscHistoryData>(() => loadFscHistory());
@@ -52,6 +60,22 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
   const [addCarrier, setAddCarrier] = useState<FscCarrier>('ups');
   const [addDate, setAddDate] = useState('');
   const [addRate, setAddRate] = useState('');
+
+  /**
+   * What the row under each input may honestly claim about `fsc_rates`.
+   *
+   * Three states, not two. `useFscRates.load()` clears `error` when it starts and
+   * leaves `data` alone until it succeeds, so mid-request we hold the PRE-SAVE
+   * read with no error flag — printing that number as "현재 DB" would be a
+   * confident claim about a table we are in the middle of asking about, and it
+   * would flip the honest "읽지 못했습니다" back into a lie every time the admin
+   * pressed re-read.
+   */
+  const dbValueLabel = (rate: number | undefined): string => {
+    if (loading) return '현재 DB: 확인 중…';
+    if (ratesError) return '현재 DB: 읽지 못했습니다';
+    return `현재 DB: ${typeof rate === 'number' ? `${rate.toFixed(2)}%` : '—'}`;
+  };
 
   const carrierLinks: Record<string, string | null> = {
     UPS: UPS_FSC_URL,
@@ -109,13 +133,92 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
             FSC Rates (International)
           </h4>
         </div>
+        <div className='flex items-center gap-2'>
+          {!readOnly && isEditing ? (
+            <>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className='flex items-center gap-1 text-[10px] font-semibold text-green-600 hover:text-green-700 dark:text-green-400 transition-colors disabled:opacity-50'
+                title='저장'
+                aria-label='FSC 요율 저장'
+              >
+                {saving ? (
+                  <Loader2 className='w-3.5 h-3.5 animate-spin' />
+                ) : (
+                  <Check className='w-3.5 h-3.5' />
+                )}
+              </button>
+              {/* Only after a failed save. The recovery advice is "check 현재 DB", and
+                  the plain refresh control is hidden while editing — without this the
+                  admin would have to cancel (losing their input) to re-read the table. */}
+              {saveError && (
+                <button
+                  onClick={fetchRates}
+                  disabled={loading || saving}
+                  className='text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors disabled:opacity-40'
+                  title='현재 DB 값 다시 읽기'
+                  aria-label='현재 DB 값 다시 읽기'
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              )}
+              <button
+                onClick={handleCancel}
+                disabled={saving}
+                className='text-[10px] font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 transition-colors'
+                title='취소'
+                aria-label='FSC 요율 편집 취소'
+              >
+                <X className='w-3.5 h-3.5' />
+              </button>
+            </>
+          ) : (
+            <>
+              {!readOnly && (
+                <button
+                  onClick={handleEditStart}
+                  disabled={loading || !data}
+                  className='text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors disabled:opacity-40'
+                  title='FSC 요율 편집'
+                  aria-label='FSC 요율 편집'
+                >
+                  <Pencil className='w-3.5 h-3.5' />
+                </button>
+              )}
+              <button
+                onClick={fetchRates}
+                disabled={loading}
+                className='text-[10px] font-semibold text-gray-500 hover:text-emax-600 dark:text-gray-400 transition-colors'
+                title='새로고침'
+                aria-label='FSC 요율 새로고침'
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      {data ? (
+      {saveError && (
+        <div
+          role='alert'
+          className='px-4 py-2 border-b border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 flex items-start gap-2'
+        >
+          <AlertTriangle className='w-3.5 h-3.5 mt-0.5 shrink-0 text-red-600 dark:text-red-400' />
+          <p className='text-[11px] leading-relaxed text-red-700 dark:text-red-300'>{saveError}</p>
+        </div>
+      )}
+
+      {loading && !data ? (
+        <div className='p-6 text-center text-xs text-gray-400'>
+          <Loader2 className='w-4 h-4 animate-spin mx-auto' />
+        </div>
+      ) : data ? (
         <div>
           {/* Percentage carriers — 2×2 grid to fill horizontal space */}
           <div className='grid grid-cols-2'>
-            {(['UPS', 'DHL', 'FEDEX', 'OCS'] as const).map((carrier, index) => {
+            {EDITABLE_FSC_CARRIERS.map((carrier, index) => {
               const rates = data.rates[carrier];
               const link = carrierLinks[carrier];
               const isLeftCol = index % 2 === 0;
@@ -148,9 +251,45 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                       </a>
                     ) : null}
                   </div>
-                  <p className='text-xl font-bold text-gray-900 dark:text-white'>
-                    {rates.international.toFixed(2)}%
-                  </p>
+                  {!readOnly && isEditing ? (
+                    <div className='flex flex-col gap-1'>
+                      <div className='flex items-center gap-1.5'>
+                        <input
+                          type='number'
+                          step='0.25'
+                          min={0}
+                          max={100}
+                          value={editRates[carrier]}
+                          onChange={(e) =>
+                            setEditRates({ ...editRates, [carrier]: e.target.value })
+                          }
+                          aria-label={`${carrier} FSC 요율 (%)`}
+                          className='w-20 px-1.5 py-1 text-sm font-bold rounded border border-emax-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emax-500 text-center'
+                        />
+                        <span className='text-sm font-bold text-gray-500 dark:text-gray-400'>
+                          %
+                        </span>
+                      </div>
+                      {/* After a failed save the cells still render what the admin typed, so
+                          without this the "check the current value" advice points at nothing.
+                          The hook re-reads the table on failure, so this is the real DB row —
+                          the only way to tell whether the indeterminate carrier landed. */}
+                      {saveError && (
+                        <span
+                          className='text-[10px] text-gray-500 dark:text-gray-400'
+                          data-testid={`fsc-db-value-${carrier}`}
+                        >
+                          {dbValueLabel(rates?.international)}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <p className='text-xl font-bold text-gray-900 dark:text-white'>
+                      {typeof rates?.international === 'number'
+                        ? `${rates.international.toFixed(2)}%`
+                        : '—'}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -329,7 +468,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
       {data && (
         <div className='px-4 py-2 border-t border-gray-100 dark:border-gray-700'>
           <span className='text-[10px] text-gray-400 dark:text-gray-400'>
-            Source: rates.ts (single source of truth)
+            Source: DB / rates.ts fallback
           </span>
         </div>
       )}

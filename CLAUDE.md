@@ -259,7 +259,7 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 
 ### Admin Widgets (visible at /admin only)
 
-- **FscRateWidget**: Tracks live DHL/UPS/FedEx/OCS fuel surcharges with external verification links and manual override
+- **FscRateWidget**: DB(`fsc_rates`) 요율을 읽어 표시하고 **관리자가 UPS/DHL/FedEx/OCS 4종을 직접 편집·저장**한다(연필 → 값 입력 → 체크). 저장은 캐리어당 `POST /api/v1/fsc/update` 로 나가고 감사로그가 남으며, 저장 직후 재조회한다. EMAX 는 per-kg(`EMAX_FSC_PER_KG`)라 표시만 하고 편집 대상이 아니다. 캐리어 공식 페이지 링크 포함(OCS 는 공식 URL 미공개)
 - **DiscountRulesWidget**: DB-driven discount rule CRUD, priority-based grouping (P100/P90/P50/P0), inline add/edit, soft delete
 - **SurchargeManagementWidget**: Carrier-specific surcharge CRUD (split into SurchargeForm, SurchargeTable, SurchargeCarrierLinks, SurchargeNotice sub-components)
 - **CustomerManagement**: Customer CRUD with quote count badges
@@ -356,6 +356,8 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 - **Market defaults**: `DEFAULT_EXCHANGE_RATE` (하나은행 월요일 09시 송금환율) 과 캐리어별 `DEFAULT_FSC_PERCENT*` 는 `src/config/rates.ts` 에 있다. **현재 수치는 여기 옮겨 적지 않는다** — FSC 는 매주 바뀌어서 문서가 곧 stale 해진다(실제로 2026-07-20 값이 8월 말까지 남아 있었다). 값이 필요하면 파일을 볼 것.
 - **FSC 출처**: 견적에 적용되는 요율은 **DB(`fsc_rates`) = Admin FSC 위젯**이다. 2026-08-24부터 프론트(`useCarrierFscDefault`)와 백엔드(`QuoteCalculator#default_fsc_for`)가 모두 DB 를 먼저 읽는다. 그 전에는 양쪽 다 상수만 읽어 **위젯에서 요율을 바꿔도 견적에 반영되지 않았다**(FscFetcher 가 컨트롤러에만 연결돼 있었음).
   - **평시 주간 갱신은 위젯만으로 끝난다 — 배포 불필요.**
+  - ⚠️ **2026-08-31 이전에는 이 문단이 emax 에서 사실이 아니었다.** `FscRateWidget` 이 `rates.ts` 상수를 읽어 표시만 하는 읽기 전용이었고(`// DB auto-apply disabled`), `updateFscRate` 는 정의만 있고 **호출부가 없었다**. 즉 emax 에는 `fsc_rates` 를 쓰는 경로가 아예 없었고, `FscRate.seed_carrier!` 는 `return if exists?` 라 행이 한 번 생기면 상수를 바꿔도 덮지 않는다 — 그래서 2026-08-24 에 계산기가 DB 우선으로 바뀐 순간부터 **견적이 최초 시드값에 묶였고, 매주 상수를 갱신·배포해도 금액이 움직이지 않았다.** main 의 편집 UI 를 이식해 해소(`fsc/useFscRateEdit.ts` — main 은 3캐리어 하드코딩이라 **OCS 를 포함한 4캐리어로 확장**했다).
+  - ⚠️ 이 저장소의 문서는 한동안 main 것을 복사해 두고 있었다. **main 에서 참인 문장이 emax 에서도 참인지 코드로 확인할 것** — 위 사고가 정확히 그 경로로 생겼다.
   - 코드 상수(`src/config/rates.ts` + `smart-quote-api/lib/constants/rates.rb` + `src/config/fsc-history.ts`)는 **DB 조회 실패·요청 대기 중 폴백**이자 이력 차트 시드다. 세 파일은 항상 같은 값으로 함께 수정하며 `fsc-history.test.ts` 가 시드↔상수 정합을 강제한다(부분 갱신 시 RED).
   - ⚠️ **EMAX 는 per-kg FSC**(`EMAX_FSC_PER_KG`)라 별도 분기이며 DB 퍼센트를 절대 쓰지 않는다. OCS 는 ad-hoc 주기.
   - ⚠️ 사용자가 FSC 칸에 직접 입력한 값은 DB 응답이 늦게 와도 덮이지 않는다. 캐리어를 바꾸면 새 캐리어 기본값으로 초기화된다.
