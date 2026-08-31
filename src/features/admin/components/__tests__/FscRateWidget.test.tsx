@@ -48,7 +48,12 @@ function hookResult(overrides: Record<string, unknown> = {}) {
 
 describe('FscRateWidget', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // resetAllMocks, NOT clearAllMocks: clear only wipes call records and leaves
+    // implementations in place, so a `mockRetry.mockImplementation` set by one
+    // case (e.g. "flip the hook into loading") leaks into the next and silently
+    // changes what it renders. That leak disabled the re-read button in a later
+    // case and made the failure look like a component bug.
+    vi.resetAllMocks();
     localStorage.clear();
     mockUseFscRates.mockReturnValue(hookResult());
     mockUpdateFscRate.mockResolvedValue({ success: true });
@@ -231,8 +236,32 @@ describe('FscRateWidget', () => {
 
       await waitFor(() =>
         expect(screen.getByTestId('fsc-db-value-FEDEX')).toHaveTextContent(
-          '현재 DB: 읽지 못했습니다'
-        )
+          '현재 DB: 읽지 못했습니다',
+        ),
+      );
+      expect(screen.getByTestId('fsc-db-value-FEDEX')).not.toHaveTextContent('33.33');
+    });
+
+    it('does not present the stale value as current while a re-read is in flight', async () => {
+      // useFscRates.load() clears `error` the moment it starts and leaves `data`
+      // alone until it succeeds. So mid-request we hold the PRE-SAVE read with no
+      // error flag — the exact window in which the honest "읽지 못했습니다" would
+      // otherwise flip back into a confident stale number.
+      mockUpdateFscRate.mockRejectedValue(new Error('socket hang up'));
+      mockRetry.mockImplementation(() => {
+        mockUseFscRates.mockReturnValue(hookResult({ loading: true, error: null }));
+      });
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await screen.findByRole('alert');
+
+      await waitFor(() =>
+        expect(screen.getByTestId('fsc-db-value-FEDEX')).toHaveTextContent('현재 DB: 확인 중')
       );
       expect(screen.getByTestId('fsc-db-value-FEDEX')).not.toHaveTextContent('33.33');
     });

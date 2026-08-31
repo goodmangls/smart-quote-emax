@@ -61,6 +61,22 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
   const [addDate, setAddDate] = useState('');
   const [addRate, setAddRate] = useState('');
 
+  /**
+   * What the row under each input may honestly claim about `fsc_rates`.
+   *
+   * Three states, not two. `useFscRates.load()` clears `error` when it starts and
+   * leaves `data` alone until it succeeds, so mid-request we hold the PRE-SAVE
+   * read with no error flag — printing that number as "현재 DB" would be a
+   * confident claim about a table we are in the middle of asking about, and it
+   * would flip the honest "읽지 못했습니다" back into a lie every time the admin
+   * pressed re-read.
+   */
+  const dbValueLabel = (rate: number | undefined): string => {
+    if (loading) return '현재 DB: 확인 중…';
+    if (ratesError) return '현재 DB: 읽지 못했습니다';
+    return `현재 DB: ${typeof rate === 'number' ? `${rate.toFixed(2)}%` : '—'}`;
+  };
+
   const carrierLinks: Record<string, string | null> = {
     UPS: UPS_FSC_URL,
     DHL: DHL_FSC_URL,
@@ -263,16 +279,7 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                           className='text-[10px] text-gray-500 dark:text-gray-400'
                           data-testid={`fsc-db-value-${carrier}`}
                         >
-                          {/* A failed re-read leaves `data` holding the PRE-SAVE read, so
-                              rendering it as "현재 DB" would assert a table state we never
-                              observed — the same lie this whole error path exists to avoid. */}
-                          {ratesError
-                            ? '현재 DB: 읽지 못했습니다'
-                            : `현재 DB: ${
-                                typeof rates?.international === 'number'
-                                  ? `${rates.international.toFixed(2)}%`
-                                  : '—'
-                              }`}
+                          {dbValueLabel(rates?.international)}
                         </span>
                       )}
                     </div>
