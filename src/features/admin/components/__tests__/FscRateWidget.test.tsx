@@ -184,7 +184,40 @@ describe('FscRateWidget', () => {
       const alert = await screen.findByRole('alert');
       expect(alert).not.toHaveTextContent('FEDEX·OCS 는 시도되지 않아');
       expect(alert).not.toHaveTextContent('FEDEX 는 시도되지 않아');
-      expect(alert).toHaveTextContent('현재 값으로 확인해 주세요');
+      expect(alert).toHaveTextContent("'현재 DB' 값으로 확인해 주세요");
+    });
+
+    it('actually shows the DB value the failure message tells the admin to check', async () => {
+      // Editing stays open on failure, so the cells render what the ADMIN TYPED.
+      // Without the DB value beside them the "check 현재 DB" advice points at
+      // nothing on screen and cannot be followed.
+      mockUpdateFscRate
+        .mockResolvedValueOnce({ success: true })
+        .mockResolvedValueOnce({ success: true })
+        .mockRejectedValueOnce(new Error('socket hang up'));
+
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+      await user.clear(screen.getByLabelText('FEDEX FSC 요율 (%)'));
+      await user.type(screen.getByLabelText('FEDEX FSC 요율 (%)'), '99.99');
+      await user.click(screen.getByLabelText('FSC 요율 저장'));
+
+      await screen.findByRole('alert');
+
+      // The input holds the typed value; the DB row is shown separately as 33.33.
+      expect(screen.getByLabelText('FEDEX FSC 요율 (%)')).toHaveValue(99.99);
+      expect(screen.getByTestId('fsc-db-value-FEDEX')).toHaveTextContent('현재 DB: 33.33%');
+    });
+
+    it('does not clutter the editor with DB values when there is no failure', async () => {
+      const user = userEvent.setup();
+      render(<FscRateWidget />);
+
+      await user.click(screen.getByLabelText('FSC 요율 편집'));
+
+      expect(screen.queryByTestId('fsc-db-value-FEDEX')).not.toBeInTheDocument();
     });
 
     it('treats the very first carrier as indeterminate rather than untouched', async () => {

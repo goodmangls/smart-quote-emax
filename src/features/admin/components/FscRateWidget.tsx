@@ -222,18 +222,35 @@ export const FscRateWidget: React.FC<FscRateWidgetProps> = ({ readOnly = false }
                     ) : null}
                   </div>
                   {!readOnly && isEditing ? (
-                    <div className='flex items-center gap-1.5'>
-                      <input
-                        type='number'
-                        step='0.25'
-                        min={0}
-                        max={100}
-                        value={editRates[carrier]}
-                        onChange={(e) => setEditRates({ ...editRates, [carrier]: e.target.value })}
-                        aria-label={`${carrier} FSC 요율 (%)`}
-                        className='w-20 px-1.5 py-1 text-sm font-bold rounded border border-emax-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emax-500 text-center'
-                      />
-                      <span className='text-sm font-bold text-gray-500 dark:text-gray-400'>%</span>
+                    <div className='flex flex-col gap-1'>
+                      <div className='flex items-center gap-1.5'>
+                        <input
+                          type='number'
+                          step='0.25'
+                          min={0}
+                          max={100}
+                          value={editRates[carrier]}
+                          onChange={(e) => setEditRates({ ...editRates, [carrier]: e.target.value })}
+                          aria-label={`${carrier} FSC 요율 (%)`}
+                          className='w-20 px-1.5 py-1 text-sm font-bold rounded border border-emax-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emax-500 text-center'
+                        />
+                        <span className='text-sm font-bold text-gray-500 dark:text-gray-400'>%</span>
+                      </div>
+                      {/* After a failed save the cells still render what the admin typed, so
+                          without this the "check the current value" advice points at nothing.
+                          The hook re-reads the table on failure, so this is the real DB row —
+                          the only way to tell whether the indeterminate carrier landed. */}
+                      {saveError && (
+                        <span
+                          className='text-[10px] text-gray-500 dark:text-gray-400'
+                          data-testid={`fsc-db-value-${carrier}`}
+                        >
+                          현재 DB:{' '}
+                          {typeof rates?.international === 'number'
+                            ? `${rates.international.toFixed(2)}%`
+                            : '—'}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <p className='text-xl font-bold text-gray-900 dark:text-white'>

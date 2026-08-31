@@ -31,15 +31,18 @@ const EMPTY_EDIT_RATES: FscEditRates = { UPS: '', DHL: '', FEDEX: '', OCS: '' };
  * timeout, a dropped connection or a 502 can all arrive after the server has
  * already committed the row. So the carrier that failed is *indeterminate*,
  * not "unchanged"; only the carriers never attempted are certainly unchanged.
- * The caller re-reads the table on failure, so the honest move is to point at
- * the refreshed display rather than assert a DB state we cannot know.
+ * The caller re-reads the table on failure and the widget then shows each row's
+ * real value under its input ("현재 DB"), so the honest move is to point the
+ * admin at that rather than assert a DB state we cannot know. Keep this wording
+ * and that label in step — editing stays open on failure, so the cells otherwise
+ * show only what the admin typed and the advice would point at nothing.
  */
 function describeSaveFailure(
   written: readonly EditableFscCarrier[],
-  failed: EditableFscCarrier | null
+  failed: EditableFscCarrier | null,
 ): string {
   const untouched = EDITABLE_FSC_CARRIERS.filter(
-    (carrier) => !written.includes(carrier) && carrier !== failed
+    (carrier) => !written.includes(carrier) && carrier !== failed,
   );
 
   const parts = ['요율을 모두 저장하지 못했습니다.'];
@@ -49,7 +52,7 @@ function describeSaveFailure(
   }
   if (failed) {
     parts.push(
-      `${failed} 는 응답을 받지 못해 반영 여부가 확실하지 않습니다 — 아래 표시된 현재 값으로 확인해 주세요.`
+      `${failed} 는 응답을 받지 못해 반영 여부가 확실하지 않습니다 — 입력칸 아래 '현재 DB' 값으로 확인해 주세요.`,
     );
   }
   if (untouched.length > 0) {
