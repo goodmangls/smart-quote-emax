@@ -5,7 +5,7 @@ module Constants
     WAR_RISK_SURCHARGE_RATE = 0  # DEC-006: War risk surcharge removed
     PACKING_MATERIAL_BASE_COST = 15000
     PACKING_LABOR_UNIT_COST = 50000
-    DEFAULT_EXCHANGE_RATE = 1320 # 적용 기준환율 (2026-09-02 확인)
+    DEFAULT_EXCHANGE_RATE = 1300 # 적용 기준환율 (2026-09-05 확인)
     DEFAULT_FSC_PERCENT = 48.25 # UPS default, effective 2026-08-31
     DEFAULT_FSC_PERCENT_DHL = 43.25 # DHL default, effective 2026-08-31
     DEFAULT_FSC_PERCENT_FEDEX = 47.75 # FedEx default, effective 2026-08-31
