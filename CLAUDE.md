@@ -353,7 +353,7 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SENTRY_DSN`, `VITE_CHANNEL_TALK_PLUGIN_KEY`, `VITE_ENABLE_SENTRY`
 - **ENV policy**: `VITE_*` keys are inlined into the client bundle at build time — use only for keys that are safe to expose to browsers (Supabase anon, public DSNs, public SDK keys with referrer/origin restrictions). Server-side secrets (Slack webhooks, EIA API key, admin tokens) MUST live only in the Rails API or Vercel serverless environment variables without the `VITE_` prefix. Slack alerts and EIA jet-fuel requests are already proxied through the Rails backend (`/api/v1/notifications/slack`, `/api/v1/jet_fuel`) — do not re-introduce `VITE_SLACK_WEBHOOK_URL` or `VITE_EIA_API_KEY`.
 - **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`, `ocs_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.
-- **Market defaults**: `DEFAULT_EXCHANGE_RATE` (하나은행 월요일 09시 송금환율) 과 캐리어별 `DEFAULT_FSC_PERCENT*` 는 `src/config/rates.ts` 에 있다. **현재 수치는 여기 옮겨 적지 않는다** — FSC 는 매주 바뀌어서 문서가 곧 stale 해진다(실제로 2026-07-20 값이 8월 말까지 남아 있었다). 값이 필요하면 파일을 볼 것.
+- **Market defaults**: `DEFAULT_EXCHANGE_RATE` (적용 기준환율 — 산출 방식은 아래 **Exchange rate policy**) 과 캐리어별 `DEFAULT_FSC_PERCENT*` 는 `src/config/rates.ts` 에 있다. **현재 수치는 여기 옮겨 적지 않는다** — FSC 는 매주 바뀌어서 문서가 곧 stale 해진다(실제로 2026-07-20 값이 8월 말까지 남아 있었다). 값이 필요하면 파일을 볼 것.
 - **FSC 출처**: 견적에 적용되는 요율은 **DB(`fsc_rates`) = Admin FSC 위젯**이다. 2026-08-24부터 프론트(`useCarrierFscDefault`)와 백엔드(`QuoteCalculator#default_fsc_for`)가 모두 DB 를 먼저 읽는다. 그 전에는 양쪽 다 상수만 읽어 **위젯에서 요율을 바꿔도 견적에 반영되지 않았다**(FscFetcher 가 컨트롤러에만 연결돼 있었음).
   - **평시 주간 갱신은 위젯만으로 끝난다 — 배포 불필요.**
   - ⚠️ **2026-08-31 이전에는 이 문단이 emax 에서 사실이 아니었다.** `FscRateWidget` 이 `rates.ts` 상수를 읽어 표시만 하는 읽기 전용이었고(`// DB auto-apply disabled`), `updateFscRate` 는 정의만 있고 **호출부가 없었다**. 즉 emax 에는 `fsc_rates` 를 쓰는 경로가 아예 없었고, `FscRate.seed_carrier!` 는 `return if exists?` 라 행이 한 번 생기면 상수를 바꿔도 덮지 않는다 — 그래서 2026-08-24 에 계산기가 DB 우선으로 바뀐 순간부터 **견적이 최초 시드값에 묶였고, 매주 상수를 갱신·배포해도 금액이 움직이지 않았다.** main 의 편집 UI 를 이식해 해소(`fsc/useFscRateEdit.ts` — main 은 3캐리어 하드코딩이라 **OCS 를 포함한 4캐리어로 확장**했다).
@@ -362,7 +362,9 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
   - ⚠️ **EMAX 는 per-kg FSC**(`EMAX_FSC_PER_KG`)라 별도 분기이며 DB 퍼센트를 절대 쓰지 않는다. OCS 는 ad-hoc 주기.
   - ⚠️ 사용자가 FSC 칸에 직접 입력한 값은 DB 응답이 늦게 와도 덮이지 않는다. 캐리어를 바꾸면 새 캐리어 기본값으로 초기화된다.
 - **FSC history**: `src/config/fsc-history.ts` tracks weekly UPS/DHL/FedEx and ad-hoc OCS FSC rates. Update when rates change.
-- **Exchange rate policy**: Live API 자동세팅 비활성화. 매주 월요일 **하나은행 09시 송금환율을 50원 내림**(`floor(시장/50)×50`)해서 적용한다 — 내림이 원화강세 방향이고, 견적 USD = `KRW ÷ 환율` 이라 낮은 환율이 USD 견적을 높여 안전 버퍼가 된다.
+- **Exchange rate policy** (2026-09-02 정책 변경): Live API 자동세팅 비활성화. **부르는 숫자를 반올림 없이 그대로 적용한다** — `/fx-update 1300` 이면 적용 환율이 1300 이다. 50원 단위 제약이 없어 1325·1337 도 그대로 들어간다.
+  - ⚠️ **입력값이 곧 마진이다.** 견적 USD = `KRW ÷ 환율` 이라 환율을 낮게 잡으면 USD 견적이 높아져 안전 버퍼가 된다 — 버퍼를 얼마나 둘지는 **숫자를 부르는 쪽의 판단**이고 스크립트는 아무것도 더하거나 빼지 않는다. 송금환율을 그대로 넣으면 버퍼는 0 이다.
+  - 구 정책 `floor(송금환율/50)×50`(2026-08-25~09-02)은 **버퍼가 시장 위치에 따라 1원~49원으로 들쭉날쭉**해서 폐기했다(1401 → 1400 이면 버퍼 1원). `--market` 플래그로만 남아 있고 명시할 때만 동작한다.
   - 갱신은 **`/fx-update` 스킬**이 한다(`~/.claude/skills/fx-update/`). smart-quote-main 과 **같은 값**을 동시에 적용하고, 저장소당 `src/config/rates.ts` + `smart-quote-api/lib/constants/rates.rb` 2파일을 쓴 뒤 재읽기로 검증한다.
   - ⚠️ **FSC 와 달리 DB·Admin 위젯이 없다. 상수뿐이라 반드시 배포해야 반영된다.** TS↔RB 를 교차 검증하는 게 없어 한쪽만 고치면 조용히 어긋난다 — `fx-apply.py --check` 가 유일한 감지 장치다.
   - 🔥 **이 저장소는 실제로 방치된 적이 있다.** 1450(2026-03-24)이 5개월간 남아 있었고, 2026-08-25 에 1350 으로 정렬하자 같은 화물의 USD 표시가 **+7.4%** 움직였다(KRW 금액은 불변). 그동안 묵은 높은 환율로 USD 견적을 낮게 내보내고 있었다.
