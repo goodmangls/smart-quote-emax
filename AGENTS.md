@@ -57,7 +57,7 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       noticeApi.ts             # Company announcements
     types.ts                   # Core TypeScript types & enums (QuoteInput, QuoteResult, Incoterm, etc.)
     types/dashboard.ts         # Dashboard types (ExchangeRate, PortWeather, LogisticsNews, AccountManager)
-    i18n/translations.ts       # 2-language dictionary (en/ko, ~800 keys)
+    i18n/translations.ts       # 2-language dictionary (en/ko) — 키 개수는 적지 않는다(썩는다)
     config/                    # Rate tables, business rules, UI constants
       ups_tariff.ts            # UPS Z1-Z10 rate tables (synced with backend, Eff. 01-Feb-26)
       dhl_tariff.ts            # DHL Z1-Z8 rate tables (synced with backend, 2026 정가)
@@ -400,6 +400,30 @@ When adding, modifying, or removing user-facing features, **always update the co
 - **Member Guide**: `docs/USER_GUIDE_MEMBER.md` — Member features (dashboard, quote calculator, history, PDF)
 
 Update the "Last Updated" date and version in the guide header when making changes.
+
+## 문서에 개수를 적지 않는다
+
+숫자는 반드시 썩고, 대개 두 군데 이상에 중복돼 조용히 갈라진다. 이 파일에서 실제로 썩은 것들:
+
+| 적혀 있던 값 | 실제 | 발견 |
+|---|---|---|
+| FSC UPS/DHL/FedEx 수치 2곳 | 매주 바뀜 | 2026-07-20 값이 8월 말까지 잔존 |
+| 테스트 개수 | — | 2026-08 기준 120여 건 어긋남 |
+| 번역 키 "~800개" | 약 723개 | 2026-09-14 |
+
+개수가 필요하면 **출처를 가리킨다**: 요율은 `src/config/rates.ts`, 테스트 수는 `npx vitest run`, 번역 키는 `src/i18n/translations.ts`. 여기 남아도 되는 숫자는 **코드가 강제하는 정책값**(존 이름, FedEx 18kg 최소청구중량, 요율표 all-or-nothing 같은 불변 규칙)뿐이다.
+
+⚠️ 같은 이유로 **smart-quote-main 의 수치를 이 문서에 옮겨 적지 말 것.** 두 저장소는 UPS 서류 요율부터 다르다 — 맞추면 견적이 26% 뛴다.
+
+## CLAUDE.md ↔ AGENTS.md 동기화
+
+두 파일은 1·3·5행(제목·대상 독자·상호참조)만 다르고 **나머지는 한 글자도 달라선 안 된다.** 검사법:
+
+```bash
+diff <(tail -n +6 CLAUDE.md) <(tail -n +6 AGENTS.md)   # 출력이 비어야 정상
+```
+
+⚠️ 2026-09-14 기준 이 저장소는 정상이었지만 **smart-quote-main 은 갈라져 있었다** — 400행과 409~412행이 같은 사실을 각자 다른 문장으로 쓰고 있었다. 한쪽만 고치면 반드시 이렇게 된다.
 
 ## Commit Messages
 
