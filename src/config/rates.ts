@@ -13,7 +13,7 @@ export const TRANSIT_TIMES = {
 } as const;
 
 // Market Defaults
-export const DEFAULT_EXCHANGE_RATE = 1300; // 적용 기준환율 (2026-09-05 확인)
+export const DEFAULT_EXCHANGE_RATE = 1320; // 적용 기준환율 (2026-09-16 확인)
 export const DEFAULT_FSC_PERCENT = 49.75; // UPS default, effective 2026-09-14
 export const DEFAULT_FSC_PERCENT_DHL = 43.75; // DHL default, effective 2026-09-14
 export const DEFAULT_FSC_PERCENT_FEDEX = 49.0; // FedEx default, effective 2026-09-14
