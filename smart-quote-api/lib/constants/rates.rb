@@ -6,9 +6,9 @@ module Constants
     PACKING_MATERIAL_BASE_COST = 15000
     PACKING_LABOR_UNIT_COST = 50000
     DEFAULT_EXCHANGE_RATE = 1320 # 적용 기준환율 (2026-09-16 확인)
-    DEFAULT_FSC_PERCENT = 53.75 # UPS default, effective 2026-09-28
-    DEFAULT_FSC_PERCENT_DHL = 46.25 # DHL default, effective 2026-09-28
-    DEFAULT_FSC_PERCENT_FEDEX = 53.25 # FedEx default, effective 2026-09-28
+    DEFAULT_FSC_PERCENT = 52.00 # UPS default, effective 2026-10-05
+    DEFAULT_FSC_PERCENT_DHL = 48.00 # DHL default, effective 2026-10-05
+    DEFAULT_FSC_PERCENT_FEDEX = 51.25 # FedEx default, effective 2026-10-05
     DEFAULT_FSC_PERCENT_OCS = 25.00 # OCS default, effective 2026-07-20
     MAX_DISCOUNT_PERCENT = 80 # Maximum discount rate (%) — keep in sync with src/config/business-rules.ts
     UPS_FSC_URL = "https://www.ups.com/kr/ko/support/shipping-support/shipping-costs-rates/fuel-surcharges.page"
