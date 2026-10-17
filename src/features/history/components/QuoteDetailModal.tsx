@@ -7,6 +7,7 @@ import { updateQuoteStatus, sendQuoteEmail } from '@/api/quoteApi';
 import { createShareLink } from '@/api/shareApi';
 import { STATUS_COLORS } from '../constants';
 import { useToast } from '@/components/ui/Toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Props {
   quote: QuoteDetail;
@@ -31,6 +32,7 @@ export const QuoteDetailModal: React.FC<Props> = ({
   onStatusChange,
 }) => {
   const fmt = formatNum;
+  const { t } = useLanguage();
   const [currentStatus, setCurrentStatus] = useState<QuoteStatus>(quote.status);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -349,7 +351,7 @@ export const QuoteDetailModal: React.FC<Props> = ({
                 <BreakdownRow label='Dest Duty/Tax' value={quote.breakdown.destDuty} />
               )}
               <div className='pt-2 mt-2 border-t border-gray-200 dark:border-gray-700 flex justify-between font-bold text-gray-900 dark:text-white'>
-                <span>Total Cost</span>
+                <span>{t('quote.publishedRateTotal')}</span>
                 <span>{fmt(quote.breakdown.totalCost)} KRW</span>
               </div>
             </div>

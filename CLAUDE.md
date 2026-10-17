@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Smart Quote System for **E-MAX Worldwide Express** - an internal logistics quoting tool that calculates international shipping costs across carriers (UPS, DHL, FedEx, EMAX, OCS). React frontend with a Rails API backend, sharing mirrored calculation logic. Includes customer dashboard with live exchange rates, weather, jet fuel prices, notices, and account manager widgets. Role-based access (Admin/Member) with Slack notifications and Sentry error tracking.
+Smart Quote System for **E-MAX Worldwide Express** - an internal logistics quoting tool that calculates international shipping costs across carriers (UPS, DHL, FedEx, EMAX, OCS). React frontend with a Rails API backend, sharing mirrored calculation logic. Includes customer dashboard with live exchange rates, weather, jet fuel prices, notices, and account manager widgets. Role-based access (Admin/Member) with Sentry error tracking.
 
 ## Development Commands
 
@@ -112,7 +112,6 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       pdfService.ts            # jsPDF-based PDF (packing details, carrier add-ons, surcharge info)
       packing-utils.ts         # applyPackingDimensions() shared utility (eliminates 6x duplication)
       fetchWithRetry.ts        # Generic fetch retry wrapper
-      slackNotification.ts     # Slack notification for member quote saves
 smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL)
   app/models/
     margin_rule.rb             # Margin rule model (validations, scopes, soft delete)
@@ -145,7 +144,6 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
     fsc_controller.rb          # FSC rate view/update
     audit_logs_controller.rb   # Audit log viewer
     chat_controller.rb         # AI chatbot (Claude API, role-aware, language auto-detect, markdown, preset questions)
-    notifications_controller.rb # Slack webhook proxy
   db/seeds/addon_rates.rb      # DHL 19 + UPS 6 add-on rate seed data
   lib/constants/               # Tariff tables (ups_tariff.rb, dhl_tariff.rb, emax_tariff.rb, ocs_tariff.rb)
 ```
@@ -182,14 +180,12 @@ Context providers wrap the app: `ThemeProvider > LanguageProvider > BrowserRoute
 | Flight Schedule (/schedule) | O | X |
 | Quote history | O | O |
 | Admin widgets panel (collapsible) | O | X |
-| Slack notification on save | X | O (auto) |
 
 ### Data Flow
 
 1. User edits input -> frontend `calculateQuote()` runs instantly via `useMemo` (no debounce, pure function)
 2. "Save Quote" -> `POST /api/v1/quotes` -> backend `QuoteCalculator.call(params)` recalculates + persists to PostgreSQL (ref: `SQ-YYYY-NNNN`)
-3. Member save -> Slack notification via `POST /api/v1/notifications/slack` (best-effort, condition: `user.role === 'member' && !isDuplicate`)
-4. History tab -> `GET /api/v1/quotes` with pagination/search/filter params
+3. History tab -> `GET /api/v1/quotes` with pagination/search/filter params
 
 ### Mirrored Calculation Logic
 
@@ -302,7 +298,6 @@ Source: FedEx "추가 서비스 요금 및 기타 정보 — 대한민국" (KR_2
 | Open-Meteo      | `api.open-meteo.com/v1/forecast`        | Port/airport weather      |
 | US EIA API      | `api.eia.gov/v2/petroleum/pri/spt/data` | USGC Jet Fuel prices      |
 | Supabase        | `VITE_SUPABASE_URL`                     | Authentication            |
-| Slack Webhook   | `/api/v1/notifications/slack`           | Member quote save alerts  |
 
 ## i18n System
 
@@ -340,9 +335,6 @@ CRUD   /api/v1/addon_rates           # Add-on rate management
 CRUD   /api/v1/customers             # Customer management
 GET    /api/v1/users                 # User list/management
 GET    /api/v1/audit_logs            # Audit log viewer
-
-# Notifications
-POST   /api/v1/notifications/slack   # Slack webhook proxy
 ```
 
 ## Configuration
@@ -351,7 +343,7 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
 - **Path alias**: `@/` -> `src/` (both vite.config.ts and tsconfig.json)
 - **Tailwind**: Custom `emax-*` (brand red) and `accent-*` (informational sky) palettes, class-based dark mode. See `DESIGN.md` for rationale and do/don't.
 - **Environment**: `VITE_API_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_SENTRY_DSN`, `VITE_CHANNEL_TALK_PLUGIN_KEY`, `VITE_ENABLE_SENTRY`
-- **ENV policy**: `VITE_*` keys are inlined into the client bundle at build time — use only for keys that are safe to expose to browsers (Supabase anon, public DSNs, public SDK keys with referrer/origin restrictions). Server-side secrets (Slack webhooks, EIA API key, admin tokens) MUST live only in the Rails API or Vercel serverless environment variables without the `VITE_` prefix. Slack alerts and EIA jet-fuel requests are already proxied through the Rails backend (`/api/v1/notifications/slack`, `/api/v1/jet_fuel`) — do not re-introduce `VITE_SLACK_WEBHOOK_URL` or `VITE_EIA_API_KEY`.
+- **ENV policy**: `VITE_*` keys are inlined into the client bundle at build time — use only for keys that are safe to expose to browsers (Supabase anon, public DSNs, public SDK keys with referrer/origin restrictions). Server-side secrets (Slack webhooks, EIA API key, admin tokens) MUST live only in the Rails API or Vercel serverless environment variables without the `VITE_` prefix. EIA jet-fuel requests are already proxied through the Rails backend (`/api/v1/jet_fuel`) — do not re-introduce `VITE_SLACK_WEBHOOK_URL` or `VITE_EIA_API_KEY`. (Slack 알림은 2026-10-17 에 제거됨 — 프록시할 엔드포인트 없음.)
 - **Tariff sync**: Frontend tariff files (`src/config/dhl_tariff.ts`, `ups_tariff.ts`, `fedex_tariff.ts`, `ocs_tariff.ts`) must stay in sync with backend `lib/constants/`. Source of truth: `storage/tariffs/*.pdf`. Backend already matches PDFs — update frontend to match backend when rates change.
   - ⚠️ **이 저장소에는 smart-quote-main 의 스냅샷 드리프트 게이트가 없다** — `shared/tariff-snapshots/` 도 `tariff:snapshot` rake task 도 없어서, TS↔RB 가 어긋나도 잡아주는 장치가 없다. 요율 수정 시 양쪽을 직접 대조할 것(main 은 모든 셀을 단언하는 parity 테스트가 있다)
   - ⚠️ **UPS Document 요율(`UPS_DOC_EXACT_RATES`)이 smart-quote-main 과 달라도 정상이다 — 동기화하지 말 것**(2026-09-08 사용자 확인). main 이 원본(2026-07-20)이고 이 저장소가 2026-08-03 "Document Rate 포트" 커밋으로 **출처 없이 복사**해 100/100 셀이 같아졌다가, main 만 새 시트로 교체(+26.32%)되면서 갈라졌다. **비서류 요율은 원래부터 400/400 셀이 전부 다르다** — 두 제품은 별개 계약이고 서류만 같았던 게 예외였다. main 값으로 맞추면 견적이 26% 뛴다

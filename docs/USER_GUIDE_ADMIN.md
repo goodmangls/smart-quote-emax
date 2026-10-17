@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** Internal Logistics Quoting System
 >
-> Version 3.1 | Last Updated: 2026-03-17
+> Version 3.2 | Last Updated: 2026-10-17
 
 ---
 
@@ -19,9 +19,8 @@
 9. [Rate Table Viewer](#9-rate-table-viewer)
 10. [Audit Log](#10-audit-log)
 11. [Quote History & Operations](#11-quote-history--operations)
-12. [Slack Notifications](#12-slack-notifications)
-13. [Account & Settings](#13-account--settings)
-14. [Troubleshooting](#14-troubleshooting)
+12. [Account & Settings](#12-account--settings)
+13. [Troubleshooting](#13-troubleshooting)
 
 ---
 
@@ -51,7 +50,6 @@
 | User management | O | X |
 | Rate table viewer | O | X |
 | Audit log viewer | O | X |
-| Slack notification on save | X | O (auto) |
 
 ---
 
@@ -70,7 +68,6 @@ Access via `/admin` (header **Admin** link).
 1. **Margin Breakdown Visible**: Full cost breakdown including margin percentage, cost amount, and profit
 2. **Margin Slider**: Manually adjust target margin percentage at any time
 3. **Admin Widgets Panel**: Additional management widgets below the calculator (see sections 4-10)
-4. **No Slack Notification**: Admin saves do not trigger Slack alerts
 
 ### Calculation Pipeline (Full Visibility)
 
@@ -332,33 +329,7 @@ Draft → Sent → Accepted
 
 ---
 
-## 12. Slack Notifications
-
-### How It Works
-
-When a **Member** saves a quote, a Slack notification is automatically sent to the admin channel.
-
-### Notification Data
-
-| Field | Content |
-|-------|---------|
-| Reference No | SQ-YYYY-NNNN |
-| Member | Company / Name / Email |
-| Carrier | UPS, DHL, or EMAX |
-| Destination | Country name |
-| Billable Weight | Applied weight |
-| Total Quote | KRW and USD amounts |
-| Margin | Profit margin % |
-
-### Conditions
-
-- Only **Member** role triggers notifications (not Admin)
-- Only **first save** (not duplicate saves)
-- Best-effort delivery (failures don't block the save)
-
----
-
-## 13. Account & Settings
+## 12. Account & Settings
 
 ### Change Password
 
@@ -373,7 +344,7 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
 
 ---
 
-## 14. Troubleshooting
+## 13. Troubleshooting
 
 **Q: Margin rules aren't applying to new quotes**
 A: Click the refresh button on the Margin Rules widget. Rules are cached for 5 minutes.

@@ -120,6 +120,7 @@ export const RateTableViewer: React.FC = () => {
         </div>
         <div className='flex items-center gap-2 flex-wrap'>
           <select
+            aria-label='Carrier'
             value={carrier}
             onChange={(e) => handleCarrierChange(e.target.value as Carrier)}
             className='text-[10px] font-semibold px-2 py-0.5 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'
@@ -130,6 +131,7 @@ export const RateTableViewer: React.FC = () => {
           </select>
           {mode === 'exact' && (
             <select
+              aria-label='Product'
               value={product}
               onChange={(e) => handleProductChange(e.target.value as RateProduct)}
               className='text-[10px] font-semibold px-2 py-0.5 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'
@@ -142,6 +144,7 @@ export const RateTableViewer: React.FC = () => {
             </select>
           )}
           <select
+            aria-label='Table mode'
             value={mode}
             onChange={(e) => setMode(e.target.value as TableMode)}
             className='text-[10px] font-semibold px-2 py-0.5 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'

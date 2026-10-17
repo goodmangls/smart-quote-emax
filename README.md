@@ -56,7 +56,6 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 | Quote History | O | O |
 | PDF Export | O | O |
 | Admin Management Panel (collapsible) | O | X |
-| Slack notification on save | X | O (auto) |
 
 ### Dashboard & Widgets
 
@@ -79,10 +78,6 @@ The **E-MAX Smart Quote** system is a full-stack logistics quoting application f
 | **User Management** | Role assignment and account management |
 | **Rate Table Viewer** | Read-only carrier rate table reference |
 | **Audit Log** | Full audit trail of all admin actions |
-
-### Slack Notifications
-
-When a **Member** saves a quote, a Slack notification is automatically sent to the admin channel with reference number, carrier, destination, billable weight, total quote amount, and margin percentage.
 
 ### Internationalization (i18n)
 
@@ -164,7 +159,7 @@ When a **Member** saves a quote, a Slack notification is automatically sent to t
     pages/                     # LandingPage, LoginPage, SignUpPage, CustomerDashboard, QuoteCalculator
       components/              # CalculatorActionBar, AdminWidgets, MobileStickyBottomBar
     components/                # Header, ProtectedRoute, ErrorBoundary, ChannelTalk
-    lib/                       # format.ts, pdfService.ts, packing-utils.ts, slackNotification.ts, fetchWithRetry.ts
+    lib/                       # format.ts, pdfService.ts, packing-utils.ts, fetchWithRetry.ts
   public/data/                 # ups_eas_data.json (86 countries, 39,876 zip ranges, lazy-loaded)
 smart-quote-api/               # Backend (Rails 8 API)
   app/models/                  # MarginRule, AuditLog, Quote, User, Customer, Surcharge, AddonRate
@@ -242,7 +237,6 @@ GET    /api/v1/users             # User management
 GET    /api/v1/audit_logs        # Audit log viewer
 
 # Notifications
-POST   /api/v1/notifications/slack  # Slack webhook proxy
 ```
 
 ## Environment Variables

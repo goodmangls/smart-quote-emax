@@ -1,1 +1,1 @@
-🔒 견적 customer_id 소유권 검사·매직링크 검증 스로틀·로그아웃 시 refresh 토큰 폐기·회원가입 비밀번호 trim 제거 (main 포팅 + emax 전용 보완)
+♿ 품질 점검 6건 — 관리자 select·서차지 폼 접근 이름 부여, en/ko 번역 키 동일성 테스트(빠진 키 정리), 이력 재확인 배지 번역, vercel.json 보안 헤더(CSP 제외), 죽은 Slack 호출 제거, "Total Cost"→"공시 요율 합계" 라벨 변경
