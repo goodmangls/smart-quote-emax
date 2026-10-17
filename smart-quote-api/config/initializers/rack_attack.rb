@@ -29,6 +29,14 @@ class Rack::Attack
     req.ip if req.path == "/api/v1/auth/magic_link" && req.post?
   end
 
+  # Throttle magic link verification: 20 per minute per IP (brute force).
+  # A magic link token is credential-equivalent: presenting a valid one issues
+  # a session. Verification is POST-only, so the method check is part of the
+  # rule; a GET rule would silently never match.
+  throttle("auth/magic_link/verify", limit: 20, period: 60) do |req|
+    req.ip if req.path == "/api/v1/auth/magic_link/verify" && req.post?
+  end
+
   # Throttle public calculate endpoint: 60 per minute per IP
   throttle("quotes/calculate", limit: 60, period: 60) do |req|
     req.ip if req.path == "/api/v1/quotes/calculate" && req.post?

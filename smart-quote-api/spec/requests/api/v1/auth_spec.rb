@@ -184,5 +184,46 @@ RSpec.describe "Api::V1::Auth", type: :request do
       expect(set_cookie).to include("refresh_token=")
       expect(set_cookie).to include("expires=")
     end
+
+    # Expiring the cookie only stops the browser from sending it. The token
+    # itself stays valid until its jti is cleared, so a copy taken before
+    # logout must stop working. The old token is re-sent explicitly: relying on
+    # the cleared cookie would make this pass even with no server-side revoke.
+    it "invalidates the refresh token so a copied cookie can no longer refresh" do
+      post "/api/v1/auth/login", params: { email: user.email, password: "password123" }, as: :json
+      copied = response.cookies["refresh_token"]
+      expect(copied).to be_present
+
+      post "/api/v1/auth/logout", as: :json
+      expect(response).to have_http_status(:ok)
+
+      post "/api/v1/auth/refresh", headers: { "Cookie" => "refresh_token=#{copied}" }, as: :json
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    # Theft case: the attacker rotates first, so the victim's cookie is stale
+    # and no longer matches the stored jti. Logout must still revoke the
+    # attacker's newer token, which only works if logout does not depend on
+    # the jti matching.
+    it "revokes the live token even when the logging-out cookie is stale" do
+      post "/api/v1/auth/login", params: { email: user.email, password: "password123" }, as: :json
+      victim_cookie = response.cookies["refresh_token"]
+
+      post "/api/v1/auth/refresh", headers: { "Cookie" => "refresh_token=#{victim_cookie}" }, as: :json
+      attacker_cookie = response.cookies["refresh_token"]
+      expect(attacker_cookie).not_to eq(victim_cookie)
+
+      post "/api/v1/auth/logout", headers: { "Cookie" => "refresh_token=#{victim_cookie}" }, as: :json
+      expect(response).to have_http_status(:ok)
+
+      post "/api/v1/auth/refresh", headers: { "Cookie" => "refresh_token=#{attacker_cookie}" }, as: :json
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "still answers 200 when no refresh cookie is sent" do
+      post "/api/v1/auth/logout", as: :json
+
+      expect(response).to have_http_status(:ok)
+    end
   end
 end

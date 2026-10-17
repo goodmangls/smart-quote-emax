@@ -53,6 +53,7 @@ module Api
 
       # POST /api/v1/auth/logout — expire the HttpOnly refresh cookie
       def logout
+        revoke_refresh_token!(refresh_token_from_cookie)
         clear_refresh_cookie
         render json: { message: "Logged out" }, status: :ok
       end
@@ -155,6 +156,23 @@ module Api
 
       def clear_refresh_cookie
         cookies.delete(:refresh_token, refresh_cookie_options.except(:value, :expires))
+      end
+
+      # Clears the user's stored jti, so every refresh token issued to them
+      # stops validating. Deliberately does not go through decode_refresh_token:
+      # that rejects a stale jti, and a stale cookie is exactly what a stolen
+      # token looks like after the attacker has rotated it. The signature is the
+      # only proof needed here. Expiry is not checked either, because an expired
+      # cookie can still carry the live jti.
+      def revoke_refresh_token!(token)
+        return if token.blank?
+
+        payload, = JWT.decode(token, jwt_secret, true, algorithm: "HS256", verify_expiration: false)
+        return unless payload["type"] == "refresh"
+
+        User.where(id: payload["user_id"]).update_all(refresh_token_jti: nil)
+      rescue JWT::DecodeError
+        nil
       end
 
       def refresh_cookie_options
