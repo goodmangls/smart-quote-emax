@@ -162,6 +162,31 @@ describe('SaveQuoteButton', () => {
     expect(onSaved).toHaveBeenCalledWith('SQ-2026-0042');
   });
 
+  it('does not post any Slack notification after a member saves', async () => {
+    vi.useRealTimers();
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('{}', { status: 404 }));
+    vi.mocked(saveQuote).mockResolvedValue({ referenceNo: 'SQ-2026-0077' } as ReturnType<
+      typeof saveQuote
+    > extends Promise<infer T>
+      ? T
+      : never);
+
+    render(<SaveQuoteButton input={mockInput} result={mockResult} />);
+
+    await userEvent.click(screen.getByText('Save Quote'));
+    await userEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/SQ-2026-0077/)).toBeInTheDocument();
+    });
+    expect(fetchSpy.mock.calls.map(([url]) => String(url))).not.toContainEqual(
+      expect.stringContaining('/notifications/slack'),
+    );
+    fetchSpy.mockRestore();
+  });
+
   it('shows Failed to save on error', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     vi.mocked(saveQuote).mockRejectedValue(new Error('Network error'));

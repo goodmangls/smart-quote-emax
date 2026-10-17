@@ -50,6 +50,8 @@ module Api
 
       # POST /api/v1/quotes (calculate + save)
       def create
+        return render_invalid_customer unless customer_assignable?(params[:customerId])
+
         input = clean_params
         validate_numeric_bounds!(input)
         result = QuoteCalculator.call(input)
@@ -110,6 +112,10 @@ module Api
       def update
         quote = scoped_quotes.find(params[:id])
         permitted = params.permit(:status, :notes, :customer_id)
+
+        if permitted.key?(:customer_id) && !customer_assignable?(permitted[:customer_id])
+          return render_invalid_customer
+        end
 
         if permitted[:status].present?
           unless Quote::VALID_STATUSES.include?(permitted[:status])
@@ -212,6 +218,23 @@ module Api
             raise InvalidInputError, "#{key} must be at most #{bounds[:max]}"
           end
         end
+      end
+
+      # Customers are private to their creator (admins see all), the same rule
+      # as CustomersController#scoped_customers. Without this a member could
+      # attach any customer id and read its company name back from
+      # `customerName`. A blank id means "no customer". Missing and foreign ids
+      # get the same answer so the response can't be used to probe ids.
+      def customer_assignable?(customer_id)
+        return true if customer_id.blank?
+
+        scope = current_user.role == "admin" ? Customer.all : current_user.customers
+        scope.exists?(id: customer_id)
+      end
+
+      def render_invalid_customer
+        render json: { error: { code: "INVALID_CUSTOMER", message: "Customer not found" } },
+               status: :unprocessable_content
       end
 
       def clean_params

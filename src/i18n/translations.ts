@@ -71,9 +71,6 @@ export const translations: Record<Language, Record<string, string>> = {
     'landing.mock.margin': '할인',
     'landing.footer':
       '© 2026 E-MAX Worldwide Express. Your Trusted Logistics Partner. All rights reserved.',
-    'landing.footer.address.main': '본사: 충청북도 청주시 흥덕구 지동로 11-3',
-    'landing.footer.address.hub': '허브센터: 경기도 김포시 고촌읍 태리 1018-1번지',
-    'landing.footer.contact': '대표번호: 1588-0033 | Fax: 043-232-4522',
     'landing.badge.networks': 'Global Freight Networks',
 
     // Auth Pages
@@ -253,6 +250,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'quote.validity.expired': '이 견적은 만료되었습니다',
     'quote.surcharge.stale': '할증료 변경 - 재견적 필요',
     'quote.surcharge.stale.short': '재확인 필요',
+    'history.badge.recheck': '재확인',
+    'quote.publishedRateTotal': '공시 요율 합계',
     'pdf.disclaimer.ko':
       '본 견적서는 유효기간 내 확인 기준이며, 할증료 변동 시 재산정될 수 있습니다.',
     'pdf.disclaimer.en':
@@ -288,6 +287,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Widget Common
     'widget.common.error': '데이터를 불러오지 못했습니다.',
     'widget.common.retry': '재시도',
+    'widget.close': '닫기',
 
     // Exchange Rate Widget
     'widget.exchange': '실시간 환율 정보',
@@ -352,6 +352,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'settings.password.new': '새 비밀번호',
     'settings.password.confirm': '새 비밀번호 확인',
     'settings.password.update': '비밀번호 변경',
+    'settings.password.success': '비밀번호가 변경되었습니다.',
     'settings.password.mismatch': '새 비밀번호가 일치하지 않습니다.',
     'settings.password.tooShort': '비밀번호는 최소 6자 이상이어야 합니다.',
     'settings.password.updateFailed': '비밀번호 변경에 실패했습니다.',
@@ -445,7 +446,6 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.compare': 'Comparison',
     'nav.admin': 'Admin Panel',
     'nav.guide': 'Guide',
-    'nav.history': 'Quote History',
 
     // Quote comparison (/compare)
     'compare.subtitle':
@@ -689,6 +689,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'quote.validity.expired': 'This quote has expired',
     'quote.surcharge.stale': 'Surcharge changed - re-quote needed',
     'quote.surcharge.stale.short': 'Re-check needed',
+    'history.badge.recheck': 'Recheck',
+    'quote.publishedRateTotal': 'Published Rate Total',
     'pdf.disclaimer.ko':
       '본 견적서는 유효기간 내 확인 기준이며, 할증료 변동 시 재산정될 수 있습니다.',
     'pdf.disclaimer.en':
@@ -702,11 +704,6 @@ export const translations: Record<Language, Record<string, string>> = {
     'widget.weather.error': 'Failed to load weather data.',
     'widget.weather.retry': 'Retry',
     'widget.weather.lastUpdated': 'Last Updated',
-    'widget.weather.details': 'Details',
-    'widget.time': 'Local Time',
-    'widget.temp': 'Temperature',
-    'widget.refresh': 'Refresh',
-    'widget.open': 'Open',
     'widget.close': 'Close',
     'widget.notice': 'Logistics Insights & Notices',
     'widget.notice.loading': 'Loading logistics news...',
@@ -759,7 +756,6 @@ export const translations: Record<Language, Record<string, string>> = {
     'common.amount': 'Amount',
     'common.from': 'From',
     'common.to': 'To',
-    'common.search': 'Search',
 
     // Account Manager Widget
     'widget.manager': 'Your Account Manager',

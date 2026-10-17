@@ -2,7 +2,7 @@
 
 > **Goodman GLS & J-Ways** International Logistics Quoting System
 >
-> Version 3.6 | Last Updated: 2026-08-12
+> Version 3.7 | Last Updated: 2026-10-17
 
 ---
 
@@ -195,8 +195,6 @@ The system alerts you to:
 1. Click the **Save** button in the action bar
 2. Optionally add notes
 3. The system generates a reference number (e.g., `SQ-2026-0042`)
-
-> When you save a quote, a notification is automatically sent to the admin team via Slack.
 
 ### Duplicate Detection
 
