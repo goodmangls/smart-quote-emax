@@ -13,9 +13,11 @@ export interface SharedQuoteData {
   destinationZip?: string;
   overseasCarrier: string;
   totalQuoteAmount: number;
-  totalQuoteAmountUsd: number;
+  // Serialized by the Rails QuoteSerializer under this exact key.
+  totalQuoteAmountUSD: number;
   appliedZone: string;
-  transitTime: string;
+  // Stored at save time; null for quotes saved before the column was written.
+  transitTime?: string | null;
   incoterm: string;
   billableWeight: number;
   createdAt: string;

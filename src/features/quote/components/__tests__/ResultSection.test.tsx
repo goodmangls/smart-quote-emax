@@ -3,6 +3,26 @@ import userEvent from '@testing-library/user-event';
 import { ResultSection } from '../ResultSection';
 import { QuoteInput, QuoteResult, Incoterm, PackingType } from '@/types';
 
+vi.mock('@/features/dashboard/hooks/useSurcharges', () => ({
+  useSurcharges: () => ({
+    surcharges: [],
+    loading: false,
+    error: null,
+    lastUpdated: null,
+    calculateApplied: () => [],
+    totalAmount: () => 0,
+    retry: vi.fn(),
+  }),
+}));
+
+vi.mock('@/features/dashboard/hooks/useAddonRates', () => ({
+  useAddonRates: () => ({ rates: [] }),
+}));
+
+vi.mock('@/features/dashboard/hooks/useFscRates', () => ({
+  useFscRates: () => ({ data: null, loading: false, error: null, retry: vi.fn() }),
+}));
+
 vi.mock('@/contexts/LanguageContext', () => ({
   useLanguage: () => ({
     language: 'ko',

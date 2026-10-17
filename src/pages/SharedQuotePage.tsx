@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getSharedQuote, SharedQuoteData } from '@/api/shareApi';
-import { COUNTRY_OPTIONS } from '@/config/options';
+import { COUNTRY_OPTIONS, ORIGIN_COUNTRY_OPTIONS } from '@/config/options';
 import { Plane, MapPin, Clock, Shield, Package, AlertTriangle } from 'lucide-react';
 
 const SharedQuotePage: React.FC = () => {
@@ -18,8 +18,11 @@ const SharedQuotePage: React.FC = () => {
       .finally(() => setLoading(false));
   }, [token]);
 
-  const countryName = (code: string) =>
-    COUNTRY_OPTIONS.find((c) => c.code === code)
+  // Origins and destinations are separate lists: Korea is only ever an origin,
+  // so a destination-only lookup printed the origin as the bare code "KR".
+  const countryName = (code: string, options: { code: string; name: string }[] = COUNTRY_OPTIONS) =>
+    options
+      .find((c) => c.code === code)
       ?.name?.replace(/[^\x20-\x7E]/g, '')
       .trim() || code;
 
@@ -54,12 +57,11 @@ const SharedQuotePage: React.FC = () => {
   }
 
   const isUsd = false; // KRW 기본 표시
-  const totalDisplay = isUsd
-    ? `$${data.totalQuoteAmountUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-    : `KRW ${data.totalQuoteAmount.toLocaleString('en-US')}`;
+  const usdDisplay = `$${data.totalQuoteAmountUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  const totalDisplay = isUsd ? usdDisplay : `KRW ${data.totalQuoteAmount.toLocaleString('en-US')}`;
   const secondaryDisplay = isUsd
     ? `KRW ${data.totalQuoteAmount.toLocaleString('en-US')}`
-    : `$${data.totalQuoteAmountUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    : usdDisplay;
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4'>
@@ -93,7 +95,9 @@ const SharedQuotePage: React.FC = () => {
             <div className='flex items-center gap-4'>
               <div className='flex-1'>
                 <p className='text-xs text-gray-400 uppercase'>Origin</p>
-                <p className='font-semibold text-gray-900'>{countryName(data.originCountry)}</p>
+                <p className='font-semibold text-gray-900'>
+                  {countryName(data.originCountry, ORIGIN_COUNTRY_OPTIONS)}
+                </p>
               </div>
               <div className='flex items-center gap-2 text-gray-300'>
                 <div className='w-8 h-px bg-gray-300' />
@@ -126,13 +130,15 @@ const SharedQuotePage: React.FC = () => {
                 <p className='text-sm font-semibold text-gray-900'>{data.appliedZone}</p>
               </div>
             </div>
-            <div className='flex items-center gap-2'>
-              <Clock className='w-4 h-4 text-gray-400' />
-              <div>
-                <p className='text-xs text-gray-400'>Transit</p>
-                <p className='text-sm font-semibold text-gray-900'>{data.transitTime}</p>
+            {data.transitTime && (
+              <div className='flex items-center gap-2'>
+                <Clock className='w-4 h-4 text-gray-400' />
+                <div>
+                  <p className='text-xs text-gray-400'>Transit</p>
+                  <p className='text-sm font-semibold text-gray-900'>{data.transitTime}</p>
+                </div>
               </div>
-            </div>
+            )}
             <div className='flex items-center gap-2'>
               <Shield className='w-4 h-4 text-gray-400' />
               <div>

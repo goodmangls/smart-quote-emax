@@ -79,6 +79,44 @@ RSpec.describe Quote, type: :model do
     end
   end
 
+  describe "#save_with_reference_retry" do
+    it "regenerates the reference number and retries when the unique index rejects a concurrent duplicate" do
+      create(:quote, reference_no: nil)
+      quote = build(:quote, reference_no: nil)
+
+      attempts = 0
+      allow(quote).to receive(:save).and_wrap_original do |original, *args|
+        attempts += 1
+        if attempts == 1
+          raise ActiveRecord::RecordNotUnique,
+                'duplicate key value violates unique constraint "index_quotes_on_reference_no"'
+        end
+        original.call(*args)
+      end
+
+      expect(quote.save_with_reference_retry).to be(true)
+      expect(quote.reference_no).to match(/\ASQ-\d{4}-\d+\z/)
+      expect(attempts).to eq(2)
+    end
+
+    it "re-raises unique violations unrelated to reference_no" do
+      quote = build(:quote, reference_no: nil)
+      allow(quote).to receive(:save)
+        .and_raise(ActiveRecord::RecordNotUnique, 'duplicate key value violates unique constraint "index_users_on_email"')
+
+      expect { quote.save_with_reference_retry }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+
+    it "gives up after exhausting retries" do
+      quote = build(:quote, reference_no: nil)
+      allow(quote).to receive(:save)
+        .and_raise(ActiveRecord::RecordNotUnique, 'duplicate key value violates unique constraint "index_quotes_on_reference_no"')
+
+      expect { quote.save_with_reference_retry }.to raise_error(ActiveRecord::RecordNotUnique)
+      expect(quote).to have_received(:save).exactly(4).times
+    end
+  end
+
   describe "scopes" do
     describe ".recent" do
       it "orders by created_at descending" do

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { QuoteInput } from '@/types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCarrierFscDefault } from '@/features/quote/hooks/useCarrierFscDefault';
 import { UPS_FSC_URL, DHL_FSC_URL, FEDEX_FSC_URL } from '@/config/rates';
 import { TrendingUp, ExternalLink, Target } from 'lucide-react';
 import { inputStyles } from './input-styles';
@@ -16,6 +17,8 @@ interface Props {
   onDiscountChange?: (val: number) => void;
   showUSD?: boolean;
 }
+
+const toFscDraft = (fsc: number | undefined): string => (fsc === undefined ? '' : String(fsc));
 
 export const FinancialSection: React.FC<Props> = ({
   input,
@@ -34,6 +37,33 @@ export const FinancialSection: React.FC<Props> = ({
   const isKo = language === 'ko';
 
   const financialGrid = `grid grid-cols-1 ${!isMobileView ? 'sm:grid-cols-3' : 'grid-cols-2'} gap-3`;
+
+  // A cleared box stays empty while the quote uses the carrier's DB default.
+  // Binding `value` straight to input.fscPercent would refill it at once, and
+  // pushing 0 instead would make an accidental clear silently drop the fuel
+  // surcharge. A typed 0 is a real 0%.
+  const carrierCode = input.overseasCarrier || 'UPS';
+  const { resolve: resolveFsc } = useCarrierFscDefault({ carrier: carrierCode });
+
+  // The text last typed, kept only while it still describes the value the parent
+  // holds for this carrier. A carrier switch, a saved quote loaded, or a refreshed
+  // rate no longer matches it, so the box shows the value itself.
+  const [typed, setTyped] = useState<{ text: string; value: number | undefined; carrier: string } | null>(
+    null,
+  );
+  const fscText =
+    typed && typed.carrier === carrierCode && typed.value === input.fscPercent
+      ? typed.text
+      : toFscDraft(input.fscPercent);
+
+  const handleFscChange = (raw: string) => {
+    const parsed = raw.trim() === '' ? resolveFsc(carrierCode) : Number(raw);
+    // Reject junk (a lone "-", "e") instead of collapsing it to a number.
+    const accepted = !Number.isNaN(parsed) && parsed >= 0;
+    const value = accepted ? parsed : input.fscPercent;
+    setTyped({ text: raw, value, carrier: carrierCode });
+    if (accepted) onFieldChange('fscPercent', parsed);
+  };
 
   return (
     <div className={grayCardClass}>
@@ -111,11 +141,8 @@ export const FinancialSection: React.FC<Props> = ({
               type='number'
               step='0.01'
               min='0'
-              value={input.fscPercent}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                onFieldChange('fscPercent', isNaN(v) || v < 0 ? 0 : v);
-              }}
+              value={fscText}
+              onChange={(e) => handleFscChange(e.target.value)}
               className={`${ic} pr-20`}
               placeholder='30.25'
               inputMode='decimal'

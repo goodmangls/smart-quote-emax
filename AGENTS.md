@@ -363,6 +363,7 @@ POST   /api/v1/notifications/slack   # Slack webhook proxy
   - 코드 상수(`src/config/rates.ts` + `smart-quote-api/lib/constants/rates.rb` + `src/config/fsc-history.ts`)는 **DB 조회 실패·요청 대기 중 폴백**이자 이력 차트 시드다. 세 파일은 항상 같은 값으로 함께 수정하며 `fsc-history.test.ts` 가 시드↔상수 정합을 강제한다(부분 갱신 시 RED).
   - ⚠️ **EMAX 는 per-kg FSC**(`EMAX_FSC_PER_KG`)라 별도 분기이며 DB 퍼센트를 절대 쓰지 않는다. OCS 는 ad-hoc 주기.
   - ⚠️ 사용자가 FSC 칸에 직접 입력한 값은 DB 응답이 늦게 와도 덮이지 않는다. 캐리어를 바꾸면 새 캐리어 기본값으로 초기화된다.
+  - ✅ **FSC 칸을 비우면 캐리어 기본값(DB)이 적용되고, 타이핑한 0 은 0% 다.** 칸이 비면 FE 는 DB 에서 해석한 기본값 숫자를 항상 밀어 넣으므로 견적에 undefined 가 실리지 않는다. `calculationService` 는 `fscPercent` 가 undefined 일 때만 배포된 상수(`defaultFscFor`)로 떨어지고, BE `QuoteCalculator` 는 DB `default_fsc_for` 를 쓴다 — 저장된 견적이 일치하는 이유가 이것이다. 0 으로 대체하면 실수로 칸을 비운 순간 할증료가 통째로 빠진다.
 - **FSC history**: `src/config/fsc-history.ts` tracks weekly UPS/DHL/FedEx and ad-hoc OCS FSC rates. Update when rates change.
 - **Exchange rate policy** (2026-09-02 정책 변경): Live API 자동세팅 비활성화. **부르는 숫자를 반올림 없이 그대로 적용한다** — `/fx-update 1300` 이면 적용 환율이 1300 이다. 50원 단위 제약이 없어 1325·1337 도 그대로 들어간다.
   - ⚠️ **입력값이 곧 마진이다.** 견적 USD = `KRW ÷ 환율` 이라 환율을 낮게 잡으면 USD 견적이 높아져 안전 버퍼가 된다 — 버퍼를 얼마나 둘지는 **숫자를 부르는 쪽의 판단**이고 스크립트는 아무것도 더하거나 빼지 않는다. 송금환율을 그대로 넣으면 버퍼는 0 이다.
