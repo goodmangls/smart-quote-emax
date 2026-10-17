@@ -51,20 +51,16 @@ describe('QuoteHistoryTable', () => {
   });
 
   it('shows loading skeletons when isLoading is true', () => {
-    const { container } = render(<QuoteHistoryTable {...defaultProps} quotes={[]} isLoading={true} />);
+    const { container } = render(
+      <QuoteHistoryTable {...defaultProps} quotes={[]} isLoading={true} />,
+    );
 
     const skeletons = container.querySelectorAll('.animate-pulse');
     expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('shows empty message when no quotes and no filters', () => {
-    render(
-      <QuoteHistoryTable
-        {...defaultProps}
-        quotes={[]}
-        hasActiveFilters={false}
-      />,
-    );
+    render(<QuoteHistoryTable {...defaultProps} quotes={[]} hasActiveFilters={false} />);
 
     // Rendered in both mobile and desktop views
     expect(
@@ -73,17 +69,9 @@ describe('QuoteHistoryTable', () => {
   });
 
   it('shows filter message when no quotes and hasActiveFilters', () => {
-    render(
-      <QuoteHistoryTable
-        {...defaultProps}
-        quotes={[]}
-        hasActiveFilters={true}
-      />,
-    );
+    render(<QuoteHistoryTable {...defaultProps} quotes={[]} hasActiveFilters={true} />);
 
-    expect(
-      screen.getAllByText('No quotes match your filters.').length,
-    ).toBeGreaterThan(0);
+    expect(screen.getAllByText('No quotes match your filters.').length).toBeGreaterThan(0);
   });
 
   it('calls onView with correct id when view button clicked', async () => {

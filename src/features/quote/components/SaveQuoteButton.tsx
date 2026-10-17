@@ -26,9 +26,7 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
 
   // Validation: items + destination + result must exist
   const isValid = useMemo(() => {
-    return input.items.length > 0
-      && input.destinationCountry.trim() !== ''
-      && result != null;
+    return input.items.length > 0 && input.destinationCountry.trim() !== '' && result != null;
   }, [input.items.length, input.destinationCountry, result]);
 
   // Hash for duplicate detection (resets when input changes)
@@ -51,7 +49,10 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
           company: user.company,
         });
       }
-      setTimeout(() => { setState('idle'); setSavedRefNo(null); }, 4000);
+      setTimeout(() => {
+        setState('idle');
+        setSavedRefNo(null);
+      }, 4000);
     } catch (e) {
       Sentry.captureException(e);
       setShowNotes(false);
@@ -73,17 +74,23 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSave();
-    if (e.key === 'Escape') { setShowNotes(false); setNotes(''); }
+    if (e.key === 'Escape') {
+      setShowNotes(false);
+      setNotes('');
+    }
   };
 
   const dupeDialog = (
     <ConfirmDialog
       open={showDupeConfirm}
-      title="Duplicate Quote"
-      message="This quote was already saved. Save again?"
-      confirmLabel="Save Again"
-      variant="warning"
-      onConfirm={() => { setShowDupeConfirm(false); doSave(true); }}
+      title='Duplicate Quote'
+      message='This quote was already saved. Save again?'
+      confirmLabel='Save Again'
+      variant='warning'
+      onConfirm={() => {
+        setShowDupeConfirm(false);
+        doSave(true);
+      }}
       onCancel={() => setShowDupeConfirm(false)}
     />
   );
@@ -93,27 +100,34 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
     return (
       <>
         {dupeDialog}
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <input
-            type="text"
+            type='text'
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add notes (optional)"
-            className="px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emax-500 focus:border-transparent w-48"
+            placeholder='Add notes (optional)'
+            className='px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emax-500 focus:border-transparent w-48'
             onKeyDown={handleKeyDown}
             autoFocus
           />
           <button
             onClick={handleSave}
             disabled={state === 'saving'}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-emax-600 rounded-lg hover:bg-emax-700 disabled:opacity-50 transition-colors"
+            className='flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-emax-600 rounded-lg hover:bg-emax-700 disabled:opacity-50 transition-colors'
           >
-            {state === 'saving' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+            {state === 'saving' ? (
+              <Loader2 className='w-3 h-3 animate-spin' />
+            ) : (
+              <Save className='w-3 h-3' />
+            )}
             Save
           </button>
           <button
-            onClick={() => { setShowNotes(false); setNotes(''); }}
-            className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            onClick={() => {
+              setShowNotes(false);
+              setNotes('');
+            }}
+            className='text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
           >
             Cancel
           </button>
@@ -125,17 +139,17 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
   // Saved state with ref no + View link
   if (state === 'saved' && savedRefNo) {
     return (
-      <div className="flex items-center gap-2">
-        <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 rounded-lg">
-          <Check className="w-3.5 h-3.5" />
+      <div className='flex items-center gap-2'>
+        <span className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400 rounded-lg'>
+          <Check className='w-3.5 h-3.5' />
           Saved! {savedRefNo}
         </span>
         {onSaved && (
           <button
             onClick={() => onSaved(savedRefNo)}
-            className="flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-emax-600 dark:text-emax-400 hover:bg-emax-50 dark:hover:bg-emax-900/20 rounded-lg transition-colors"
+            className='flex items-center gap-1 px-2 py-1.5 text-xs font-medium text-emax-600 dark:text-emax-400 hover:bg-emax-50 dark:hover:bg-emax-900/20 rounded-lg transition-colors'
           >
-            View <ExternalLink className="w-3 h-3" />
+            View <ExternalLink className='w-3 h-3' />
           </button>
         )}
       </div>
@@ -145,7 +159,7 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
   // Error state
   if (state === 'error') {
     return (
-      <span className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg">
+      <span className='flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 rounded-lg'>
         Failed to save
       </span>
     );
@@ -163,7 +177,7 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
           : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600'
       }`}
     >
-      <Save className="w-3.5 h-3.5" /> Save Quote
+      <Save className='w-3.5 h-3.5' /> Save Quote
     </button>
   );
 };
