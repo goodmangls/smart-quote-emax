@@ -30,7 +30,10 @@ export const getSharedQuote = async (token: string): Promise<SharedQuoteData> =>
   const res = await fetch(`${API_URL}/api/v1/shared/${token}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body?.error?.message || (res.status === 410 ? 'This share link has expired' : 'Invalid share link'));
+    throw new Error(
+      body?.error?.message ||
+        (res.status === 410 ? 'This share link has expired' : 'Invalid share link'),
+    );
   }
   return res.json();
 };
