@@ -3,6 +3,7 @@ import { QuoteSummary } from '@/types';
 import { Eye, Trash2, Clock, AlertTriangle } from 'lucide-react';
 import { formatNum } from '@/lib/format';
 import { STATUS_COLORS } from '@/features/history/constants';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function getExpiryFromDate(validityDate: string) {
   const expiry = new Date(validityDate);
@@ -26,6 +27,7 @@ export const QuoteHistoryTable: React.FC<Props> = ({
   onView,
   onDelete,
 }) => {
+  const { t } = useLanguage();
   const emptyMessage = hasActiveFilters
     ? 'No quotes match your filters.'
     : 'No quotes saved yet. Calculate a quote and save it!';
@@ -81,7 +83,7 @@ export const QuoteHistoryTable: React.FC<Props> = ({
                     {q.surchargeStale && (
                       <span className='inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'>
                         <AlertTriangle className='w-2.5 h-2.5' />
-                        재확인
+                        {t('history.badge.recheck')}
                       </span>
                     )}
                   </div>
@@ -284,7 +286,7 @@ export const QuoteHistoryTable: React.FC<Props> = ({
                       {q.surchargeStale && (
                         <span className='inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'>
                           <AlertTriangle className='w-2.5 h-2.5' />
-                          재확인
+                          {t('history.badge.recheck')}
                         </span>
                       )}
                     </div>

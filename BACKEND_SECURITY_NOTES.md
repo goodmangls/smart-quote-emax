@@ -1,5 +1,7 @@
 # BACKEND_SECURITY_NOTES.md
 
+> 2026-10-17 정정: 아래 "Missing Slack Notification Endpoint" 건(Finding 2)은 해소됐다. 프론트의 죽은 Slack 호출(`/api/v1/notifications/slack`)을 제거했고 이 엔드포인트는 더 이상 호출되지 않는다. 아래 본문은 당시 감사 기록으로 남긴다.
+
 ## Scope
 
 Backend security follow-up for the `smart-quote-main` review.

@@ -2,11 +2,9 @@ import React, { useState, useMemo } from 'react';
 import * as Sentry from '@sentry/browser';
 import { QuoteInput, QuoteResult } from '@/types';
 import { saveQuote } from '@/api/quoteApi';
-import { sendQuoteSlackNotification } from '@/lib/slackNotification';
 import { Save, Check, Loader2, ExternalLink } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useToast } from '@/components/ui/Toast';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface Props {
   input: QuoteInput;
@@ -15,7 +13,6 @@ interface Props {
 }
 
 export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => {
-  const { user } = useAuth();
   const [state, setState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState('');
@@ -32,7 +29,7 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
   // Hash for duplicate detection (resets when input changes)
   const inputHash = useMemo(() => JSON.stringify(input), [input]);
 
-  const doSave = async (isDuplicate = false) => {
+  const doSave = async () => {
     setState('saving');
     try {
       const detail = await saveQuote(input, notes || undefined);
@@ -42,13 +39,6 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
       setShowNotes(false);
       setNotes('');
       toast('success', `Quote saved: ${detail.referenceNo}`);
-      if (result && user && user.role === 'member' && !isDuplicate) {
-        sendQuoteSlackNotification(input, result, detail.referenceNo, {
-          name: user.name || user.email,
-          email: user.email,
-          company: user.company,
-        });
-      }
       setTimeout(() => {
         setState('idle');
         setSavedRefNo(null);
@@ -89,7 +79,7 @@ export const SaveQuoteButton: React.FC<Props> = ({ input, result, onSaved }) => 
       variant='warning'
       onConfirm={() => {
         setShowDupeConfirm(false);
-        doSave(true);
+        doSave();
       }}
       onCancel={() => setShowDupeConfirm(false)}
     />

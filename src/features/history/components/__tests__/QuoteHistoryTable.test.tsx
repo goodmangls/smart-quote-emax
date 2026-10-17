@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuoteHistoryTable } from '../QuoteHistoryTable';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import { QuoteSummary } from '@/types';
 
 const mockQuote: QuoteSummary = {
@@ -24,9 +25,17 @@ const defaultProps = {
   onDelete: vi.fn(),
 };
 
+// The table reads its language from LanguageProvider. The provider defaults to Korean,
+// so the existing English assertions pin the language to English explicitly.
+const renderTable = (ui: React.ReactElement) => render(<LanguageProvider>{ui}</LanguageProvider>);
+
 describe('QuoteHistoryTable', () => {
+  beforeEach(() => {
+    localStorage.setItem('smartQuoteLanguage', 'en');
+  });
+
   it('renders table headers', () => {
-    render(<QuoteHistoryTable {...defaultProps} />);
+    renderTable(<QuoteHistoryTable {...defaultProps} />);
 
     expect(screen.getByText('Ref No')).toBeInTheDocument();
     expect(screen.getByText('Date')).toBeInTheDocument();
@@ -39,7 +48,7 @@ describe('QuoteHistoryTable', () => {
   });
 
   it('renders quote rows with formatted data', () => {
-    render(<QuoteHistoryTable {...defaultProps} />);
+    renderTable(<QuoteHistoryTable {...defaultProps} />);
 
     // Both mobile card and desktop table render — use getAllByText
     expect(screen.getAllByText('SQ-2026-0001').length).toBeGreaterThan(0);
@@ -51,7 +60,7 @@ describe('QuoteHistoryTable', () => {
   });
 
   it('shows loading skeletons when isLoading is true', () => {
-    const { container } = render(
+    const { container } = renderTable(
       <QuoteHistoryTable {...defaultProps} quotes={[]} isLoading={true} />,
     );
 
@@ -60,7 +69,7 @@ describe('QuoteHistoryTable', () => {
   });
 
   it('shows empty message when no quotes and no filters', () => {
-    render(<QuoteHistoryTable {...defaultProps} quotes={[]} hasActiveFilters={false} />);
+    renderTable(<QuoteHistoryTable {...defaultProps} quotes={[]} hasActiveFilters={false} />);
 
     // Rendered in both mobile and desktop views
     expect(
@@ -69,14 +78,14 @@ describe('QuoteHistoryTable', () => {
   });
 
   it('shows filter message when no quotes and hasActiveFilters', () => {
-    render(<QuoteHistoryTable {...defaultProps} quotes={[]} hasActiveFilters={true} />);
+    renderTable(<QuoteHistoryTable {...defaultProps} quotes={[]} hasActiveFilters={true} />);
 
     expect(screen.getAllByText('No quotes match your filters.').length).toBeGreaterThan(0);
   });
 
   it('calls onView with correct id when view button clicked', async () => {
     const onView = vi.fn();
-    render(<QuoteHistoryTable {...defaultProps} onView={onView} />);
+    renderTable(<QuoteHistoryTable {...defaultProps} onView={onView} />);
 
     const viewButtons = screen.getAllByLabelText('View detail');
     await userEvent.click(viewButtons[0]);
@@ -86,11 +95,30 @@ describe('QuoteHistoryTable', () => {
 
   it('calls onDelete with correct id and refNo when delete button clicked', async () => {
     const onDelete = vi.fn();
-    render(<QuoteHistoryTable {...defaultProps} onDelete={onDelete} />);
+    renderTable(<QuoteHistoryTable {...defaultProps} onDelete={onDelete} />);
 
     const deleteButtons = screen.getAllByLabelText('Delete');
     await userEvent.click(deleteButtons[0]);
 
     expect(onDelete).toHaveBeenCalledWith(1, 'SQ-2026-0001');
+  });
+
+  describe('surcharge re-check badge', () => {
+    const staleQuote: QuoteSummary = { ...mockQuote, surchargeStale: true };
+
+    it('shows the badge in English for English users and never the Korean text', () => {
+      renderTable(<QuoteHistoryTable {...defaultProps} quotes={[staleQuote]} />);
+
+      expect(screen.getAllByText('Recheck').length).toBeGreaterThan(0);
+      expect(screen.queryByText('재확인')).not.toBeInTheDocument();
+    });
+
+    it('shows the badge in Korean for Korean users', () => {
+      localStorage.setItem('smartQuoteLanguage', 'ko');
+      renderTable(<QuoteHistoryTable {...defaultProps} quotes={[staleQuote]} />);
+
+      expect(screen.getAllByText('재확인').length).toBeGreaterThan(0);
+      expect(screen.queryByText('Recheck')).not.toBeInTheDocument();
+    });
   });
 });

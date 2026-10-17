@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Save, Loader2, X } from 'lucide-react';
 import { type SurchargeRule } from '@/api/surchargeApi';
 
@@ -19,12 +19,22 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
   onSave,
   onCancel,
 }) => {
+  // Unique per instance so each visible <label> can point at its control via htmlFor/id.
+  const uid = useId();
+  const fid = (name: string) => `${uid}-${name}`;
+
   return (
     <div className='px-4 py-3 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 space-y-3'>
       <div className='grid grid-cols-2 gap-2'>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Code *</label>
+          <label
+            htmlFor={fid('code')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Code *
+          </label>
           <input
+            id={fid('code')}
             type='text'
             value={form.code || ''}
             onChange={(e) => onUpdateForm('code', e.target.value)}
@@ -33,8 +43,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
           />
         </div>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Carrier</label>
+          <label
+            htmlFor={fid('carrier')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Carrier
+          </label>
           <select
+            id={fid('carrier')}
             value={form.carrier || ''}
             onChange={(e) => onUpdateForm('carrier', e.target.value)}
             className='w-full px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
@@ -48,10 +64,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
       </div>
       <div className='grid grid-cols-2 gap-2'>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>
+          <label
+            htmlFor={fid('name-en')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
             Name (EN) *
           </label>
           <input
+            id={fid('name-en')}
             type='text'
             value={form.name || ''}
             onChange={(e) => onUpdateForm('name', e.target.value)}
@@ -60,8 +80,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
           />
         </div>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Name (KO)</label>
+          <label
+            htmlFor={fid('name-ko')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Name (KO)
+          </label>
           <input
+            id={fid('name-ko')}
             type='text'
             value={form.nameKo || ''}
             onChange={(e) => onUpdateForm('nameKo', e.target.value)}
@@ -72,8 +98,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
       </div>
       <div className='grid grid-cols-3 gap-2'>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Type</label>
+          <label
+            htmlFor={fid('type')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Type
+          </label>
           <select
+            id={fid('type')}
             value={form.chargeType || 'fixed'}
             onChange={(e) => onUpdateForm('chargeType', e.target.value)}
             className='w-full px-2 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
@@ -83,8 +115,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
           </select>
         </div>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Amount *</label>
+          <label
+            htmlFor={fid('amount')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Amount *
+          </label>
           <input
+            id={fid('amount')}
             type='number'
             step='any'
             value={form.amount ?? 0}
@@ -93,8 +131,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
           />
         </div>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Zone</label>
+          <label
+            htmlFor={fid('zone')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Zone
+          </label>
           <input
+            id={fid('zone')}
             type='text'
             value={form.zone || ''}
             onChange={(e) => onUpdateForm('zone', e.target.value)}
@@ -105,10 +149,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
       </div>
       <div className='grid grid-cols-2 gap-2'>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>
+          <label
+            htmlFor={fid('country-codes')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
             Country Codes
           </label>
           <input
+            id={fid('country-codes')}
             type='text'
             value={
               Array.isArray(form.countryCodes)
@@ -121,8 +169,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
           />
         </div>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>Source URL</label>
+          <label
+            htmlFor={fid('source-url')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
+            Source URL
+          </label>
           <input
+            id={fid('source-url')}
             type='text'
             value={form.sourceUrl || ''}
             onChange={(e) => onUpdateForm('sourceUrl', e.target.value)}
@@ -133,10 +187,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
       </div>
       <div className='grid grid-cols-3 gap-2'>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>
+          <label
+            htmlFor={fid('effective-from')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
             Effective From
           </label>
           <input
+            id={fid('effective-from')}
             type='date'
             value={form.effectiveFrom || ''}
             onChange={(e) => onUpdateForm('effectiveFrom', e.target.value)}
@@ -144,10 +202,14 @@ export const SurchargeForm: React.FC<SurchargeFormProps> = ({
           />
         </div>
         <div>
-          <label className='block text-[10px] font-semibold text-gray-500 mb-0.5'>
+          <label
+            htmlFor={fid('effective-to')}
+            className='block text-[10px] font-semibold text-gray-500 mb-0.5'
+          >
             Effective To
           </label>
           <input
+            id={fid('effective-to')}
             type='date'
             value={form.effectiveTo || ''}
             onChange={(e) => onUpdateForm('effectiveTo', e.target.value || null)}
