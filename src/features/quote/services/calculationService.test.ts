@@ -15,6 +15,7 @@ import { DHL_EXACT_RATES } from '@/config/dhl_tariff';
 import { FEDEX_EXACT_RATES } from '@/config/fedex_tariff';
 import { OCS_EXACT_RATES } from '@/config/ocs_tariff';
 import { determineOcsZone } from '@/config/ocs_zones';
+import { defaultFscFor } from '@/config/rates';
 
 describe('calculationService', () => {
   // --- Zone Mapping Tests ---
@@ -317,6 +318,33 @@ describe('calculationService', () => {
       expect(result.breakdown.intlWarRisk).toBe(0);
       expect(result.totalQuoteAmount).toBeGreaterThan(0);
       expect(result.totalCostAmount).toBeGreaterThan(0);
+    });
+
+    it.each(['UPS', 'DHL', 'FEDEX'] as const)(
+      '%s: omitted fscPercent prices exactly like the carrier default (add-ons included)',
+      (carrier) => {
+        // A payload that never carried fscPercent (the type says required; the API may not).
+        const withoutFsc: Partial<QuoteInput> = { ...baseInput };
+        delete withoutFsc.fscPercent;
+        const omitted = calculateQuote({
+          ...withoutFsc,
+          overseasCarrier: carrier,
+        } as QuoteInput);
+        const explicit = calculateQuote({
+          ...baseInput,
+          fscPercent: defaultFscFor(carrier),
+          overseasCarrier: carrier,
+        });
+        expect(omitted.breakdown.intlFsc).toBe(explicit.breakdown.intlFsc);
+        expect(omitted.breakdown.carrierAddOnTotal).toBe(explicit.breakdown.carrierAddOnTotal);
+        expect(omitted.totalQuoteAmount).toBe(explicit.totalQuoteAmount);
+      },
+    );
+
+    it('an explicit 0 applies no fuel surcharge and is not replaced by the default', () => {
+      const zero = calculateQuote({ ...baseInput, fscPercent: 0, overseasCarrier: 'UPS' });
+      expect(zero.breakdown.intlFsc).toBe(0);
+      expect(zero.fscPercent).toBe(0);
     });
 
     it('DHL quote: uses DHL zone and rates', () => {

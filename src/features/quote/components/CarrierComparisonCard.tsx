@@ -1,13 +1,15 @@
 import React, { useMemo, useState } from 'react';
+import * as Sentry from '@sentry/browser';
 import { QuoteInput, QuoteResult } from '@/types';
 import { calculateQuote } from '@/features/quote/services/calculationService';
+import { toQuoteSurcharges, toQuoteAddonRates } from '@/features/quote/services/quoteSurcharges';
+import { useCarrierFscDefault } from '@/features/quote/hooks/useCarrierFscDefault';
+import { useSurcharges } from '@/features/dashboard/hooks/useSurcharges';
+import { useAddonRates } from '@/features/dashboard/hooks/useAddonRates';
+import type { ResolvedSurcharge } from '@/api/surchargeApi';
+import type { AddonRate } from '@/api/addonRateApi';
 import { formatKRW, formatUSDInt } from '@/lib/format';
 import { ArrowRightLeft, Check, ArrowUpDown } from 'lucide-react';
-import {
-  DEFAULT_FSC_PERCENT,
-  DEFAULT_FSC_PERCENT_DHL,
-  DEFAULT_FSC_PERCENT_FEDEX,
-} from '@/config/rates';
 import { MAX_DISCOUNT_PERCENT } from '@/config/business-rules';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -17,10 +19,16 @@ const COMPARABLE_CARRIERS: ComparableCarrier[] = ['UPS', 'DHL', 'FEDEX'];
 
 type CarrierDiscountOverrides = Partial<Record<ComparableCarrier, number>>;
 
-function defaultFsc(carrier: ComparableCarrier): number {
-  if (carrier === 'DHL') return DEFAULT_FSC_PERCENT_DHL;
-  if (carrier === 'FEDEX') return DEFAULT_FSC_PERCENT_FEDEX;
-  return DEFAULT_FSC_PERCENT;
+// The memo re-runs on every keystroke — report each distinct failure once per
+// session so a broken rate table doesn't flood Sentry.
+const reportedComparisonErrors = new Set<string>();
+
+function reportComparisonError(carrier: ComparableCarrier, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  const key = `${carrier}:${message}`;
+  if (reportedComparisonErrors.has(key)) return;
+  reportedComparisonErrors.add(key);
+  Sentry.captureException(error, { tags: { feature: 'carrier-comparison', carrier } });
 }
 
 function clampDiscount(value: number): number {
@@ -65,6 +73,17 @@ export const CarrierComparisonCard: React.FC<Props> = ({
   const selectedCarrier = input.overseasCarrier || 'UPS';
   const baseDiscount = clampDiscount(input.discountPercent ?? 0);
 
+  // Each column is priced from that carrier's own inputs, never the selected
+  // carrier's: DB FSC (shipped constant only while loading or on failure),
+  // and that carrier's own system surcharges and add-on rates.
+  const { resolve: resolveFsc } = useCarrierFscDefault({ carrier: selectedCarrier });
+  const upsSurcharges = useSurcharges('UPS', input.destinationCountry).surcharges;
+  const dhlSurcharges = useSurcharges('DHL', input.destinationCountry).surcharges;
+  const fedexSurcharges = useSurcharges('FEDEX', input.destinationCountry).surcharges;
+  const upsAddonRates = useAddonRates('UPS').rates;
+  const dhlAddonRates = useAddonRates('DHL').rates;
+  const fedexAddonRates = useAddonRates('FEDEX').rates;
+
   // Per-carrier overrides for non-selected carriers. Selected always follows input.discountPercent.
   const [overrides, setOverrides] = useState<CarrierDiscountOverrides>({});
 
@@ -76,24 +95,55 @@ export const CarrierComparisonCard: React.FC<Props> = ({
       }
       return overrides[carrier] ?? baseDiscount;
     };
+    const carrierInputs: Record<
+      ComparableCarrier,
+      { surcharges: ResolvedSurcharge[]; addonRates: AddonRate[] }
+    > = {
+      UPS: { surcharges: upsSurcharges, addonRates: upsAddonRates },
+      DHL: { surcharges: dhlSurcharges, addonRates: dhlAddonRates },
+      FEDEX: { surcharges: fedexSurcharges, addonRates: fedexAddonRates },
+    };
 
     for (const carrier of COMPARABLE_CARRIERS) {
       try {
         const discountPercent = discountOf(carrier);
+        const { surcharges, addonRates } = carrierInputs[carrier];
         const result = calculateQuote({
           ...input,
           overseasCarrier: carrier,
-          fscPercent: defaultFsc(carrier),
+          // The selected column keeps the FSC the calculator shows (typed or
+          // DB default); the others use their own DB rate.
+          fscPercent:
+            carrier === selectedCarrier && input.fscPercent !== undefined
+              ? input.fscPercent
+              : resolveFsc(carrier),
+          // Explicit undefined overrides the selected carrier's spread-in lists.
+          resolvedSurcharges: toQuoteSurcharges(surcharges),
+          resolvedAddonRates: addonRates.length > 0 ? toQuoteAddonRates(addonRates) : undefined,
           discountPercent,
         });
         quotes.push({ carrier, result, discountPercent });
-      } catch {
-        /* skip carrier that fails for this route */
+      } catch (error) {
+        // emax has no expected per-carrier skip: unknown countries fall back to the
+        // default zone, so every failure here is a rate-table defect worth reporting.
+        reportComparisonError(carrier, error);
       }
     }
 
     return quotes.sort((a, b) => a.result.totalQuoteAmount - b.result.totalQuoteAmount);
-  }, [input, selectedCarrier, baseDiscount, overrides]);
+  }, [
+    input,
+    selectedCarrier,
+    baseDiscount,
+    overrides,
+    resolveFsc,
+    upsSurcharges,
+    dhlSurcharges,
+    fedexSurcharges,
+    upsAddonRates,
+    dhlAddonRates,
+    fedexAddonRates,
+  ]);
 
   const topTwo = ranked.slice(0, 2);
   const third = ranked[2];

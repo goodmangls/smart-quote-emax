@@ -196,6 +196,16 @@ RSpec.describe "Api::V1::Quotes", type: :request do
       expect(json.dig("error", "code")).to eq("CALCULATION_ERROR")
     end
 
+    # Two concurrent creates can compute the same reference_no; the unique index
+    # then rejects the second INSERT. Create must go through the retrying save.
+    it "saves through the reference-number retry path" do
+      expect_any_instance_of(Quote).to receive(:save_with_reference_retry).and_call_original
+
+      post "/api/v1/quotes", params: valid_params, headers: user_headers, as: :json
+
+      expect(response).to have_http_status(:created)
+    end
+
     it "creates a quote for authenticated user" do
       post "/api/v1/quotes", params: valid_params, headers: user_headers, as: :json
 

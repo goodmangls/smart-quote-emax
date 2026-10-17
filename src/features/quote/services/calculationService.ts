@@ -13,6 +13,7 @@ import {
   PACKING_LABOR_UNIT_COST,
   WAR_RISK_SURCHARGE_RATE,
   TRANSIT_TIMES,
+  defaultFscFor,
 } from '@/config/rates';
 import { EMAX_EXACT_RATES, EMAX_RANGE_RATES, EMAX_FSC_PER_KG } from '@/config/emax_tariff';
 import { resolveCarrierRateTables } from './rateTableResolver';
@@ -295,6 +296,8 @@ export const calculateEmaxCosts = (billableWeight: number, country: string): Car
 
 export const calculateQuote = (input: QuoteInput): QuoteResult => {
   const carrier = input.overseasCarrier || 'UPS';
+  // Blank FSC = carrier default (same rule as the Rails calculator). Only an explicit 0 means no fuel surcharge.
+  const effectiveFscPercent = input.fscPercent ?? defaultFscFor(carrier);
   const isEmax = carrier === 'EMAX';
   const volumetricDivisor = isEmax ? 6000 : 5000;
 
@@ -447,15 +450,15 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     | NonNullable<import('@/types').CostBreakdown['carrierAddOnDetails']>
     | undefined;
   if (carrier === 'DHL') {
-    const dhlAddOns = calculateDhlAddOnCosts(input, billableWeight, input.fscPercent);
+    const dhlAddOns = calculateDhlAddOnCosts(input, billableWeight, effectiveFscPercent);
     carrierAddOnTotal = dhlAddOns.total;
     carrierAddOnDetails = dhlAddOns.details.length > 0 ? dhlAddOns.details : undefined;
   } else if (carrier === 'UPS') {
-    const upsAddOns = calculateUpsAddOnCosts(input, billableWeight, input.fscPercent);
+    const upsAddOns = calculateUpsAddOnCosts(input, billableWeight, effectiveFscPercent);
     carrierAddOnTotal = upsAddOns.total;
     carrierAddOnDetails = upsAddOns.details.length > 0 ? upsAddOns.details : undefined;
   } else if (carrier === 'FEDEX') {
-    const fedexAddOns = calculateFedexAddOnCosts(input, billableWeight, input.fscPercent);
+    const fedexAddOns = calculateFedexAddOnCosts(input, billableWeight, effectiveFscPercent);
     carrierAddOnTotal = fedexAddOns.total;
     carrierAddOnDetails = fedexAddOns.details.length > 0 ? fedexAddOns.details : undefined;
   }
@@ -495,7 +498,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     const emaxFscPerKg = EMAX_FSC_PER_KG[input.destinationCountry] ?? EMAX_FSC_PER_KG.VN;
     intlFscNew = Math.round(roundToHalf(billableWeight) * emaxFscPerKg);
   } else {
-    fscRate = (input.fscPercent || 0) / 100;
+    fscRate = effectiveFscPercent / 100;
     intlFscNew = Math.round(baseWithDiscount * fscRate);
   }
 
@@ -541,7 +544,7 @@ export const calculateQuote = (input: QuoteInput): QuoteResult => {
     discountAmount,
     discountPercent: Math.round(safeDiscountPercent * 100) / 100,
     currency: 'KRW',
-    fscPercent: input.fscPercent ?? 0,
+    fscPercent: effectiveFscPercent,
     totalActualWeight: itemResult.totalActualWeight,
     totalVolumetricWeight: itemResult.totalPackedVolumetricWeight,
     billableWeight,

@@ -13,9 +13,11 @@ export interface SharedQuoteData {
   destinationZip?: string;
   overseasCarrier: string;
   totalQuoteAmount: number;
-  totalQuoteAmountUsd: number;
+  // Serialized by the Rails QuoteSerializer under this exact key.
+  totalQuoteAmountUSD: number;
   appliedZone: string;
-  transitTime: string;
+  // Stored at save time; null for quotes saved before the column was written.
+  transitTime?: string | null;
   incoterm: string;
   billableWeight: number;
   createdAt: string;
@@ -30,7 +32,10 @@ export const getSharedQuote = async (token: string): Promise<SharedQuoteData> =>
   const res = await fetch(`${API_URL}/api/v1/shared/${token}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body?.error?.message || (res.status === 410 ? 'This share link has expired' : 'Invalid share link'));
+    throw new Error(
+      body?.error?.message ||
+        (res.status === 410 ? 'This share link has expired' : 'Invalid share link'),
+    );
   }
   return res.json();
 };

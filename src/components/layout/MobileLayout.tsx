@@ -7,6 +7,7 @@ import { AdminWidgets } from '@/pages/components/AdminWidgets';
 import { formatKRW, formatUSDInt } from '@/lib/format';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { ResolvedDiscount } from '@/api/discountRuleApi';
+import { carrierBadgeClass } from '@/config/carrier-badge';
 
 const LANGUAGES = [
   { code: 'en' as const, label: 'EN', flag: '🇺🇸' },
@@ -57,18 +58,19 @@ export const MobileLayout: React.FC<Props> = ({
   const { language, setLanguage, t } = useLanguage();
   const prevCarrierRef = useRef(input.overseasCarrier);
 
-  // Auto-scroll to results when carrier changes
+  // Auto-scroll to results when carrier changes. The timer is cleared on the next
+  // carrier change and on unmount, so rapid switching scrolls once, not per switch.
   useEffect(() => {
-    if (prevCarrierRef.current !== input.overseasCarrier) {
-      prevCarrierRef.current = input.overseasCarrier;
-      // Delay to allow result recalculation
-      setTimeout(() => {
-        const el = document.getElementById('result-section');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 150);
-    }
+    if (prevCarrierRef.current === input.overseasCarrier) return;
+    prevCarrierRef.current = input.overseasCarrier;
+    // Delay to allow result recalculation
+    const timer = setTimeout(() => {
+      const el = document.getElementById('result-section');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+    return () => clearTimeout(timer);
   }, [input.overseasCarrier]);
   const containerClass =
     'max-w-[420px] mx-auto border-x border-gray-200 dark:border-gray-800 shadow-2xl bg-white dark:bg-gray-900 min-h-screen transition-all duration-300';
@@ -192,13 +194,7 @@ export const MobileLayout: React.FC<Props> = ({
             {/* Top row: carrier badge + billable weight */}
             <div className='flex items-center gap-2 mb-1.5'>
               <span
-                className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide ${
-                  result.carrier === 'UPS'
-                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
-                    : result.carrier === 'DHL'
-                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300'
-                      : 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300'
-                }`}
+                className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wide ${carrierBadgeClass(result.carrier)}`}
               >
                 {result.carrier}
               </span>

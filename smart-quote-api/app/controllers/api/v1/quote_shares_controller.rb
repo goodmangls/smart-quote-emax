@@ -33,7 +33,13 @@ module Api
           return render json: { error: { message: "This share link has expired" } }, status: :gone
         end
 
-        render json: QuoteSerializer.detail(quote).merge(shared: true)
+        # The shared page shows the carrier and transit time, which the detail
+        # serializer does not carry. Both are stored on the quote at save time.
+        render json: QuoteSerializer.detail(quote).merge(
+          shared: true,
+          overseasCarrier: quote.overseas_carrier,
+          transitTime: quote.transit_time
+        )
       rescue ActiveRecord::RecordNotFound
         render json: { error: { message: "Invalid or expired share link" } }, status: :not_found
       end

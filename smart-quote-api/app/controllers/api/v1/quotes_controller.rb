@@ -66,7 +66,7 @@ module Api
           customer_id: params[:customerId]
         )
 
-        if quote.save
+        if quote.save_with_reference_retry
           AuditLog.track!(user: current_user, action: "quote.created", resource: quote, ip_address: request.remote_ip)
           render json: QuoteSerializer.detail(quote), status: :created
         else

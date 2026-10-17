@@ -140,7 +140,7 @@ class QuoteCalculator
       ups_surge_fee_result = Calculators::UpsSurgeFee.call(
         country: @input[:destinationCountry],
         billable_weight: @billable_weight,
-        fsc_percent: @input[:fscPercent] || DEFAULT_FSC_PERCENT
+        fsc_percent: @input[:fscPercent] || default_fsc_for(@carrier)
       )
       @ups_surge_total = ups_surge_fee_result ? ups_surge_fee_result[:total] : 0
     end

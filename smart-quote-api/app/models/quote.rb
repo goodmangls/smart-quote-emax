@@ -55,6 +55,25 @@ class Quote < ApplicationRecord
     validity_date.present? && validity_date < Date.current && %w[draft sent].include?(status)
   end
 
+  # generate_reference_no reads the next sequence in its own transaction, which
+  # commits before the INSERT. Two concurrent creates can therefore compute the
+  # same number, and the unique index rejects the second INSERT. Clearing
+  # reference_no lets the before_validation callback pick a fresh number.
+  def save_with_reference_retry(max_retries: 3)
+    attempts = 0
+    begin
+      save
+    rescue ActiveRecord::RecordNotUnique => e
+      raise unless e.message.include?("reference_no")
+
+      attempts += 1
+      raise if attempts > max_retries
+
+      self.reference_no = nil
+      retry
+    end
+  end
+
   private
 
   def set_validity_date

@@ -106,6 +106,23 @@ RSpec.describe QuoteCalculator, "FSC source" do
     end
   end
 
+  # The UPS surge fee (Israel) carries fuel on its own line. An omitted FSC must
+  # price it at the DB rate, the same as the main charge — not the shipped constant.
+  context "UPS surge fee when the request omits fscPercent" do
+    before { stub_db_rates }
+
+    def wire(result)
+      JSON.parse(result.to_json)
+    end
+
+    it "matches the total of an explicit request for the DB rate" do
+      omitted = wire(described_class.call(base_input(destinationCountry: "IL")))
+      explicit = wire(described_class.call(base_input(destinationCountry: "IL", fscPercent: db_ups)))
+
+      expect(omitted["totalQuoteAmount"]).to eq(explicit["totalQuoteAmount"])
+    end
+  end
+
   # EMAX charges fuel per kg (Constants::EmaxTariff::EMAX_FSC_PER_KG), on its own
   # branch above the percentage path — so moving the percentage source to the DB
   # must leave it untouched even if an EMAX row appears in fsc_rates.

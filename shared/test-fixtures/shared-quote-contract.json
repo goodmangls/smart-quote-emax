@@ -1,0 +1,16 @@
+{
+  "referenceNo": "SQ-2026-0042",
+  "originCountry": "KR",
+  "destinationCountry": "US",
+  "destinationZip": "10001",
+  "overseasCarrier": "UPS",
+  "totalQuoteAmount": 1500000,
+  "totalQuoteAmountUSD": 1071.43,
+  "appliedZone": "Z5",
+  "transitTime": "3-5 days",
+  "incoterm": "DAP",
+  "billableWeight": 15.5,
+  "createdAt": "2026-10-01T00:00:00Z",
+  "validityDate": "2026-10-08",
+  "shared": true
+}
