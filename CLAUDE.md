@@ -51,7 +51,8 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
     api/                       # API clients
       apiClient.ts             # Centralized fetch client (auth token, 401 handling)
       quoteApi.ts              # Rails backend (fetch-based, VITE_API_URL)
-      marginRuleApi.ts         # Margin rule CRUD + resolve API
+      discountRuleApi.ts       # Discount rule CRUD + resolve API
+      shareApi.ts              # 공유 견적 링크 (POST /quotes/:id/share, GET /shared/:token)
       exchangeRateApi.ts       # open.er-api.com (KRW base, localStorage cache for previous rates)
       weatherApi.ts            # Open-Meteo API (47 global ports/airports)
       noticeApi.ts             # Company announcements
@@ -68,6 +69,7 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       fsc-history.ts           # FSC historical rates with localStorage persistence (UPS/DHL/FedEx/OCS)
       rates.ts                 # KRW cost constants + FSC 폴백 상수 (매주 갱신 — 수치는 파일 참조)
       business-rules.ts        # Surge thresholds, packing weight buffer/addition
+      carrier-badge.ts         # 캐리어 배지 색상 단일 출처 (모바일 결과 바·관리자 할증표가 함께 읽음)
       options.ts               # Country options, carrier options, incoterm options
       addon-utils.ts           # Shared AddonRateLike/NormalizedRate types, calcAddonFee(), findRate()
       ups_zones.ts / dhl_zones.ts / fedex_zones.ts / ocs_zones.ts  # Config-driven zone mappings (Record<string, ZoneInfo>)
@@ -82,29 +84,32 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       quote/
         components/            # InputSection, ResultSection, SaveQuoteButton, CarrierComparisonCard
         components/widgets/    # ExchangeRateWidget, WeatherWidget, NoticeWidget, AccountManagerWidget, ExchangeRateCalculatorWidget
-        services/              # calculationService.ts (orchestrator, 369 lines), dhlAddonCalculator.ts, upsAddonCalculator.ts
+        services/              # calculationService.ts (orchestrator), quoteSurcharges.ts, dhlAddonCalculator.ts, upsAddonCalculator.ts
         hooks/                 # useSyncToInput (generic data sync hook)
         components/PackingTypeInfo.tsx  # Packing type info panel with live cost preview
       history/
         components/            # QuoteHistoryPage, QuoteHistoryTable, QuoteSearchBar, QuotePagination, QuoteDetailModal
         constants.ts           # Shared constants (STATUS_COLORS)
       admin/
-        components/            # DiscountRulesWidget (formerly Margin), FscRateWidget, UserManagementWidget, CustomerManagement, AuditLogViewer, RateTableViewer
+        components/            # TargetDiscountRulesWidget, FscRateWidget, UserManagementWidget, CustomerManagement, AuditLogViewer, RateTableViewer
         components/surcharge/  # SurchargeManagementWidget, SurchargeForm, SurchargeTable, SurchargeCarrierLinks, SurchargeNotice
       dashboard/
         components/            # WelcomeBanner, QuoteHistoryCompact, AccountSettingsModal, WidgetError, WidgetSkeleton
-        hooks/                 # useExchangeRates, usePortWeather, useLogisticsNews, useMarginRules, useResolvedMargin, useFscRates, useSurcharges, useAddonRates
+        hooks/                 # useExchangeRates, usePortWeather, useLogisticsNews, useJetFuelPrices, useDiscountRules, useResolvedDiscount, useFscRates, useSurcharges, useAddonRates
     pages/                     # Route-level pages
       LandingPage.tsx          # Public landing (/)
       LoginPage.tsx            # Auth login (/login)
       SignUpPage.tsx           # Auth signup (/signup)
+      MagicLinkVerifyPage.tsx  # Magic link login (/auth/verify)
       CustomerDashboard.tsx    # Dashboard with widgets (/dashboard)
       QuoteCalculator.tsx      # Calculator + history (/quote, /admin)
+      QuoteComparison.tsx      # Quote comparison (/compare)
+      SharedQuotePage.tsx      # Public shared quote (/q/:token)
       components/              # CalculatorActionBar, AdminWidgets, MobileStickyBottomBar
     components/
       layout/                  # Header, MobileLayout, NavigationTabs, Footer
       ui/CollapsibleSection.tsx # Reusable collapsible wrapper for admin widgets
-      ProtectedRoute.tsx       # Auth guard (requireAdmin prop for /admin, /schedule)
+      ProtectedRoute.tsx       # Auth guard (requireAdmin prop for /admin)
       ErrorBoundary.tsx        # React error boundary with Sentry
       ChannelTalk.tsx          # ChannelTalk chat widget
     lib/
@@ -114,7 +119,8 @@ bundle exec rspec spec/requests/api/v1/quotes_spec.rb
       fetchWithRetry.ts        # Generic fetch retry wrapper
 smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL)
   app/models/
-    margin_rule.rb             # Margin rule model (validations, scopes, soft delete)
+    discount_rule.rb           # Discount rule model (validations, scopes, soft delete)
+    quote.rb                   # reference_no 채번 + save_with_reference_retry (유니크 충돌 시 최대 3회 재채번)
     audit_log.rb               # Audit trail model
   app/services/
     quote_calculator.rb        # Main orchestrator
@@ -135,15 +141,16 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
       ocs_cost.rb / ocs_zone.rb
   app/controllers/api/v1/
     quotes_controller.rb       # Quote CRUD (uses QuoteSearcher, QuoteExporter, QuoteSerializer)
-    margin_rules_controller.rb # CRUD + resolve endpoint (admin guard, audit log)
+    discount_rules_controller.rb # CRUD + resolve endpoint (admin guard, audit log)
     surcharges_controller.rb   # Surcharge CRUD
     addon_rates_controller.rb  # Add-on rate management
     customers_controller.rb    # Customer CRUD
     users_controller.rb        # User management
-    auth_controller.rb         # JWT login/register/password
+    auth_controller.rb         # JWT login/register/refresh/logout/password + magic link
+    quote_shares_controller.rb # 공유 링크 생성 + 공개 조회 (/shared/:token)
     fsc_controller.rb          # FSC rate view/update
     audit_logs_controller.rb   # Audit log viewer
-    chat_controller.rb         # AI chatbot (Claude API, role-aware, language auto-detect, markdown, preset questions)
+    exchange_rates_controller.rb / jet_fuel_controller.rb / notices_controller.rb  # 대시보드 위젯 프록시
   db/seeds/addon_rates.rb      # DHL 19 + UPS 6 add-on rate seed data
   lib/constants/               # Tariff tables (ups_tariff.rb, dhl_tariff.rb, emax_tariff.rb, ocs_tariff.rb)
 ```
@@ -154,9 +161,12 @@ smart-quote-api/               # Backend (Rails 8 API-only, Ruby 3.4, PostgreSQL
 /              → LandingPage (public)
 /login         → LoginPage (public)
 /signup        → SignUpPage (public)
+/auth/verify   → MagicLinkVerifyPage (public)
 /dashboard     → CustomerDashboard (ProtectedRoute)
 /quote         → QuoteCalculator isPublic=true (ProtectedRoute)
 /admin         → QuoteCalculator isPublic=false (ProtectedRoute requireAdmin)
+/compare       → QuoteComparison (ProtectedRoute)
+/q/:token      → SharedQuotePage (public)
 /guide         → UserGuidePage (public E-MAX Manual)
 *              → redirect to /
 ```
@@ -170,21 +180,20 @@ Context providers wrap the app: `ThemeProvider > LanguageProvider > BrowserRoute
 | Dashboard & widgets | O | O (limited) |
 | Quote calculator | O | O |
 | Carrier Comparison | O | O |
-| Financial settings (Ex.Rate, FSC, Margin) | O | X |
+| Financial settings (Ex.Rate, FSC, Discount) | O | X |
 | Special Packing options | O | X |
 | Weather Widget | O | X |
 | Exchange Rate / Calculator Widget | O | X |
 | Jet Fuel Widget | O | O |
 | Language toggle (i18n) | O | X |
 | Currency toggle (KRW/USD) | O | X |
-| Flight Schedule (/schedule) | O | X |
 | Quote history | O | O |
 | Admin widgets panel (collapsible) | O | X |
 
 ### Data Flow
 
 1. User edits input -> frontend `calculateQuote()` runs instantly via `useMemo` (no debounce, pure function)
-2. "Save Quote" -> `POST /api/v1/quotes` -> backend `QuoteCalculator.call(params)` recalculates + persists to PostgreSQL (ref: `SQ-YYYY-NNNN`)
+2. "Save Quote" -> `POST /api/v1/quotes` -> backend `QuoteCalculator.call(params)` recalculates + persists to PostgreSQL (ref: `SQ-YYYY-NNNN`, 동시 저장으로 번호가 겹치면 `save_with_reference_retry` 가 최대 3회 재채번)
 3. History tab -> `GET /api/v1/quotes` with pagination/search/filter params
 
 ### Mirrored Calculation Logic
@@ -196,8 +205,8 @@ Frontend (`src/features/quote/services/calculationService.ts`) and backend (`sma
 1. **Item Costs** - Packing dimensions (+10/+10/+15cm), volumetric weight (`L*W*H / 5000` for UPS/DHL/FedEx/OCS, `/6000` for EMAX), packing material/labor, manual surge charges (all carriers).
 2. **Billable Weight** - Single box (Σqty=1): `max(Σ actual, Σ volumetric)` (legacy total model). Multi-box (2+ physical boxes): per-box billing — `Σᵢ roundToHalf(max(actualᵢ, volumetricᵢ))`, i.e. round each box's chargeable weight up to 0.5kg, then sum (E-MAX confirmed). Mirrored in `calculateItemCosts.totalBillableWeight` (frontend) and `ItemCost#total_billable_weight` (backend).
 3. **Carrier Costs** - Zone lookup (country -> zone code), shared `lookupCarrierRate()` engine (exact table 0.5-20kg -> range table >20kg -> fallback), FSC% surcharge.
-4. **Margin** - Dynamic margin via `MarginRuleResolver` (priority-based: P100 per-user flat > P90 per-user weight > P50 nationality > P0 default), `revenue = cost / (1 - margin%)`, rounded up to nearest KRW 100. Admin can manually override at any time.
-5. **Warnings** - Low margin (<10%), high volumetric weight, surge charges, collect terms (EXW/FOB), EMAX/OCS country support.
+4. **Discount** - emax 는 마진이 아니라 **공시 요율에서 할인**한다. `DiscountRuleResolver`(priority 순, first-match-wins, 기본 0% = 정가)가 할인율을 정하고, `할인 base = base × (1 − discount%)` → FSC 는 할인된 base 에 붙고 → 애드온은 할인 없이 더한 뒤 KRW 100 단위 올림. Admin can manually override at any time. ⚠️ smart-quote-main 의 `cost / (1 − margin%)` 공식을 이 저장소에 옮겨 오지 말 것 — 의미가 반대다.
+5. **Warnings** - high volumetric weight, FedEx minimum chargeable weight, document-rate weight limits, collect terms (EXW/FOB), EMAX/OCS country support.
 
 
 ### UPS Zone Mapping (Z1-Z10) — per UPS 2026 Service Guide
@@ -256,7 +265,7 @@ Zone mappings are config-driven (`src/config/ups_zones.ts`, `src/config/dhl_zone
 ### Admin Widgets (visible at /admin only)
 
 - **FscRateWidget**: DB(`fsc_rates`) 요율을 읽어 표시하고 **관리자가 UPS/DHL/FedEx/OCS 4종을 직접 편집·저장**한다(연필 → 값 입력 → 체크). 저장은 캐리어당 `POST /api/v1/fsc/update` 로 나가고 감사로그가 남으며, 저장 직후 재조회한다. EMAX 는 per-kg(`EMAX_FSC_PER_KG`)라 표시만 하고 편집 대상이 아니다. 캐리어 공식 페이지 링크 포함(OCS 는 공식 URL 미공개)
-- **DiscountRulesWidget**: DB-driven discount rule CRUD, priority-based grouping (P100/P90/P50/P0), inline add/edit, soft delete
+- **TargetDiscountRulesWidget**: DB-driven discount rule CRUD, priority-based grouping (P100/P90/P50/P0), inline add/edit, soft delete
 - **SurchargeManagementWidget**: Carrier-specific surcharge CRUD (split into SurchargeForm, SurchargeTable, SurchargeCarrierLinks, SurchargeNotice sub-components)
 - **CustomerManagement**: Customer CRUD with quote count badges
 - **UserManagementWidget**: User role/account management
@@ -285,10 +294,20 @@ Source: FedEx "추가 서비스 요금 및 기타 정보 — 대한민국" (KR_2
 
 - **EMAX Vietnam**: All Vietnam quotes must use the **Hanoi-based** rate table and range rate (KRW 11,000/kg >20kg).
 - **EMAX Weight Policy**: Apply **0.5kg step rounding** (round up to nearest 0.5kg) for all EMAX calculations to ensure consistency with carrier tariffs.
-- **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions). AI chatbot enforces this in responses.
+- **Incoterm Policy**: UPS/DHL/FedEx/EMAX/OCS express shipments → **DAP only** (no exceptions).
 - **Volumetric Weight**: Use `L*W*H/5000` for all carriers except EMAX (`/6000`).
 - **Billable Weight (per-box)**: For multi-box shipments (2+ physical boxes, counting quantity), round each box's chargeable weight `max(actual, volumetric)` up to 0.5kg **individually**, then sum: `Σᵢ roundToHalf(max(actualᵢ, volumetricᵢ))` (E-MAX confirmed). A single box (Σqty=1) keeps the legacy `max(Σ actual, Σ volumetric)` total model — unchanged. Identical logic mirrored in frontend (`calculationService.ts`) and backend (`item_cost.rb` / `quote_calculator.rb`).
-- **Rounding Policy**: Margin-adjusted revenue is always rounded up to the nearest KRW 100.
+- **Rounding Policy**: The quote total (discounted base + FSC + add-ons) is always rounded up to the nearest KRW 100.
+- **Carrier Comparison Card**: 열마다 **그 캐리어의** DB FSC·시스템 할증·애드온으로 계산한다(선택 캐리어 열만 화면에 입력된 FSC 를 쓴다). 2026-10-17 이전에는 하드코딩 FSC 상수를 쓰고 선택 캐리어의 할증·애드온을 다른 열에도 실었다. 계산 실패는 삼키지 않고 Sentry 로 보고한다(세션당 중복 제거).
+- **공유 견적 계약**: `GET /shared/:token` 응답 키는 `shared/test-fixtures/shared-quote-contract.json` 으로 BE·FE 양쪽이 고정한다. 키를 바꾸면 이 fixture 를 함께 고칠 것 — 2026-10-17 이전에 FE 가 없는 키(`totalQuoteAmountUsd`)를 읽어 USD 금액이 안 나왔다.
+
+### 보안 규칙 (2026-10-17, smart-quote-main 에서 이식)
+
+- **견적에 붙이는 고객은 소유권을 검사한다.** create·update 의 `customerId` 는 `customer_assignable?` 를 통과해야 하고, 없는 id 와 남의 id 는 똑같이 `422 INVALID_CUSTOMER` 로 답한다 — 응답의 `customerName` 이 다른 회사명을 읽는 열거 오라클이 되기 때문이다.
+- **`POST /auth/magic_link/verify` 는 IP 당 20회/분**으로 따로 스로틀한다(`rack_attack.rb`). 규칙이 POST 조건을 포함하므로 GET 으로 바꾸면 조용히 안 걸린다.
+- **로그아웃은 refresh 토큰을 서버에서 폐기한다.** 쿠키 삭제만으로는 복사된 refresh 토큰이 계속 유효했다. 서명만 검증해(만료 무시) `users.refresh_token_jti` 를 비운다. ⚠️ 사용자당 jti 가 하나라 **로그아웃은 모든 기기의 세션을 끊는다** — 기기별 로그아웃이 필요해지면 main 처럼 `revoked_tokens` 테이블 구조로 바꿔야 한다.
+- **비밀번호는 입력한 그대로 보낸다** — 가입·로그인·비밀번호 변경 모두 trim 하지 않는다(`trim()` 은 빈칸 검사에만 쓴다). 가입만 trim 해서 앞뒤 공백이 있는 비밀번호로 로그인이 실패했다.
+- **보안 헤더는 `vercel.json`** 에 있다(HSTS·nosniff·X-Frame-Options DENY·Referrer-Policy·Permissions-Policy). CSP 는 외부 출처(ChannelTalk·Sentry 등)를 확정하지 못해 아직 없다.
 
 
 | API             | Endpoint                                | Purpose                   |
@@ -316,25 +335,38 @@ GET    /api/v1/quotes/:id        # Detail
 PATCH  /api/v1/quotes/:id        # Update status/notes/customer
 DELETE /api/v1/quotes/:id        # Delete
 GET    /api/v1/quotes/export     # CSV download
+POST   /api/v1/quotes/:id/send_email # Email quote
+POST   /api/v1/quotes/:quote_id/share # Create share link
+GET    /api/v1/shared/:token     # Public shared quote (no auth, contract fixture 고정)
 
 # Authentication
 POST   /api/v1/auth/login        # JWT Login
 POST   /api/v1/auth/register     # Account creation
+GET    /api/v1/auth/me           # Current user
+POST   /api/v1/auth/refresh      # Rotate access token (refresh cookie)
+POST   /api/v1/auth/logout       # Revoke refresh jti + clear cookie (전 기기 로그아웃)
 PUT    /api/v1/auth/password     # Change Password
+POST   /api/v1/auth/promote      # Promote user role
+POST   /api/v1/auth/magic_link        # Request magic link email
+POST   /api/v1/auth/magic_link/verify # Verify magic link (20/min/IP throttle)
 
 # Admin Configuration
 GET    /api/v1/fsc/rates         # View Fuel Surcharges (DHL/UPS/FedEx/OCS)
 POST   /api/v1/fsc/update        # Update global FSC% rates
-GET    /api/v1/margin_rules          # List all rules
-POST   /api/v1/margin_rules          # Create rule
-PUT    /api/v1/margin_rules/:id      # Update rule
-DELETE /api/v1/margin_rules/:id      # Soft delete rule
-GET    /api/v1/margin_rules/resolve  # Resolve margin
-CRUD   /api/v1/surcharges            # Surcharge management
-CRUD   /api/v1/addon_rates           # Add-on rate management
+GET    /api/v1/discount_rules          # List all rules
+POST   /api/v1/discount_rules          # Create rule
+PUT    /api/v1/discount_rules/:id      # Update rule
+DELETE /api/v1/discount_rules/:id      # Soft delete rule
+POST   /api/v1/discount_rules/resolve  # Resolve discount (권장 — PII 를 body 로)
+GET    /api/v1/discount_rules/resolve  # deprecated, 하위 호환용
+CRUD   /api/v1/surcharges            # Surcharge management (+ GET resolve)
+CRUD   /api/v1/addon_rates           # Add-on rate management (+ GET resolve)
 CRUD   /api/v1/customers             # Customer management
-GET    /api/v1/users                 # User list/management
+GET    /api/v1/users                 # User list/management (+ PATCH/DELETE)
 GET    /api/v1/audit_logs            # Audit log viewer
+
+# Dashboard proxies
+GET    /api/v1/exchange_rates · /api/v1/jet_fuel · /api/v1/notices/news
 ```
 
 ## Configuration
