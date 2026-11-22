@@ -1,1 +1,1 @@
-⛽ UPS·DHL·FedEx FSC 2026-11-16 주간 요율 반영 (UPS 49.75% / DHL 50.00% / FedEx 49.00%)
+🔧 e2e·backend CI 러너를 ubuntu-24.04 로 고정 (26.04 에서 Playwright·Ruby 3.4.5 미지원)
