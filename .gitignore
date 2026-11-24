@@ -33,3 +33,6 @@ reports/
 !.env.example
 .env
 .env*.local
+
+# Project-scoped agent skills installed by skill installers (local only)
+.agents/skills/
